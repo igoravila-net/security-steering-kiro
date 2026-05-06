@@ -1,0 +1,31 @@
+{
+  "enabled": true,
+  "name": "Verificar Segurança de Dependências",
+  "description": "Quando um arquivo de dependências for editado (package.json, pom.xml, build.gradle, requirements.txt, .csproj, etc.), verifica se as bibliotecas adicionadas ou atualizadas possuem vulnerabilidades conhecidas e sugere versões seguras.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/package.json",
+      "**/pom.xml",
+      "**/build.gradle",
+      "**/build.gradle.kts",
+      "**/requirements.txt",
+      "**/requirements*.txt",
+      "**/Pipfile",
+      "**/pyproject.toml",
+      "**/poetry.lock",
+      "**/*.csproj",
+      "**/Podfile",
+      "**/Package.swift",
+      "**/libs.versions.toml",
+      "**/Cargo.toml",
+      "**/go.mod",
+      "**/composer.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Um arquivo de dependências foi editado. Analise as dependências adicionadas ou modificadas e para CADA biblioteca:\n\n1. Pesquise na web se a versão utilizada possui CVEs conhecidos (use fontes como NVD, GitHub Advisories, Snyk)\n2. Identifique a versão mínima segura mais recente\n3. Verifique se a biblioteca está em EOL (End of Life) ou foi abandonada\n4. Se encontrar problemas, sugira a correção com o formato:\n\n⚠️ [BIBLIOTECA] vX.Y.Z → Versão segura recomendada: vA.B.C\n   - CVE-XXXX-XXXXX (severidade): descrição breve\n   - Ação: atualizar para vA.B.C\n\nSe a biblioteca estiver em EOL:\n🚫 [BIBLIOTECA] está em End of Life. Alternativa recomendada: [ALTERNATIVA]\n\nSe não encontrar vulnerabilidades:\n✅ Dependências verificadas - nenhuma vulnerabilidade conhecida encontrada.\n\nIMPORTANTE: Sempre pesquise informações atualizadas na web antes de fazer recomendações. Não confie apenas em conhecimento prévio pois novas CVEs são publicadas constantemente."
+  }
+}

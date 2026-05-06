@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Aprender com Vulnerabilidades Detectadas",
+  "description": "Após cada revisão de segurança que bloqueia código vulnerável (hook security-code-review), registra o padrão vulnerável detectado em um log de aprendizado para análise posterior e melhoria dos steerings.",
+  "version": "1",
+  "when": {
+    "type": "postToolUse",
+    "toolTypes": [
+      "write"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Se a última operação de escrita foi BLOQUEADA pelo hook de segurança (security-code-review), analise o padrão vulnerável que foi detectado e:\n\n1. Leia o arquivo .kiro/steering/seguranca-aprendizado-vulnerabilidades.md\n2. Adicione uma nova entrada no final da seção \"## Registro de Padrões Detectados\" com:\n   - Data (use a data atual)\n   - Tipo de vulnerabilidade detectada\n   - Linguagem do código\n   - Padrão vulnerável resumido (sem expor dados sensíveis)\n   - Steering relacionado que deveria ter prevenido\n3. Se o padrão NÃO está coberto por nenhum steering existente, adicione na seção \"## Gaps Identificados\" com sugestão de melhoria\n\nSe a operação NÃO foi bloqueada por segurança, ignore esta instrução."
+  }
+}

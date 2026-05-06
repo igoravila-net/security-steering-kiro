@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Atualizar README ao Modificar Steering",
+  "description": "Quando um arquivo de steering de segurança for criado ou editado, lembra o agente de verificar se o README.md precisa ser atualizado com o novo steering.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/.kiro/steering/seguranca-*.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Um steering de segurança foi modificado ou criado. Verifique se o README.md na raiz do projeto precisa ser atualizado para refletir a mudança (novo steering adicionado, steering removido, ou mudança significativa de escopo). Se necessário, atualize a tabela correspondente no README.md."
+  }
+}

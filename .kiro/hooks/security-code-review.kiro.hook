@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Revisão de Segurança em Código",
+  "description": "Revisa cada operação de escrita de código contra padrões de segurança proibidos: eval(), credenciais hardcoded, innerHTML sem sanitização, SQL concatenado, comandos shell com entrada do usuário, desserialização insegura, e ausência de sanitização/limitação de input.",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "write"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Antes de escrever este código, revise-o contra os seguintes padrões de segurança PROIBIDOS:\n\nPADRÕES CRÍTICOS A BLOQUEAR:\n- eval(), exec(), Function() com qualquer dado que possa vir de entrada externa\n- Credenciais, tokens, senhas ou API keys hardcoded (strings que parecem segredos)\n- innerHTML, dangerouslySetInnerHTML, Html.Raw, th:utext, mark_safe sem sanitização prévia\n- Concatenação de strings em SQL (deve usar consultas parametrizadas)\n- Runtime.exec(), subprocess com shell=True, exec() com entrada do usuário\n- Desserialização de dados não confiáveis (ObjectInputStream sem filtro, enableDefaultTyping)\n- Entrada do usuário sem validação de tamanho máximo (TODA entrada deve ter limite de caracteres)\n- Entrada do usuário sem chamada explícita a função de sanitização\n- Variáveis de ambiente com segredos expostas em logs\n- Endpoints sem autenticação/autorização\n\nREGRA FUNDAMENTAL - TODO INPUT É MALICIOSO:\n- Toda entrada do usuário DEVE ter limite de caracteres definido (@Size, maxLength, .slice(), [:N])\n- Toda entrada do usuário DEVE passar por função de sanitização antes de uso\n- Nunca confiar em dados vindos do cliente, headers, query params, path params, body\n\nSe o código viola alguma dessas regras, BLOQUEIE a escrita e explique o problema com a correção necessária.\nSe o código está seguro, permita a escrita sem comentários."
+  }
+}

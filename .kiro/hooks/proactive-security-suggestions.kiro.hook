@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Sugestões Proativas de Segurança",
+  "description": "Quando o agente parar de executar (após gerar código), revisa proativamente o que foi escrito e sugere melhorias de segurança que o desenvolvedor pode não ter considerado, como rate limiting, logging de auditoria, ou validações adicionais.",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Se código foi escrito nesta sessão, revise os arquivos modificados e sugira melhorias de segurança que podem ter sido esquecidas. Foque em:\n\n1. Rate limiting ausente em endpoints novos\n2. Logging de auditoria ausente (quem fez o quê, quando)\n3. Timeout não configurado em chamadas externas\n4. Health check não implementado\n5. Correlation ID ausente para rastreabilidade\n6. Testes de segurança não criados (401, 403, 400)\n7. Dados sensíveis que poderiam ser mascarados na resposta\n8. Circuit breaker ausente em integrações externas\n\nApresente as sugestões de forma concisa. Se nenhum código foi escrito ou tudo está adequado, não sugira nada."
+  }
+}

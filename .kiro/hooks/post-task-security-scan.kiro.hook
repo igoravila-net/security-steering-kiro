@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "SAST Pós-Tarefa",
+  "description": "Após cada tarefa de spec ser completada, executa análise estática de segurança para verificar se o código implementado não introduziu vulnerabilidades.",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A tarefa foi completada. Execute uma revisão de segurança nos arquivos modificados:\n\n1. Verifique se TODA entrada do usuário tem:\n   - Limite de caracteres explícito (maxLength, @Size, max_length, .slice())\n   - Chamada a função de sanitização antes de uso\n   - Validação de tipo e formato\n\n2. Verifique padrões vulneráveis:\n   - SQL injection (concatenação em queries)\n   - XSS (saída sem encoding)\n   - Command injection (entrada em shell)\n   - Path traversal (entrada em file paths)\n   - Credenciais hardcoded\n   - Dados sensíveis em logs\n\n3. Verifique se endpoints novos têm:\n   - Autenticação\n   - Autorização (verificação de ownership)\n   - Rate limiting\n   - Validação de input com limites\n\nSe encontrar problemas, liste-os e corrija automaticamente."
+  }
+}
