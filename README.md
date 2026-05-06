@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro, implementado v
 
 ## Visão Geral
 
-Este repositório contém **38 steerings de segurança** e **4 hooks automatizados** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP e melhores práticas de mercado.
+Este repositório contém **39 steerings de segurança** e **4 hooks automatizados** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -97,6 +97,7 @@ Os steerings são regras carregadas automaticamente em toda interação com o Ki
 | `seguranca-uso-ativos-ti.md` | Uso Seguro de Ativos de TI |
 | `seguranca-lgpd-dados-sensiveis.md` | LGPD e Dados Sensíveis |
 | `seguranca-dependencias.md` | Dependências Vulneráveis |
+| `seguranca-padrao-logs.md` | Padrão de Logs (Arquitetura de Referência) |
 
 ### Aprendizado e Melhoria Contínua
 
