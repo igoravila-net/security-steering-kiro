@@ -1,7 +1,7 @@
 ---
 name: "security-steering-kiro"
 displayName: "COGNA Security Guardrails"
-description: "v1.3.0 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas."
+description: "v1.4.0 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas."
 keywords: ["segurança", "security", "owasp", "cogna", "lgpd", "vulnerabilidade", "appsec", "devsecops"]
 author: "Segurança da Informação - Grupo COGNA"
 ---

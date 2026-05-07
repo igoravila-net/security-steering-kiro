@@ -2,6 +2,25 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.4.0] - 2026-05-07
+
+### Adicionado
+- Secrets scanning (API keys, tokens, senhas, chaves privadas, cloud)
+- Threat modeling STRIDE automatizado + Security Champions
+- PR security description checklist
+- Compliance as Code (LGPD, PCI-DSS, menores)
+- Métricas de adoção e feedback loop
+- Regras por domínio/squad
+- Integração com tickets Veracode
+- Consulta automática de CVEs
+- Hook manual para atualizar CVEs (AppSec)
+- Padrões OWASP PTK
+
+### Otimizado
+- 8 steerings redundantes removidos (-1.360 linhas)
+- 14 steerings mudados para inclusion: manual
+- Contexto reduzido em ~37%
+
 ## [1.3.0] - 2026-05-07
 
 ### Adicionado
