@@ -8,16 +8,26 @@ author: "Segurança da Informação - Grupo COGNA"
 
 # COGNA Security Guardrails
 
-**Versão:** 1.3.0  
+**Versão:** 1.4.0  
 **Autor:** Segurança da Informação - Grupo COGNA  
 **Última atualização:** 07/Maio/2026
 
 ## Changelog Resumido
 
+**v1.4.0** (07/Mai/2026)
+- Secrets scanning, Threat modeling STRIDE, Compliance as Code
+- Métricas de adoção, regras por domínio/squad
+- Consulta automática de CVEs, padrões OWASP PTK
+- Otimização: -37% contexto (8 redundantes removidos, 14 para manual)
+
 **v1.3.0** (07/Mai/2026)
-- Segurança por framework (Spring Boot, ASP.NET, NestJS, Django, FastAPI, Express, Angular, React, Swift, Kotlin)
-- Templates de código seguro (Controller, Service, Repository, DTO, Integração, Upload, Login)
-- Arquitetura de resiliência (Health Check, Circuit Breaker, Retry, Timeout, Alertas)
+- Frameworks específicos, templates seguros, resiliência, onboarding, feedback AppSec
+
+**v1.2.0** — Testes expandidos para 20 categorias
+**v1.1.0** — Logs COGNA, execução automática obrigatória
+**v1.0.0** — Framework base (40+ steerings, 8 hooks, 19 políticas)
+
+Changelog completo: ver CHANGELOG.md
 - Onboarding de segurança para novos devs
 - Feedback loop com AppSec/Veracode (mapeamento CWE)
 - Testes de regressão de segurança
