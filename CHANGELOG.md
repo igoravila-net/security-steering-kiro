@@ -2,6 +2,42 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.0.0] - 2026-05-07
+
+### Breaking Change — Reestruturação Completa
+
+Consolidação de ~62 steerings individuais em 7 steerings temáticos, seguindo o modelo do [arm-soc-migration Power](https://github.com/kirodotdev/powers/blob/main/arm-soc-migration/).
+
+### Estrutura Nova
+
+| Arquivo | Conteúdo |
+|---|---|
+| constraints.md | Regras críticas, input malicioso, scaffolding, secrets scanning, dependências |
+| implementation.md | Padrões de código seguro por vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs) |
+| validation.md | Testes de segurança (20 categorias), checklist pré-PR, threat modeling STRIDE |
+| policies.md | Políticas corporativas COGNA (SI, LGPD, acessos, incidentes, IA, criptografia, cloud) |
+| infrastructure.md | IaC (Terraform, Docker, K8s), deployment, resiliência, CI/CD security |
+| observability.md | Padrão de logs COGNA (GELF, CorrelationID), monitoramento, auditoria |
+| conditional.md | Regras por tipo de arquivo (controllers, repos, templates, infra) via fileMatch |
+
+### Motivação
+- Redução de ~90% no número de arquivos (62 para 7)
+- Minimização de contexto carregado pelo Kiro
+- Estrutura alinhada com padrão oficial de Powers (POWER.md enxuto + steerings temáticos)
+- Eliminação de redundâncias entre steerings
+
+### Removido
+- Todos os arquivos seguranca-*.md individuais (62 arquivos)
+- Steerings de aprendizado contínuo (dados voláteis não pertencem a steerings)
+- Changelog e versionamento inline no POWER.md
+
+### Alterado
+- POWER.md reescrito: enxuto (overview + lista de steerings + SLAs + referências)
+- README.md atualizado para refletir nova estrutura
+- conditional.md unifica os 4 steerings condicionais em um único arquivo com fileMatch amplo
+
+---
+
 ## [1.4.0] - 2026-05-07
 
 ### Adicionado
@@ -10,10 +46,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - PR security description checklist
 - Compliance as Code (LGPD, PCI-DSS, menores)
 - Métricas de adoção e feedback loop
-- Regras por domínio/squad
-- Integração com tickets Veracode
 - Consulta automática de CVEs
-- Hook manual para atualizar CVEs (AppSec)
 - Padrões OWASP PTK
 
 ### Otimizado
@@ -25,46 +58,31 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 ### Adicionado
 - Segurança por framework específico (Spring Boot, ASP.NET, NestJS, Django, FastAPI, Express, Angular, React, Swift, Kotlin)
-- Templates de código seguro (Controller, Service, Repository, DTO, Integração, Upload, Login, Error Handler)
-- Arquitetura de resiliência (Health Check, Circuit Breaker, Retry, Timeout, Métricas, Alertas)
+- Templates de código seguro
+- Arquitetura de resiliência
 - Onboarding de segurança para novos desenvolvedores
-- Feedback loop com AppSec/Veracode (mapeamento CWE)
+- Feedback loop com AppSec/Veracode
 - Testes de regressão de segurança
-- Versionamento semântico do framework
 
 ## [1.2.0] - 2026-05-07
 
 ### Adicionado
 - Testes de segurança expandidos de 8 para 20 categorias
-- Novas categorias: CORS, Timeout/DoS, Upload, Sessão/Cookies, Headers, CSRF, Mass Assignment, Business Logic, Desserialização, Criptografia/Tokens
 - Banco de payloads maliciosos para testes parametrizados
 - Cobertura mínima por componente definida
-- Nomenclatura padronizada para testes
 
 ## [1.1.0] - 2026-05-07
 
 ### Adicionado
-- Steering de testes de segurança automatizados (auth, authz, validation, injection, rate limiting, dados sensíveis)
-- Steering de padrão de logs COGNA (campos GELF, CorrelationID, níveis, implementação por linguagem)
+- Steering de testes de segurança automatizados
+- Steering de padrão de logs COGNA
 - Instrução de execução automática obrigatória no POWER.md
-- Ícone personalizado do Grupo COGNA (icon.png)
-- Versão e changelog visíveis na descrição do Power
-
-### Melhorado
-- POWER.md com seção de execução automática obrigatória
-- Testes de segurança com inputs maliciosos parametrizados
 
 ## [1.0.0] - 2026-05-07
 
-### Adicionado - Framework Base
+### Adicionado — Framework Base
 - 40+ steerings de segurança (OWASP Top 10 + políticas corporativas)
 - 8 hooks automatizados
 - Exemplos em todas as linguagens homologadas
 - 19 políticas corporativas COGNA convertidas
-- Steerings de vulnerabilidades OWASP multilinguagem
-- Steerings de APIs e autenticação (OAuth2, OIDC, JWT, PKCE)
-- Steerings de infraestrutura (Cloud, IaC, Firewalls, Criptografia)
-- Steerings proativos (scaffolding seguro, checklist pré-PR, erros comuns)
 - Steerings condicionais por tipo de arquivo
-- Sistema de aprendizado contínuo (vulnerabilidades e bibliotecas)
-- Hooks: security-code-review, block-secrets-in-commits, check-dependency-security, post-task-security-scan, proactive-security-suggestions, learn-from-vulnerabilities, learn-from-insecure-dependencies, update-readme-on-steering-change
