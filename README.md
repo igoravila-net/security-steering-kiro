@@ -44,14 +44,38 @@ steering/
 | **observability** | Níveis de log, campos GELF/COGNA, CorrelationID, implementação por linguagem, dados sensíveis em logs, logging de segurança, monitoramento |
 | **conditional** | Regras ativadas por fileMatch: controllers/APIs, repositories/SQL, templates/views, infra/IaC |
 
-## Hooks Ativos
+## Hooks Recomendados
 
-| Hook | Trigger | Ação |
-|---|---|---|
-| **Revisão de Segurança em Código** | Antes de escrever código | Bloqueia padrões vulneráveis |
-| **Bloquear Segredos em Commits** | Antes de comandos git | Detecta API keys, tokens, senhas |
-| **Verificar Segurança de Dependências** | Ao editar arquivos de dependência | Pesquisa CVEs e sugere versões seguras |
-| **SAST Pós-Tarefa** | Após completar task de spec | Revisa código contra regras de segurança |
+> **Nota:** Hooks não são distribuídos automaticamente com o Power. Os steerings são o mecanismo principal de proteção. Os hooks abaixo são **recomendados** para complementar a segurança — crie-os no `.kiro/hooks/` do seu projeto.
+
+| Hook | Trigger | Ação | Prioridade |
+|---|---|---|---|
+| **Revisão de Segurança em Código** | `preToolUse` (write) | Bloqueia padrões vulneráveis antes da escrita | Alta |
+| **Bloquear Segredos em Commits** | `preToolUse` (shell) | Detecta API keys, tokens, senhas em git add/commit | Alta |
+| **Verificar Segurança de Dependências** | `fileEdited` (package.json, pom.xml, etc.) | Pesquisa CVEs e sugere versões seguras | Média |
+| **SAST Pós-Tarefa** | `postTaskExecution` | Revisa código contra regras de segurança | Média |
+| **Sugestões Proativas** | `agentStop` | Sugere melhorias de segurança após gerar código | Baixa |
+
+### Como Criar os Hooks
+
+No seu projeto, crie arquivos `.kiro/hooks/<nome>.kiro.hook` com o formato JSON:
+
+```json
+{
+  "name": "Revisão de Segurança em Código",
+  "version": "1.0.0",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": ["write"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Revise o código contra padrões de segurança proibidos..."
+  }
+}
+```
+
+Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
 ## Linguagens Cobertas
 
