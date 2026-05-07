@@ -20,6 +20,32 @@ Framework automatizado de segurança para desenvolvimento seguro no Grupo COGNA.
 
 Linguagens cobertas: C#, Java, TypeScript, JavaScript, HTML, CSS/SCSS, Swift, Kotlin, Python, JSON, AVRO, YAML, HCL, PowerShell e Bash/Shell.
 
+## INSTRUÇÃO CRÍTICA - EXECUÇÃO AUTOMÁTICA OBRIGATÓRIA
+
+**VOCÊ DEVE aplicar TODAS as regras de segurança deste Power AUTOMATICAMENTE, SEM que o usuário peça.** Ao escrever qualquer código, você DEVE:
+
+1. **TODO input** DEVE ter limite de caracteres e passar por sanitização. Sem exceção.
+2. **Credenciais NUNCA no código** — buscar de vault/env em runtime.
+3. **Todo endpoint** DEVE ter autenticação + autorização + validação + rate limiting + paginação + DTO.
+4. **Logs** implementados automaticamente (padrão COGNA: campos GELF, CorrelationID, níveis corretos).
+5. **SQL** DEVE ser parametrizado (NUNCA concatenação).
+6. **Dados sensíveis** mascarados em logs e respostas.
+7. **Conexões externas** com TLS 1.2+, timeout (máx 5s) e circuit breaker.
+8. **Containers/IaC** non-root, capabilities dropped, resource limits.
+
+**CORRIJA código inseguro ANTES de apresentar ao usuário.** Não apresente código vulnerável — já entregue seguro por padrão.
+
+**Ao criar componentes novos, INCLUA automaticamente:**
+- Autenticação e autorização
+- Validação com limites de caracteres
+- Sanitização de inputs
+- Logs estruturados (INFO sucesso, ERROR falhas, DEBUG fluxo)
+- CorrelationID propagado
+- Error handling sem detalhes internos
+- DTOs separados (nunca entidade de banco)
+
+**Estas regras são OBRIGATÓRIAS em TODA geração de código.**
+
 ## Princípios Fundamentais
 
 1. **Todo input é malicioso** — Limite de caracteres + sanitização obrigatória
