@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro no Grupo COGNA,
 
 ## Visão Geral
 
-Este Power contém **7 steerings temáticos consolidados** e **4 hooks automatizados** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
+Este Power contém **7 steerings temáticos consolidados** e **10 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -44,9 +44,11 @@ steering/
 | **observability** | Níveis de log, campos GELF/COGNA, CorrelationID, implementação por linguagem, dados sensíveis em logs, logging de segurança, monitoramento |
 | **conditional** | Regras ativadas por fileMatch: controllers/APIs, repositories/SQL, templates/views, infra/IaC |
 
-## Hooks Recomendados
+## Hooks
 
 > **Nota:** Hooks não são distribuídos automaticamente com o Power. Os steerings são o mecanismo principal de proteção. Os hooks abaixo são **recomendados** para complementar a segurança — crie-os no `.kiro/hooks/` do seu projeto.
+
+### Recomendados para Projetos
 
 | Hook | Trigger | Ação | Prioridade |
 |---|---|---|---|
@@ -55,6 +57,16 @@ steering/
 | **Verificar Segurança de Dependências** | `fileEdited` (package.json, pom.xml, etc.) | Pesquisa CVEs e sugere versões seguras | Média |
 | **SAST Pós-Tarefa** | `postTaskExecution` | Revisa código contra regras de segurança | Média |
 | **Sugestões Proativas** | `agentStop` | Sugere melhorias de segurança após gerar código | Baixa |
+
+### Desenvolvimento e Manutenção do Power
+
+| Hook | Trigger | Ação |
+|---|---|---|
+| **Aprender com Vulnerabilidades** | `postToolUse` (write) | Registra padrões vulneráveis bloqueados para análise e melhoria dos steerings |
+| **Aprender com Dependências Inseguras** | `postToolUse` (read) | Registra bibliotecas com CVEs detectados para atualizar lista de proibidas |
+| **Sincronizar Versão POWER/CHANGELOG** | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md quando CHANGELOG é editado |
+| **Atualizar CVEs (Manual)** | `userTriggered` | Busca CVEs recentes na web e atualiza steerings (uso pelo time AppSec) |
+| **Atualizar README ao Modificar Steering** | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças nos steerings |
 
 ### Como Criar os Hooks
 
