@@ -1,16 +1,37 @@
 ---
 name: "security-steering-kiro"
 displayName: "COGNA Security Guardrails"
-description: "Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 40+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas."
+description: "v1.3.0 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas."
 keywords: ["segurança", "security", "owasp", "cogna", "lgpd", "vulnerabilidade", "appsec", "devsecops"]
 author: "Segurança da Informação - Grupo COGNA"
 ---
 
 # COGNA Security Guardrails
 
-**Versão:** 1.0.0  
+**Versão:** 1.3.0  
 **Autor:** Segurança da Informação - Grupo COGNA  
-**Última atualização:** Maio/2026
+**Última atualização:** 07/Maio/2026
+
+## Changelog Resumido
+
+**v1.3.0** (07/Mai/2026)
+- Segurança por framework (Spring Boot, ASP.NET, NestJS, Django, FastAPI, Express, Angular, React, Swift, Kotlin)
+- Templates de código seguro (Controller, Service, Repository, DTO, Integração, Upload, Login)
+- Arquitetura de resiliência (Health Check, Circuit Breaker, Retry, Timeout, Alertas)
+- Onboarding de segurança para novos devs
+- Feedback loop com AppSec/Veracode (mapeamento CWE)
+- Testes de regressão de segurança
+
+**v1.2.0** (07/Mai/2026)
+- Testes expandidos para 20 categorias
+
+**v1.1.0** (07/Mai/2026)
+- Testes de segurança, Padrão de logs COGNA, Execução automática
+
+**v1.0.0** (07/Mai/2026)
+- 40+ steerings, 8 hooks, 19 políticas COGNA
+
+Changelog completo: ver CHANGELOG.md
 
 ![COGNA](icon.png)
 

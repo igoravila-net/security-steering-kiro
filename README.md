@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro, implementado v
 
 ## Visão Geral
 
-Este repositório contém **39 steerings de segurança** e **4 hooks automatizados** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP e melhores práticas de mercado.
+Este repositório contém **40 steerings de segurança** e **4 hooks automatizados** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -56,6 +56,7 @@ Os steerings são regras carregadas automaticamente em toda interação com o Ki
 | `seguranca-config-deployment-backdoor.md` | Deployment Config, Server Config, Backdoor, Time and State |
 | `seguranca-input-malicioso.md` | Todo Input é Malicioso (sanitização obrigatória) |
 | `seguranca-scaffolding-seguro.md` | Scaffolding Seguro (componentes criados com segurança por default) |
+| `seguranca-testes-seguranca.md` | Testes de Segurança (20 categorias: auth, authz, injeção, rate limiting, CORS, DoS, upload, sessão, headers, CSRF, mass assignment, business logic, desserialização, criptografia + banco de payloads) |
 
 ### Segurança de APIs e Autenticação
 
