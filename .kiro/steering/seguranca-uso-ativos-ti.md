@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Uso Seguro de Ativos de TI (Grupo COGNA)
 
 > Baseado na Política de Uso Seguro de Ativos de TI (Segurança da Informação_008 v3) do Grupo COGNA
@@ -89,3 +93,4 @@
 - Política de Classificação da Informação - Grupo COGNA
 - ISO 27002:2013
 - NIST CSF
+

@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Classificação, Manuseio e Descarte de Informações (Grupo COGNA)
 
 > Baseado no Procedimento de Classificação e Manuseio de Informações (Segurança da Informação_001 v2) do Grupo COGNA
@@ -106,3 +110,4 @@
 - LGPD (Lei 13.709/2018)
 - ISO/IEC 27000
 - NIST CSF
+

@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Segurança em Nuvem (Grupo COGNA)
 
 > Baseado na Política de Segurança em Nuvem (N1, v01) do Grupo COGNA
@@ -121,3 +125,4 @@ Antes de adotar qualquer serviço em nuvem:
 - CIS Controls
 - ISO 27001:2022
 - LGPD (Lei 13.709/2018)
+

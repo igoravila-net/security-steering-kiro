@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Avaliação de Fornecedores de TI (Grupo COGNA)
 
 > Baseado no Procedimento de Avaliação de Controles de Segurança da Informação para Fornecedores de TI (Segurança da Informação_PR007 v1) do Grupo COGNA
@@ -90,3 +94,4 @@ Toda contratação de software/serviço de TI requer aprovação de:
 - Procedimento de Avaliação de Controles de SI para Fornecedores de TI (PR007 v1) - Grupo COGNA
 - Política de Segurança da Informação - Grupo COGNA
 - Política de Suprimentos/Compras - Grupo COGNA
+

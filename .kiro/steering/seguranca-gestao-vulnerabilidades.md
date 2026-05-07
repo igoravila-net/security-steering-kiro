@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Gestão de Vulnerabilidades Cibernéticas (Grupo COGNA)
 
 > Baseado na Política de Gestão de Vulnerabilidades Cibernéticas (SI-1 v1) do Grupo COGNA
@@ -124,3 +128,4 @@ Após implementar correção:
 - ISO/IEC 29147:2018
 - NIST
 - SANS Implementing a Vulnerability Management Process
+

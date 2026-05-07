@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Gestão de Firewalls (Grupo COGNA)
 
 > Baseado na Política de Gestão de Firewalls (Nível N1, v01) do Grupo COGNA
@@ -108,3 +112,4 @@ Toda criação/alteração/remoção de regra de firewall DEVE seguir:
 - CIS Controls
 - LGPD (Lei 13.709)
 - Política de Gestão de Incidentes - Grupo COGNA
+

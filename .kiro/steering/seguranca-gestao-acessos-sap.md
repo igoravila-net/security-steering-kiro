@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Gestão de Acessos SAP (Grupo COGNA)
 
 > Baseado no Procedimento de Gestão de Acessos SAP (SI-SAP02 v01) do Grupo COGNA
@@ -96,3 +100,4 @@ Se aprovado sem riscos → perfil provisionado automaticamente
 - Política de Gestão de Acessos Lógicos - Grupo COGNA
 - ISO 27002
 - NIST 800-53
+

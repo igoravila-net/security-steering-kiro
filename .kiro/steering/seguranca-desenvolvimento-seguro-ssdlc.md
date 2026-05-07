@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Desenvolvimento Seguro / SSDLC (Grupo COGNA)
 
 > Baseado na Política de Desenvolvimento Seguro (Segurança da Informação_001 v3) do Grupo COGNA
@@ -137,3 +141,4 @@ Toda solução desenvolvida pelo Grupo COGNA DEVE seguir o SSDLC, incluindo plat
 - NIST 800-64
 - Política de Segurança da Informação - Grupo COGNA
 - Política de Proteção de Dados e Privacidade - Grupo COGNA
+

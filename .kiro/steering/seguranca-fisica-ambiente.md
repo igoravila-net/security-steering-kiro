@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Segurança Física e do Ambiente (Grupo COGNA)
 
 > Baseado na Política de Segurança Física e do Ambiente (Segurança da Informação_006 v03) do Grupo COGNA
@@ -78,3 +82,4 @@
 - Política de Gestão de Ativos - Grupo COGNA
 - ISO 27002:2013
 - NIST CSF (800-53)
+

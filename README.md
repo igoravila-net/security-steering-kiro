@@ -106,6 +106,7 @@ Os steerings são regras carregadas automaticamente em toda interação com o Ki
 
 | Steering | Cobertura |
 |---|---|
+| `seguranca-consulta-cves-automatica.md` | Consulta automática de CVEs ao mencionar/usar bibliotecas (verifica NVD, GitHub Advisories, cve.org) |
 | `seguranca-aprendizado-vulnerabilidades.md` | Registro de padrões vulneráveis detectados, métricas, gaps e melhorias |
 | `seguranca-aprendizado-bibliotecas.md` | Registro de bibliotecas/dependências inseguras detectadas, métricas por ecossistema e candidatas a proibição |
 

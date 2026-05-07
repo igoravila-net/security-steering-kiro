@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Cofre de Senhas e PAM (Grupo COGNA)
 
 > Baseado na Política de Cofre de Senhas (Segurança da Informação_003 v1) do Grupo COGNA
@@ -83,3 +87,4 @@ NUNCA declarar valores literais de credenciais no código-fonte.
 - Procedimento de Uso de Senhas - Grupo COGNA
 - ISO 27001:2022, ISO 27002:2022
 - NIST SP 800-53 (Rev. 5)
+

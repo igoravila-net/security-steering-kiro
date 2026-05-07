@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Gestão de Incidentes de Segurança da Informação e Privacidade (Grupo COGNA)
 
 > Baseado na Política de Gestão de Incidentes de Segurança da Informação e Privacidade (Segurança da Informação_004 v2) do Grupo COGNA
@@ -139,3 +143,4 @@
 - LGPD (Lei 13.709/2018, Art. 48)
 - ISO 27002:2013
 - NIST 800-53
+

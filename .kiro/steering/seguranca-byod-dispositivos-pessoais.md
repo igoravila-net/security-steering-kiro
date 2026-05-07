@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - BYOD e Dispositivos Pessoais (Grupo COGNA)
 
 > Baseado na Política de Uso de Dispositivos Pessoais - BYOD (SI_003 v03) do Grupo COGNA
@@ -83,3 +87,4 @@
 - ISO 27002:2013
 - NIST CSF
 - LGPD (Lei 13.709/2018)
+

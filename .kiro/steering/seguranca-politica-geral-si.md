@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Política Geral de Segurança da Informação (Grupo COGNA)
 
 > Baseado na Política de Segurança da Informação (SI_001 v07) do Grupo COGNA
@@ -93,3 +97,4 @@ Esta política é a base para todos os demais steerings de segurança:
 - NIST CSF
 - Política Nacional de Segurança da Informação
 - Código de Conduta do Grupo Cogna
+

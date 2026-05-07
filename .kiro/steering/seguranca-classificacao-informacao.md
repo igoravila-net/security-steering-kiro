@@ -1,3 +1,7 @@
+---
+inclusion: manual
+---
+
 # Políticas de Segurança - Classificação da Informação (Grupo COGNA)
 
 > Baseado na Política de Classificação das Informações (Segurança da Informação_001 v3) do Grupo COGNA e na LGPD (Lei 13.709/2018)
@@ -113,3 +117,4 @@ Se detectar vazamento ou acesso indevido a dados classificados:
 - LGPD (Lei 13.709/2018)
 - NIST CSF
 - ISO/IEC 27001
+
