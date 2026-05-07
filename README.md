@@ -59,6 +59,7 @@ Os steerings são regras carregadas automaticamente em toda interação com o Ki
 | `seguranca-testes-seguranca.md` | Testes de Segurança (20 categorias: auth, authz, injeção, rate limiting, CORS, DoS, upload, sessão, headers, CSRF, mass assignment, business logic, desserialização, criptografia + banco de payloads) |
 | `seguranca-frameworks-especificos.md` | Segurança por Framework (Spring Boot, ASP.NET, NestJS, Django, FastAPI, Express, Angular, React, Swift, Kotlin) |
 | `seguranca-ptk-patterns.md` | Padrões OWASP PTK (sinks perigosos JS/TS, fluxo tainted IAST, JWT attacks, CSP, SCA frontend) |
+| `seguranca-secrets-scanning.md` | Secrets Scanning (detecção de API keys, tokens, senhas, chaves privadas e credenciais cloud no código) |
 
 ### Segurança de APIs e Autenticação
 
