@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "name": "Verificar Segurança de Dependências",
-  "description": "Quando um arquivo de dependências for editado (package.json, pom.xml, build.gradle, requirements.txt, .csproj, etc.), verifica se as bibliotecas adicionadas ou atualizadas possuem vulnerabilidades conhecidas e sugere versões seguras.",
-  "version": "1",
+  "description": "Quando um arquivo de dependências for editado, pesquisa CVEs na web, sugere versões seguras e instrui correção automática antes de prosseguir.",
+  "version": "2",
   "when": {
     "type": "fileEdited",
     "patterns": [
@@ -26,6 +26,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Um arquivo de dependências foi editado. Analise as dependências adicionadas ou modificadas e para CADA biblioteca:\n\n1. Pesquise na web se a versão utilizada possui CVEs conhecidos (use fontes como NVD, GitHub Advisories, Snyk)\n2. Identifique a versão mínima segura mais recente\n3. Verifique se a biblioteca está em EOL (End of Life) ou foi abandonada\n4. Se encontrar problemas, sugira a correção com o formato:\n\n⚠️ [BIBLIOTECA] vX.Y.Z → Versão segura recomendada: vA.B.C\n   - CVE-XXXX-XXXXX (severidade): descrição breve\n   - Ação: atualizar para vA.B.C\n\nSe a biblioteca estiver em EOL:\n🚫 [BIBLIOTECA] está em End of Life. Alternativa recomendada: [ALTERNATIVA]\n\nSe não encontrar vulnerabilidades:\n✅ Dependências verificadas - nenhuma vulnerabilidade conhecida encontrada.\n\nIMPORTANTE: Sempre pesquise informações atualizadas na web antes de fazer recomendações. Não confie apenas em conhecimento prévio pois novas CVEs são publicadas constantemente."
+    "prompt": "Arquivo de dependências editado. OBRIGATÓRIO antes de prosseguir:\n\n1. Para CADA dependência adicionada/modificada, pesquise na web (GitHub Advisories, NVD, Snyk) se a versão possui CVEs conhecidos\n2. Se encontrar CVE: atualize IMEDIATAMENTE para versão segura no arquivo (não apenas sugira — corrija)\n3. Se a biblioteca está na lista PROIBIDA do steering (event-stream, colors>=1.4.1, faker>=6.6.6, log4j<2.17.1, etc.): BLOQUEIE e substitua pela alternativa\n4. Se é pacote npm: execute `npm audit --audit-level=high` após a edição e corrija vulnerabilidades encontradas\n5. Verifique se a biblioteca está em EOL — se sim, substitua pela alternativa recomendada\n\nFormato de report:\n⚠️ [lib] vX.Y.Z → corrigido para vA.B.C (CVE-XXXX)\n🚫 [lib] PROIBIDA → substituída por [alternativa]\n✅ Todas as dependências verificadas — sem CVEs conhecidos\n\nIMPORTANTE: Pesquise SEMPRE na web. Não confie em conhecimento prévio — novas CVEs são publicadas diariamente. Se não conseguir verificar, alerte o usuário."
   }
 }
