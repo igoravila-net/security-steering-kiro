@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Coletor de Feedback do Power",
+  "description": "Ao final de cada sessão, analisa a experiência com os hooks de segurança e registra feedbacks de fricção, redundância ou falsos positivos no arquivo SECURITY-POWER-FEEDBACK.md do projeto do usuário.",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analise esta sessão e identifique problemas com os hooks de segurança COGNA. Se detectar algum dos padrões abaixo, registre no arquivo SECURITY-POWER-FEEDBACK.md (crie se não existir, adicione ao .gitignore):\n\n[REDUNDÂNCIA] Hook disparou mas resposta foi sempre 'APROVADO'/'OK'/'Sem sugestões' sem valor agregado (mesmo arquivo/comando verificado 3+ vezes)\n[FALSO POSITIVO] Hook bloqueou ou alertou para algo que não era risco real (ex: checklist de auth em arquivo de teste)\n[FRICÇÃO] Hook adicionou latência significativa sem ganho proporcional de segurança\n[GAP] Situação de risco real que nenhum hook detectou\n\nFormato de registro:\n| Data | Tipo | Hook | Problema | Impacto |\n\nSe a sessão não teve problemas com hooks (poucos disparos, todos relevantes), NÃO registre nada.\nSe não existe código de produção nesta sessão, NÃO registre nada.\nResponda apenas: 'Feedback registrado' ou 'Sem feedback — sessão sem fricção.'"
+  }
+}
