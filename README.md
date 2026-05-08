@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro no Grupo COGNA,
 
 ## Visão Geral
 
-Este Power contém **7 steerings temáticos consolidados** e **18 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
+Este Power contém **7 steerings temáticos consolidados** e **21 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -36,7 +36,7 @@ steering/
 
 | Steering | Conteúdo |
 |---|---|
-| **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, supply chain security (npm), onboarding |
+| **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, supply chain security (npm, pip, Maven, NuGet), onboarding |
 | **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions |
 | **validation** | 20 categorias de testes de segurança, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
 | **policies** | Política Geral SI, classificação da informação, LGPD, gestão de acessos, PAM, incidentes, vulnerabilidades, SSDLC, IA segura, criptografia em BD, cloud, fornecedores |
@@ -65,6 +65,8 @@ steering/
 | **Sugestões Proativas** | `proactive-security-suggestions.kiro.hook` | `agentStop` | Sugere melhorias apenas para código de produção com I/O | Baixa |
 | **Security Review On-Demand** | `security-review-on-demand.kiro.hook` | `userTriggered` | Revisão completa (20 categorias) sob demanda no arquivo ativo | Baixa |
 | **Coletor de Feedback** | `power-feedback-collector.kiro.hook` | `agentStop` | Coleta feedback automático de fricção/redundância/falsos positivos | Baixa |
+| **LGPD — Dados Pessoais** | `lgpd-data-review.kiro.hook` | `fileEdited` (user*, customer*, aluno*, profile*) | Verifica mascaramento, consentimento e retenção de PII | Média |
+| **Métricas de Adoção** | `adoption-metrics.kiro.hook` | `agentStop` | Registra regras aplicadas, bloqueios e correções por sessão | Baixa |
 
 ### Desenvolvimento e Manutenção do Power
 
@@ -74,6 +76,7 @@ steering/
 | **Aprender com Dependências Inseguras** | `learn-from-insecure-dependencies.kiro.hook` | `postToolUse` (read) | Registra bibliotecas com CVEs detectados |
 | **Sincronizar Versão POWER/CHANGELOG** | `sync-version-power-changelog.kiro.hook` | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md |
 | **Atualizar CVEs (Manual)** | `update-cves-from-web.kiro.hook` | `userTriggered` | Busca CVEs recentes na web (uso pelo time AppSec) |
+| **Mapear Findings Veracode** | `veracode-cwe-mapping.kiro.hook` | `userTriggered` | Mapeia CWEs do Veracode para steerings e sugere melhorias |
 | **Atualizar README ao Modificar Steering** | `update-readme-on-steering-change.kiro.hook` | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças |
 
 ### Como Criar os Hooks
