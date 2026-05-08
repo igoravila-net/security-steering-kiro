@@ -37,7 +37,7 @@ steering/
 | Steering | Conteúdo |
 |---|---|
 | **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, supply chain security (npm, pip, Maven, NuGet), onboarding |
-| **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions |
+| **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress) |
 | **validation** | 20 categorias de testes de segurança, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
 | **policies** | Política Geral SI, classificação da informação, LGPD, gestão de acessos, PAM, incidentes, vulnerabilidades, SSDLC, IA segura, criptografia em BD, cloud, fornecedores |
 | **infrastructure** | Terraform, Docker, Kubernetes, Helm, deployment config, server config, resiliência, CI/CD security, anti-backdoor |
@@ -102,11 +102,16 @@ Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
 > **Importante:** NÃO crie hooks do tipo `promptSubmit` para injetar regras de segurança. Os steering files deste Power já são carregados automaticamente (`inclusion: auto`) em toda interação. Um hook `promptSubmit` duplicaria as regras, consumindo ~300+ tokens extras por mensagem sem ganho de segurança.
 
+> **Hooks que NÃO devem ser criados no projeto consumidor:**
+> - `security-context-reminder` (promptSubmit) — redundante com steerings auto-incluídos
+> - `security-power-feedback` (agentStop) — gera apenas feedback sobre limitações da plataforma sem ação possível
+> - Qualquer hook que injete checklist de regras COGNA via prompt — os steerings já fazem isso
+
 > **Limitação conhecida:** Hooks `preToolUse` e `postToolUse` sempre interceptam o evento — não é possível filtrar por conteúdo do comando ou path do arquivo no `when`. A classificação (SKIP/APROVADO) é feita pelo agente via prompt. Os prompts deste Power são otimizados para resposta mínima (~1 palavra) em cenários de auto-approve, minimizando o custo de cada interceptação inevitável.
 
 ## Linguagens Cobertas
 
-C#, Java, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell, Bash/Shell
+C#, Java, PHP, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell, Bash/Shell
 
 ## SLAs de Correção
 
