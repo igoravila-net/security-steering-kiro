@@ -1,13 +1,13 @@
 {
   "enabled": true,
   "name": "Coletor de Feedback do Power",
-  "description": "Ao final de cada sessão, analisa a experiência com os hooks de segurança e registra feedbacks de fricção, redundância ou falsos positivos no arquivo SECURITY-POWER-FEEDBACK.md do projeto do usuário.",
-  "version": "1",
+  "description": "Ao final de cada sessão, analisa a experiência com os hooks de segurança e registra feedbacks acionáveis. Ignora limitações conhecidas da plataforma Kiro.",
+  "version": "2",
   "when": {
     "type": "agentStop"
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Analise esta sessão e identifique problemas com os hooks de segurança COGNA. Se detectar algum dos padrões abaixo, registre no arquivo SECURITY-POWER-FEEDBACK.md (crie se não existir, adicione ao .gitignore):\n\n[REDUNDÂNCIA] Hook disparou mas resposta foi sempre 'APROVADO'/'OK'/'Sem sugestões' sem valor agregado (mesmo arquivo/comando verificado 3+ vezes)\n[FALSO POSITIVO] Hook bloqueou ou alertou para algo que não era risco real (ex: checklist de auth em arquivo de teste)\n[FRICÇÃO] Hook adicionou latência significativa sem ganho proporcional de segurança\n[GAP] Situação de risco real que nenhum hook detectou\n\nFormato de registro:\n| Data | Tipo | Hook | Problema | Impacto |\n\nSe a sessão não teve problemas com hooks (poucos disparos, todos relevantes), NÃO registre nada.\nSe não existe código de produção nesta sessão, NÃO registre nada.\nResponda apenas: 'Feedback registrado' ou 'Sem feedback — sessão sem fricção.'"
+    "prompt": "Analise esta sessão e identifique problemas ACIONÁVEIS com os hooks de segurança COGNA.\n\nNÃO REGISTRAR (limitações conhecidas da plataforma Kiro — sem solução no Power):\n- Hook preToolUse/postToolUse interceptou arquivo já aprovado (não há cache nativo de hooks)\n- Hook disparou para .md/.json/.kiro.hook com resposta 'APROVADO' (interceptação inevitável, prompt já otimizado)\n- Mesmo comando shell interceptado múltiplas vezes (não há filtragem por conteúdo do comando no when)\n- Edições paralelas no mesmo arquivo geraram múltiplas interceptações (cada tool call dispara individualmente)\n- Hook de observabilidade respondeu 'SKIP' para domain/testes (postToolUse não filtra por path)\n\nREGISTRAR APENAS problemas ACIONÁVEIS:\n[GAP] Risco real que nenhum hook detectou (ex: credencial hardcoded passou, SQL concat não bloqueado)\n[FALSO POSITIVO] Hook BLOQUEOU código seguro incorretamente (não apenas interceptou com APROVADO)\n[MELHORIA] Padrão novo que deveria ser adicionado à whitelist do prompt\n\nSe não há problemas acionáveis → 'Sem feedback.'\nSe registrar → formato: | Data | Tipo | Hook | Problema | Ação sugerida |"
   }
 }
