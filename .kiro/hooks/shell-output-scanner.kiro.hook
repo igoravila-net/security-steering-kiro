@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "name": "Scanner de Output de Shell",
-  "description": "Após execução de comandos shell, verifica se o output contém credenciais ou informações sensíveis expostas acidentalmente.",
-  "version": "1",
+  "description": "Após execução de comandos, escaneia output por credenciais. Skip para testes/lint/build/git.",
+  "version": "2",
   "when": {
     "type": "postToolUse",
     "toolTypes": [
@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Verifique o output do comando executado:\n\n[SKIP] Se o comando foi teste (vitest/jest), lint (tsc/eslint), build (vite/webpack), git log/status/diff, ou leitura de docs/configs → responda 'OK'.\n\n[VERIFICAR] Para outros comandos, escaneie o output por:\n1. API keys (sk-, pk-, AKIA, AIza, ghp_, glpat-)\n2. Tokens JWT (eyJ...)\n3. Senhas ou connection strings com credenciais\n4. Chaves privadas (BEGIN RSA/EC/PRIVATE KEY)\n5. Variáveis de ambiente com valores sensíveis expostos\n\nSe detectar credencial no output:\n⚠️ ALERTA: Credencial detectada no output. Instrua o usuário a rotacionar imediatamente.\n\nSe output limpo ou comando seguro: responda apenas 'OK'."
+    "prompt": "Se comando foi vitest/jest/tsc/eslint/vite/webpack/git log/git status/git diff/git show/git fetch/npm test/npm run build/npm run lint/cat/type/dir/ls → 'OK'. Para outros: escanear output por sk-, pk-, AKIA, AIza, ghp_, glpat-, eyJ, BEGIN PRIVATE KEY, password/secret com valor. Detectou → ALERTE e instrua rotação. Limpo → 'OK'."
   }
 }

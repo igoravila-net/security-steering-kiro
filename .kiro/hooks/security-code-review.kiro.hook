@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "name": "Revisão de Segurança em Código",
-  "description": "Revisa operações de escrita com profundidade proporcional ao risco. Auto-aprova testes, docs e configs. Checklist completa apenas para código com I/O, auth e dados sensíveis. Cache por sessão para arquivos já classificados.",
-  "version": "3",
+  "description": "Revisa escrita com profundidade proporcional ao risco. Ultra-rápido para testes/docs. Checklist completa apenas para I/O/auth.",
+  "version": "4",
   "when": {
     "type": "preToolUse",
     "toolTypes": [
@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "CACHE: Se já classificou este MESMO arquivo como [SKIP] ou [LIGHT] nesta sessão e o conteúdo não mudou de camada, responda 'APROVADO' sem re-processar.\n\nClassifique o arquivo sendo escrito:\n\n[SKIP] Se é: *.test.ts, *.spec.ts, *.test.js, *.spec.js, *_test.go, *_test.py, *.md, *.json (config/package), .gitignore, *.yml (CI), *.css, *.html (estático), *.kiro.hook\n→ 'APROVADO'\n\n[LIGHT] Se é: domain/models, domain/types, domain/value-objects, DTOs, enums, interfaces, constantes\n→ Verifique APENAS: (1) sem credenciais hardcoded (2) tipos corretos. Se OK: 'APROVADO'\n\n[FULL] Se é: controllers, routes, handlers, services com I/O, repositories, infrastructure, middleware de auth, integrações externas\n→ Checklist:\n- eval()/exec()/Function() com entrada externa\n- Credenciais/tokens/senhas hardcoded\n- innerHTML/dangerouslySetInnerHTML sem sanitização\n- Concatenação de strings em SQL\n- Entrada do usuário sem limite de caracteres\n- Entrada do usuário sem sanitização\n- Endpoints sem autenticação/autorização\n\nSe viola regra [FULL]: BLOQUEIE e explique correção.\nSe seguro ou [SKIP]/[LIGHT]: permita sem comentários."
+    "prompt": "REGRA: Se já aprovou este arquivo nesta sessão → 'APROVADO'. Se extensão é .md, .json, .yml, .css, .html, .gitignore, .kiro.hook, ou path contém test/spec/mock/__test__ → 'APROVADO'. Se path contém domain/models, domain/types, DTOs, enums, interfaces → verificar apenas credenciais hardcoded, se OK → 'APROVADO'. APENAS se path contém controller, route, handler, service, repository, infrastructure, middleware, auth, integration → checklist: eval/exec, credenciais, innerHTML, SQL concat, input sem limite, input sem sanitização, endpoint sem auth. Violação → BLOQUEIE. Seguro → permita sem comentários."
   }
 }
