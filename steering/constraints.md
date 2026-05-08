@@ -387,6 +387,50 @@ Versões sugeridas sem verificação de CVE em fonte atual = VIOLAÇÃO CRÍTICA
    - Verificar deprecated: `dotnet list package --deprecated`
    - Gerar SBOM: `dotnet CycloneDX -o sbom.json`
 
+### Supply Chain Security — Composer/PHP
+
+#### Ataques Conhecidos e Mitigações
+
+| Ataque | Descrição | Mitigação |
+|---|---|---|
+| Typosquatting | Pacotes com nomes similares no Packagist | Verificar vendor/package exato, downloads, mantenedor |
+| Dependency Confusion | Pacote privado com mesmo nome no Packagist público | Usar repositório Satis/Private Packagist para pacotes internos |
+| Malicious Package | Pacote com código malicioso em autoload/scripts | Auditar `composer.json` scripts, verificar código-fonte |
+| Abandoned Package | Pacote sem manutenção com CVEs não corrigidos | `composer audit`, verificar última release |
+
+#### Regras OBRIGATÓRIAS para Composer/PHP
+
+1. **Lockfile commitado**
+   - `composer.lock` SEMPRE commitado
+   - CI DEVE usar `composer install --no-dev --no-scripts` (não `composer update`)
+   - Verificar integridade com `composer validate`
+
+2. **Versões controladas**
+   - Usar constraints específicos (`^8.0` OK, `*` PROIBIDO)
+   - Atualizar de forma controlada (PR dedicado com `composer update`)
+   - Revisar changelog antes de atualizar major versions
+
+3. **Auditoria obrigatória**
+   - `composer audit` obrigatório no CI (falhar em HIGH/CRITICAL)
+   - Monitorar GitHub Advisories para pacotes PHP
+   - Verificar pacotes abandonados: `composer outdated --direct`
+
+4. **Pacotes PROIBIDOS**
+
+   | Pacote | Motivo | Alternativa |
+   |---|---|---|
+   | phpmailer < 6.5 | Múltiplos CVEs (RCE, XSS) | phpmailer >= 6.9 |
+   | guzzlehttp/guzzle < 7.4.5 | SSRF, header injection | guzzle >= 7.8 |
+   | symfony/http-kernel < 6.3.8 | CVEs de segurança | symfony >= 6.4 LTS |
+   | laravel/framework < 10.0 | EOL | laravel >= 11 |
+   | phpmyadmin (em produção) | Interface admin exposta | Usar CLI ou ferramentas internas |
+
+5. **Pipeline CI/CD — Verificações Composer**
+   - Instalar: `composer install --no-dev --no-scripts --prefer-dist`
+   - Auditar: `composer audit --format=json`
+   - Validar: `composer validate --strict`
+   - Scripts: executar apenas após auditoria manual
+
 ---
 
 ## Secrets Scanning — Padrões de Detecção

@@ -368,3 +368,73 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 - Sanitizar dados recebidos de APIs externas antes de usar
 - TLS obrigatório para comunicação entre serviços
 - Implementar retry com backoff exponencial (não retry infinito)
+
+---
+
+## 15. PHP — Padrões de Código Seguro
+
+> Regras específicas para PHP (Laravel, Symfony, WordPress, APIs).
+
+### SQL Injection
+- SEMPRE usar PDO com prepared statements ou Eloquent ORM (Laravel)
+- NUNCA concatenar variáveis em queries SQL
+- Usar query builder com bindings: `DB::table('users')->where('email', $email)`
+- WordPress: usar `$wpdb->prepare()` para queries customizadas
+
+### XSS
+- Laravel Blade: `{{ $var }}` escapa automaticamente — NUNCA usar `{!! $var !!}` com input
+- Symfony Twig: `{{ var }}` escapa automaticamente — NUNCA usar `{{ var|raw }}` com input
+- WordPress: usar `esc_html()`, `esc_attr()`, `esc_url()` em todo output
+- PHP puro: `htmlspecialchars($input, ENT_QUOTES, 'UTF-8')` obrigatório
+
+### Command Injection
+- NUNCA usar `exec()`, `system()`, `shell_exec()`, `passthru()` com input do usuário
+- Se necessário: `escapeshellarg()` + `escapeshellcmd()` em TODOS os argumentos
+- Preferir APIs nativas (ex: `unlink()` em vez de `exec('rm ...')`)
+- Desabilitar funções perigosas no `php.ini`: `disable_functions = exec,system,shell_exec,passthru,proc_open`
+
+### Code Injection
+- NUNCA usar `eval()`, `assert()`, `preg_replace` com flag `/e`
+- NUNCA usar `include`/`require` com path controlável pelo usuário
+- Desabilitar `allow_url_include` e `allow_url_fopen` em produção
+
+### Autenticação e Sessão
+- Hash de senhas: `password_hash($pwd, PASSWORD_ARGON2ID)` ou `PASSWORD_BCRYPT`
+- Verificar: `password_verify($input, $hash)`
+- Sessão: `session.cookie_httponly = 1`, `session.cookie_secure = 1`, `session.use_strict_mode = 1`
+- Regenerar session ID após login: `session_regenerate_id(true)`
+- CSRF: usar token em formulários (Laravel `@csrf`, Symfony CSRF component)
+
+### Upload de Arquivos
+- Validar MIME type real (não confiar em extensão): `finfo_file()`
+- Limitar tamanho: `upload_max_filesize` e validação no código
+- Armazenar fora do webroot (NUNCA em `public/`)
+- Renomear arquivo (UUID, não nome original)
+- Bloquear extensões perigosas: `.php`, `.phtml`, `.php5`, `.phar`
+
+### Configuração Segura (php.ini produção)
+- `display_errors = Off`
+- `log_errors = On`
+- `expose_php = Off`
+- `allow_url_include = Off`
+- `session.cookie_httponly = 1`
+- `session.cookie_secure = 1`
+- `session.cookie_samesite = Strict`
+- `open_basedir` configurado para restringir acesso a diretórios
+
+### Desserialização
+- NUNCA usar `unserialize()` com dados do usuário
+- Se necessário: usar `allowed_classes` parameter
+- Preferir JSON: `json_decode()` / `json_encode()`
+
+### SSRF
+- Validar URLs antes de `file_get_contents()` ou `curl`
+- Bloquear IPs internos (127.0.0.1, 10.x, 172.16-31.x, 192.168.x)
+- Usar whitelist de hosts permitidos
+- Desabilitar `allow_url_fopen` se não necessário
+
+### Dependências (Composer)
+- `composer.lock` SEMPRE commitado
+- Usar versões exatas quando possível
+- `composer audit` obrigatório no CI
+- Verificar pacotes antes de instalar (packagist.org stats, repo, mantenedores)
