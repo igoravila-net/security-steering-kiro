@@ -196,6 +196,136 @@ Sempre que uma dependência for adicionada ou atualizada:
     - Rebuild controlado: `npm rebuild`
     - Validar lockfile: `npx lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https`
 
+### Supply Chain Security — pip/Python
+
+#### Ataques Conhecidos e Mitigações
+
+| Ataque | Descrição | Mitigação |
+|---|---|---|
+| Typosquatting | Pacotes com nomes similares (ex: `reqeusts` em vez de `requests`) | Verificar nome exato com `pip show`, usar requirements pinados |
+| Dependency Confusion | Pacote interno com mesmo nome no PyPI público | Usar `--index-url` privado + `--extra-index-url` com prioridade |
+| Malicious setup.py | setup.py executa código arbitrário na instalação | Preferir wheels (.whl), auditar setup.py de pacotes novos |
+| Namespace Squatting | Pacotes reservam nomes populares sem conteúdo legítimo | Verificar autor, repo, downloads antes de instalar |
+| Backdoor em atualização | Mantenedor comprometido publica versão maliciosa | Pinnar versões, usar hash verification, monitorar advisories |
+
+#### Regras OBRIGATÓRIAS para pip/Python
+
+1. **Lockfile pinado e verificado**
+   - Usar `requirements.txt` com versões exatas (`==`) ou `poetry.lock`/`Pipfile.lock`
+   - CI DEVE usar `pip install --require-hashes -r requirements.txt`
+   - NUNCA usar `>=` ou `~=` sem limite superior em produção
+
+2. **Verificação de integridade (hashes)**
+   - Gerar hashes: `pip-compile --generate-hashes`
+   - CI valida hashes automaticamente com `--require-hashes`
+   - Detecta substituição de pacotes no registry
+
+3. **Registry privado para pacotes internos**
+   - Pacotes internos DEVEM estar em registry privado (Artifactory, CodeArtifact, GitLab PyPI)
+   - Configurar `pip.conf` com `--index-url` apontando para registry privado
+   - NUNCA publicar pacote interno no PyPI público
+
+4. **Auditoria e monitoramento**
+   - `pip-audit` obrigatório no CI (falhar build em HIGH/CRITICAL)
+   - `safety check` como alternativa
+   - Monitorar GitHub Advisories e PyPI advisories
+   - Gerar SBOM com `pip-licenses` ou `cyclonedx-py`
+
+5. **Verificação antes de instalar novo pacote**
+   - Verificar: downloads mensais (PyPI Stats), última release, mantenedores, repo ativo
+   - Desconfiar de: pacotes com < 500 downloads/mês, sem release há 2+ anos, sem repo público
+   - Verificar se nome é similar a pacote popular (typosquatting)
+   - Preferir pacotes com Trusted Publishers (PyPI attestation)
+
+6. **Pacotes PROIBIDOS (supply chain risk)**
+
+   | Pacote | Motivo | Alternativa |
+   |---|---|---|
+   | jeIlyfish (com I maiúsculo) | Typosquatting de `jellyfish` — stealer | jellyfish |
+   | colourama | Typosquatting de `colorama` — malware | colorama |
+   | python3-dateutil | Typosquatting de `python-dateutil` | python-dateutil |
+   | setup-tools | Typosquatting de `setuptools` | setuptools |
+   | urllib | Typosquatting de `urllib3` | urllib3 |
+   | reqeusts | Typosquatting de `requests` | requests |
+
+7. **Configuração pip.conf segura**
+   - index-url: registry privado como primário
+   - extra-index-url: PyPI como fallback (com cuidado)
+   - require-virtualenv: true (evitar instalação global)
+   - trusted-host: apenas registries internos
+
+8. **Pipeline CI/CD — Verificações pip**
+   - Instalar com hashes: `pip install --require-hashes -r requirements.txt`
+   - Auditar: `pip-audit --strict --desc`
+   - Verificar licenças: `pip-licenses --fail-on="GPL-3.0"`
+   - Scan de vulnerabilidades: `safety check --full-report`
+
+### Supply Chain Security — Maven/Java
+
+#### Ataques Conhecidos e Mitigações
+
+| Ataque | Descrição | Mitigação |
+|---|---|---|
+| Dependency Confusion | Artefato interno com mesmo groupId no Maven Central | Usar groupId corporativo único, configurar mirror com prioridade |
+| Typosquatting | Artefatos com groupId/artifactId similares | Verificar groupId oficial do projeto antes de adicionar |
+| Compromised Repository | Mirror ou proxy comprometido serve artefatos alterados | Verificar checksums SHA-256, usar HTTPS, validar assinaturas GPG |
+| Transitive Dependency Attack | Vulnerabilidade em dependência indireta (transitiva) | Usar `dependencyManagement`, OWASP Dependency-Check |
+| Build Plugin Attack | Plugin Maven malicioso executa código no build | Usar apenas plugins de fontes confiáveis, pinnar versões |
+
+#### Regras OBRIGATÓRIAS para Maven/Java
+
+1. **Versões fixas e BOM**
+   - NUNCA usar ranges `[2.0,)` ou `LATEST`/`RELEASE`
+   - Usar `dependencyManagement` para controlar versões transitivas
+   - Spring Boot BOM gerencia versões — manter atualizado
+
+2. **Verificação de integridade**
+   - Maven verifica checksums automaticamente (SHA-1/MD5)
+   - Habilitar verificação de assinaturas GPG com `maven-gpg-plugin`
+   - Usar HTTPS para todos os repositories no `settings.xml`
+
+3. **Repository privado para artefatos internos**
+   - Artefatos internos DEVEM estar em Nexus/Artifactory corporativo
+   - GroupId corporativo: `com.cogna.*` ou `br.com.cogna.*`
+   - Configurar mirror no `settings.xml` para interceptar requests ao Central
+   - NUNCA publicar artefato interno no Maven Central
+
+4. **OWASP Dependency-Check obrigatório**
+   - Plugin `dependency-check-maven` no build
+   - `failBuildOnCVSS` >= 7 (falhar em HIGH e CRITICAL)
+   - Executar em toda build do CI
+   - Suprimir falsos positivos com `suppression.xml` documentado
+
+5. **Auditoria e monitoramento**
+   - `mvn dependency:tree` para visualizar transitivas
+   - `mvn versions:display-dependency-updates` semanalmente
+   - Monitorar GitHub Advisories para dependências Java
+   - Gerar SBOM com `cyclonedx-maven-plugin`
+
+6. **Pacotes PROIBIDOS (supply chain risk)**
+
+   | Pacote | Motivo | Alternativa |
+   |---|---|---|
+   | log4j-core < 2.17.1 | Log4Shell (CVE-2021-44228) — RCE | log4j-core >= 2.24 |
+   | commons-collections < 3.2.2 | Desserialização RCE | commons-collections4 >= 4.4 |
+   | spring-cloud-function < 3.2.3 | SpEL injection RCE (CVE-2022-22963) | >= 3.2.3 |
+   | fastjson < 1.2.83 | Múltiplos RCE via autoType | Jackson ou Gson |
+   | struts2-core (qualquer) | Múltiplos RCE históricos | Spring MVC |
+   | commons-text < 1.10 | Text4Shell (CVE-2022-42889) | commons-text >= 1.10 |
+   | snakeyaml < 2.0 | Desserialização insegura | snakeyaml >= 2.2 |
+
+7. **Configuração settings.xml segura**
+   - Mirrors: HTTPS obrigatório, apontar para Nexus/Artifactory interno
+   - Servers: credenciais criptografadas com `maven-encryption`
+   - Profiles: ativar OWASP Dependency-Check por default
+   - NUNCA armazenar senhas em plaintext no settings.xml
+
+8. **Pipeline CI/CD — Verificações Maven**
+   - Build com check: `mvn verify -P security`
+   - OWASP scan: `mvn dependency-check:check -DfailBuildOnCVSS=7`
+   - Verificar atualizações: `mvn versions:display-dependency-updates`
+   - Gerar SBOM: `mvn cyclonedx:makeAggregateBom`
+
 ---
 
 ## Secrets Scanning — Padrões de Detecção
