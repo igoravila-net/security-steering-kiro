@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "REGRA: Se já aprovou este arquivo nesta sessão → 'APROVADO'. Se extensão é .md, .json, .yml, .css, .html, .gitignore, .kiro.hook, ou path contém test/spec/mock/__test__ → 'APROVADO'. Se path contém domain/models, domain/types, DTOs, enums, interfaces → verificar apenas credenciais hardcoded, se OK → 'APROVADO'. APENAS se path contém controller, route, handler, service, repository, infrastructure, middleware, auth, integration → checklist: eval/exec, credenciais, innerHTML, SQL concat, input sem limite, input sem sanitização, endpoint sem auth. Violação → BLOQUEIE. Seguro → permita sem comentários."
+    "prompt": "REGRA: Se já aprovou este arquivo nesta sessão → 'APROVADO'. Se extensão é .md, .json, .yml, .css, .html, .gitignore, .kiro.hook, .svelte, .vue, .jsx, .tsx (componente UI puro), ou path contém test/spec/mock/__test__/routes/components/lib/components → 'APROVADO'. Se path contém domain/models, domain/types, DTOs, enums, interfaces → verificar apenas credenciais hardcoded, se OK → 'APROVADO'. APENAS se path contém controller, route/api, handler, service, repository, infrastructure, middleware, auth, integration → checklist: eval/exec, credenciais, innerHTML, SQL concat, input sem limite, input sem sanitização, endpoint sem auth. Violação → BLOQUEIE. Seguro → permita sem comentários."
   }
 }
