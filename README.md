@@ -97,6 +97,8 @@ No seu projeto, crie arquivos `.kiro/hooks/<nome>.kiro.hook` com o formato JSON:
 
 Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
+> **Importante:** NÃO crie hooks do tipo `promptSubmit` para injetar regras de segurança. Os steering files deste Power já são carregados automaticamente (`inclusion: auto`) em toda interação. Um hook `promptSubmit` duplicaria as regras, consumindo ~300+ tokens extras por mensagem sem ganho de segurança.
+
 ## Linguagens Cobertas
 
 C#, Java, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell, Bash/Shell
