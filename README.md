@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro no Grupo COGNA,
 
 ## Visão Geral
 
-Este Power contém **7 steerings temáticos consolidados** e **16 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
+Este Power contém **7 steerings temáticos consolidados** e **18 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -50,29 +50,31 @@ steering/
 
 ### Recomendados para Projetos
 
-| Hook | Trigger | Ação | Prioridade |
-|---|---|---|---|
-| **Revisão de Segurança em Código** v3 | `preToolUse` (write) | 3 níveis: SKIP (testes/docs) → LIGHT (domain) → FULL (I/O/auth). Cache por sessão | Alta |
-| **Bloquear Segredos em Commits** v2 | `preToolUse` (shell) | Auto-aprova testes/lint/build. Verifica segredos apenas em git add/commit/push | Alta |
-| **Detectar Arquivos de Secrets** | `fileCreated` + `fileEdited` | Alerta ao criar/editar .env, .pem, .key, credentials. Verifica .gitignore | Alta |
-| **Revisão de Infra — Edição** | `fileEdited` (Dockerfile, *.tf, k8s) | Detecta regressões: USER root, 0.0.0.0/0, encryption desabilitada | Alta |
-| **npm audit Automático** | `fileEdited` (package.json/lock) | Executa `npm audit --audit-level=moderate` automaticamente | Média |
-| **Verificar Segurança de Dependências** | `fileEdited` (package.json, pom.xml, etc.) | Pesquisa CVEs via agente e sugere versões seguras | Média |
-| **CORS e Security Headers** | `fileEdited` (server.*, middleware*) | Verifica CORS restritivo e headers de segurança obrigatórios | Média |
-| **Scanner de Output de Shell** | `postToolUse` (shell) | Escaneia output por credenciais expostas acidentalmente | Média |
-| **SAST Pós-Tarefa** | `postTaskExecution` | Revisa código contra regras de segurança após completar task | Média |
-| **Sugestões Proativas** v2 | `agentStop` | Sugere melhorias apenas para código de produção com I/O | Baixa |
-| **Security Review On-Demand** | `userTriggered` | Revisão completa (20 categorias) sob demanda no arquivo ativo | Baixa |
+| Hook | Arquivo | Trigger | Ação | Prioridade |
+|---|---|---|---|---|
+| **Revisão de Segurança em Código** | `security-code-review.kiro.hook` | `preToolUse` (write) | 3 níveis: SKIP (testes/docs) → LIGHT (domain) → FULL (I/O/auth). Cache por sessão | Alta |
+| **Bloquear Segredos em Commits** | `block-secrets-in-commits.kiro.hook` | `preToolUse` (shell) | Auto-aprova testes/lint/build. Verifica segredos apenas em git add/commit/push | Alta |
+| **Detectar Arquivos de Secrets (criação)** | `detect-secrets-files.kiro.hook` | `fileCreated` (.env, .pem, .key, credentials) | Alerta ao criar arquivos de secrets. Verifica .gitignore | Alta |
+| **Detectar Arquivos de Secrets (edição)** | `detect-secrets-files-edit.kiro.hook` | `fileEdited` (.env, .pem, .key, credentials) | Alerta ao editar arquivos de secrets. Detecta credenciais reais | Alta |
+| **Revisão de Infra — Edição** | `infra-review-on-edit.kiro.hook` | `fileEdited` (Dockerfile, *.tf, k8s) | Detecta regressões: USER root, 0.0.0.0/0, encryption desabilitada | Alta |
+| **npm audit Automático** | `npm-audit-on-dependency-change.kiro.hook` | `fileEdited` (package.json/lock) | Executa `npm audit --audit-level=moderate` automaticamente | Média |
+| **Verificar Segurança de Dependências** | `check-dependency-security.kiro.hook` | `fileEdited` (package.json, pom.xml, etc.) | Pesquisa CVEs via agente e sugere versões seguras | Média |
+| **CORS e Security Headers** | `cors-security-headers-check.kiro.hook` | `fileEdited` (server.*, middleware*) | Verifica CORS restritivo e headers de segurança obrigatórios | Média |
+| **Scanner de Output de Shell** | `shell-output-scanner.kiro.hook` | `postToolUse` (shell) | Escaneia output por credenciais expostas acidentalmente | Média |
+| **SAST Pós-Tarefa** | `post-task-security-scan.kiro.hook` | `postTaskExecution` | Revisa código contra regras de segurança após completar task | Média |
+| **Sugestões Proativas** | `proactive-security-suggestions.kiro.hook` | `agentStop` | Sugere melhorias apenas para código de produção com I/O | Baixa |
+| **Security Review On-Demand** | `security-review-on-demand.kiro.hook` | `userTriggered` | Revisão completa (20 categorias) sob demanda no arquivo ativo | Baixa |
+| **Coletor de Feedback** | `power-feedback-collector.kiro.hook` | `agentStop` | Coleta feedback automático de fricção/redundância/falsos positivos | Baixa |
 
 ### Desenvolvimento e Manutenção do Power
 
-| Hook | Trigger | Ação |
-|---|---|---|
-| **Aprender com Vulnerabilidades** v2 | `postToolUse` (write) | Registra padrões vulneráveis bloqueados (ignora testes/docs) |
-| **Aprender com Dependências Inseguras** | `postToolUse` (read) | Registra bibliotecas com CVEs detectados |
-| **Sincronizar Versão POWER/CHANGELOG** | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md |
-| **Atualizar CVEs (Manual)** | `userTriggered` | Busca CVEs recentes na web (uso pelo time AppSec) |
-| **Atualizar README ao Modificar Steering** | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças |
+| Hook | Arquivo | Trigger | Ação |
+|---|---|---|---|
+| **Aprender com Vulnerabilidades** | `learn-from-vulnerabilities.kiro.hook` | `postToolUse` (write) | Registra padrões vulneráveis bloqueados (ignora testes/docs) |
+| **Aprender com Dependências Inseguras** | `learn-from-insecure-dependencies.kiro.hook` | `postToolUse` (read) | Registra bibliotecas com CVEs detectados |
+| **Sincronizar Versão POWER/CHANGELOG** | `sync-version-power-changelog.kiro.hook` | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md |
+| **Atualizar CVEs (Manual)** | `update-cves-from-web.kiro.hook` | `userTriggered` | Busca CVEs recentes na web (uso pelo time AppSec) |
+| **Atualizar README ao Modificar Steering** | `update-readme-on-steering-change.kiro.hook` | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças |
 
 ### Como Criar os Hooks
 
