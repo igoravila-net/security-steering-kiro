@@ -15,6 +15,10 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - Hook detect-secrets-files: alerta ao criar .env, .pem, .key, credentials
 - Hook npm-audit-on-dependency-change: executa npm audit automaticamente
 - Hook security-review-on-demand: revisão completa (20 categorias) sob demanda
+- Hook detect-secrets-files-edit: alerta ao editar arquivos de secrets
+- Hook infra-review-on-edit: detecta regressões em Dockerfile, Terraform, K8s editados
+- Hook shell-output-scanner: escaneia output de comandos por credenciais expostas
+- Hook cors-security-headers-check: verifica CORS e headers ao editar servidor/middleware
 
 ### Alterado
 - Hook security-code-review v2: 3 níveis (SKIP/LIGHT/FULL) baseados no tipo de arquivo

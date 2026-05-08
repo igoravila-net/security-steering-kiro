@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Scanner de Output de Shell",
+  "description": "Após execução de comandos shell, verifica se o output contém credenciais ou informações sensíveis expostas acidentalmente.",
+  "version": "1",
+  "when": {
+    "type": "postToolUse",
+    "toolTypes": [
+      "shell"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Verifique o output do comando executado:\n\n[SKIP] Se o comando foi teste (vitest/jest), lint (tsc/eslint), build (vite/webpack), git log/status/diff, ou leitura de docs/configs → responda 'OK'.\n\n[VERIFICAR] Para outros comandos, escaneie o output por:\n1. API keys (sk-, pk-, AKIA, AIza, ghp_, glpat-)\n2. Tokens JWT (eyJ...)\n3. Senhas ou connection strings com credenciais\n4. Chaves privadas (BEGIN RSA/EC/PRIVATE KEY)\n5. Variáveis de ambiente com valores sensíveis expostos\n\nSe detectar credencial no output:\n⚠️ ALERTA: Credencial detectada no output. Instrua o usuário a rotacionar imediatamente.\n\nSe output limpo ou comando seguro: responda apenas 'OK'."
+  }
+}

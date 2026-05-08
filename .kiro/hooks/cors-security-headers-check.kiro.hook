@@ -1,0 +1,25 @@
+{
+  "enabled": true,
+  "name": "Verificação de CORS e Security Headers",
+  "description": "Ao editar arquivos de servidor/middleware, verifica configuração de CORS e headers de segurança.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/server.*",
+      "**/app.*",
+      "**/*middleware*",
+      "**/hooks.server.*",
+      "**/+server.*",
+      "**/cors*",
+      "**/helmet*",
+      "**/*security*config*",
+      "**/nginx*",
+      "**/apache*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Arquivo de servidor/middleware editado. Verifique segurança HTTP:\n\n[CORS]\n1. Origin não usa wildcard (*) com credentials?\n2. Métodos permitidos são explícitos (não *)?\n3. Headers expostos são mínimos?\n4. preflight cache (max-age) configurado?\n\n[Security Headers]\n5. X-Content-Type-Options: nosniff?\n6. X-Frame-Options: DENY ou SAMEORIGIN?\n7. Strict-Transport-Security (HSTS) com max-age >= 31536000?\n8. Content-Security-Policy definida?\n9. Referrer-Policy: strict-origin-when-cross-origin?\n10. Permissions-Policy configurada?\n\nSe headers de segurança estão ausentes em novo servidor, sugira adição.\nSe é edição menor sem impacto em CORS/headers, responda 'OK - sem impacto em segurança HTTP'."
+  }
+}
