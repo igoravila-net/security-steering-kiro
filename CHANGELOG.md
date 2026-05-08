@@ -2,6 +2,22 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.1.0] - 2026-05-08
+
+### Adicionado
+- Supply Chain Security para npm/Node.js no steering constraints
+- Tabela de ataques conhecidos (typosquatting, dependency confusion, protestware, account takeover, starjacking)
+- 10 regras obrigatórias para segurança de dependências npm
+- Lista de 8 pacotes proibidos por supply chain risk (event-stream, colors, faker, node-ipc, etc.)
+- Configuração .npmrc segura e pipeline CI/CD com verificações npm
+- Documentação completa de todos os 7 hooks no README (separados em Recomendados e Manutenção)
+
+### Alterado
+- README atualizado com seção de hooks separada em categorias
+- Hook update-readme-on-steering-change atualizado para novos steerings temáticos v2.0.0
+
+---
+
 ## [2.0.0] - 2026-05-07
 
 ### Breaking Change — Reestruturação Completa

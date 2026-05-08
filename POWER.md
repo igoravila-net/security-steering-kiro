@@ -1,8 +1,8 @@
 ---
 name: "security-steering-kiro"
 displayName: "COGNA Security Guardrails"
-version: "2.0.0"
-description: "v2.0.0 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas."
+version: "2.1.0"
+description: "v2.1.0 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas."
 keywords: ["segurança", "security", "owasp", "cogna", "lgpd", "vulnerabilidade", "appsec", "devsecops"]
 author: "Segurança da Informação - Grupo COGNA"
 ---
@@ -26,7 +26,7 @@ Princípios fundamentais:
 
 ## Available Steering Files
 
-- **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras e scaffolding por default
+- **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, supply chain security (npm) e scaffolding por default
 - **implementation** — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs) com exemplos multilinguagem
 - **validation** — Testes de segurança, checklist pré-PR, threat modeling STRIDE e métricas de compliance
 - **policies** — Políticas corporativas COGNA (SI geral, LGPD, acessos, incidentes, IA segura, criptografia, cloud)
