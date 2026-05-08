@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "name": "Revisão de Segurança em Código",
-  "description": "Revisa cada operação de escrita de código contra padrões de segurança proibidos: eval(), credenciais hardcoded, innerHTML sem sanitização, SQL concatenado, comandos shell com entrada do usuário, desserialização insegura, e ausência de sanitização/limitação de input.",
-  "version": "1",
+  "description": "Revisa operações de escrita com profundidade proporcional ao risco. Auto-aprova testes, docs e configs. Checklist completa apenas para código com I/O, auth e dados sensíveis.",
+  "version": "2",
   "when": {
     "type": "preToolUse",
     "toolTypes": [
@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Antes de escrever este código, revise-o contra os seguintes padrões de segurança PROIBIDOS:\n\nPADRÕES CRÍTICOS A BLOQUEAR:\n- eval(), exec(), Function() com qualquer dado que possa vir de entrada externa\n- Credenciais, tokens, senhas ou API keys hardcoded (strings que parecem segredos)\n- innerHTML, dangerouslySetInnerHTML, Html.Raw, th:utext, mark_safe sem sanitização prévia\n- Concatenação de strings em SQL (deve usar consultas parametrizadas)\n- Runtime.exec(), subprocess com shell=True, exec() com entrada do usuário\n- Desserialização de dados não confiáveis (ObjectInputStream sem filtro, enableDefaultTyping)\n- Entrada do usuário sem validação de tamanho máximo (TODA entrada deve ter limite de caracteres)\n- Entrada do usuário sem chamada explícita a função de sanitização\n- Variáveis de ambiente com segredos expostas em logs\n- Endpoints sem autenticação/autorização\n\nREGRA FUNDAMENTAL - TODO INPUT É MALICIOSO:\n- Toda entrada do usuário DEVE ter limite de caracteres definido (@Size, maxLength, .slice(), [:N])\n- Toda entrada do usuário DEVE passar por função de sanitização antes de uso\n- Nunca confiar em dados vindos do cliente, headers, query params, path params, body\n\nSe o código viola alguma dessas regras, BLOQUEIE a escrita e explique o problema com a correção necessária.\nSe o código está seguro, permita a escrita sem comentários."
+    "prompt": "Classifique o arquivo sendo escrito e aplique o nível de verificação adequado:\n\n[SKIP] Se o arquivo é: *.test.ts, *.spec.ts, *.test.js, *.spec.js, *_test.go, *_test.py, *.md, *.json (config/package), .gitignore, *.yml (CI), *.css, *.html (estático)\n→ Responda apenas: 'APROVADO - arquivo de baixo risco.'\n\n[LIGHT] Se o arquivo é: domain/models, domain/types, domain/value-objects, DTOs, enums, interfaces, constantes\n→ Verifique APENAS: (1) sem credenciais hardcoded (2) tipos corretos. Se OK, responda 'APROVADO.'\n\n[FULL] Se o arquivo é: controllers, routes, handlers, services com I/O, repositories, infrastructure, middleware de auth, integrações externas\n→ Aplique checklist completa:\n- eval()/exec()/Function() com entrada externa\n- Credenciais/tokens/senhas hardcoded\n- innerHTML/dangerouslySetInnerHTML sem sanitização\n- Concatenação de strings em SQL\n- Entrada do usuário sem limite de caracteres\n- Entrada do usuário sem sanitização\n- Endpoints sem autenticação/autorização\n\nSe o código viola alguma regra [FULL], BLOQUEIE e explique a correção.\nSe está seguro ou é [SKIP]/[LIGHT], permita sem comentários adicionais."
   }
 }
