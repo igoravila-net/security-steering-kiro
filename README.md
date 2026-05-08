@@ -99,6 +99,8 @@ Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
 > **Importante:** NÃO crie hooks do tipo `promptSubmit` para injetar regras de segurança. Os steering files deste Power já são carregados automaticamente (`inclusion: auto`) em toda interação. Um hook `promptSubmit` duplicaria as regras, consumindo ~300+ tokens extras por mensagem sem ganho de segurança.
 
+> **Limitação conhecida:** Hooks `preToolUse` e `postToolUse` sempre interceptam o evento — não é possível filtrar por conteúdo do comando ou path do arquivo no `when`. A classificação (SKIP/APROVADO) é feita pelo agente via prompt. Os prompts deste Power são otimizados para resposta mínima (~1 palavra) em cenários de auto-approve, minimizando o custo de cada interceptação inevitável.
+
 ## Linguagens Cobertas
 
 C#, Java, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell, Bash/Shell
