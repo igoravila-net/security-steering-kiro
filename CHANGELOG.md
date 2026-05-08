@@ -6,23 +6,33 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 ### Adicionado
 - Supply Chain Security para npm/Node.js no steering constraints
-- Tabela de ataques conhecidos (typosquatting, dependency confusion, protestware, account takeover, starjacking)
-- 10 regras obrigatórias para segurança de dependências npm
-- Lista de 8 pacotes proibidos por supply chain risk (event-stream, colors, faker, node-ipc, etc.)
-- Configuração .npmrc segura e pipeline CI/CD com verificações npm
-- Documentação completa de todos os 7 hooks no README (separados em Recomendados e Manutenção)
-- Hooks v2 com verificação contextual por nível de risco (reduz fricção ~70%)
+- Supply Chain Security para pip/Python (5 ataques, 6 pacotes proibidos, 8 regras, CI/CD)
+- Supply Chain Security para Maven/Java (5 ataques, 7 pacotes proibidos, 8 regras, CI/CD)
+- Supply Chain Security para NuGet/.NET (4 ataques, 5 pacotes proibidos, 6 regras, CI/CD)
+- Hooks v4 com verificação contextual por nível de risco (reduz fricção ~70%)
 - Hook detect-secrets-files: alerta ao criar .env, .pem, .key, credentials
+- Hook detect-secrets-files-edit: alerta ao editar arquivos de secrets
 - Hook npm-audit-on-dependency-change: executa npm audit automaticamente
 - Hook security-review-on-demand: revisão completa (20 categorias) sob demanda
-- Hook detect-secrets-files-edit: alerta ao editar arquivos de secrets
 - Hook infra-review-on-edit: detecta regressões em Dockerfile, Terraform, K8s editados
 - Hook shell-output-scanner: escaneia output de comandos por credenciais expostas
 - Hook cors-security-headers-check: verifica CORS e headers ao editar servidor/middleware
+- Hook power-feedback-collector v2: coleta feedback acionável (ignora limitações da plataforma)
+- Hook lgpd-data-review: verifica mascaramento/consentimento/retenção em entidades com PII
+- Hook adoption-metrics: registra métricas de uso por sessão
+- Hook veracode-cwe-mapping: mapeia findings Veracode para steerings (manual AppSec)
+- Documentação completa de todos os 21 hooks no README com nomes de arquivo
+- Alerta no README contra hook promptSubmit redundante
+- Documentação de limitações conhecidas da plataforma Kiro
 
 ### Alterado
-- Hook security-code-review v2: 3 níveis (SKIP/LIGHT/FULL) baseados no tipo de arquivo
-- Hook block-secrets-in-commits v2: auto-aprova testes/lint/build, verifica apenas git add/commit/push
+- Hook security-code-review v4: prompts ultra-concisos, cache por sessão, auto-approve para .svelte/.vue/.jsx/.tsx e paths de UI
+- Hook block-secrets-in-commits v3: whitelist expandida (node ./node_modules/vitest, .bin/)
+- Hook proactive-security-suggestions v3: contextual (só produção com I/O)
+- Hook learn-from-vulnerabilities v2: ignora bloqueios em testes/docs/configs
+- Hook check-dependency-security v2: correção automática de CVEs + npm audit obrigatório
+- Hook update-readme-on-steering-change v2: atualizado para steerings temáticos v2.0.0
+- README atualizado com seção de hooks separada em categorias (15 recomendados + 6 manutenção)
 - Hook proactive-security-suggestions v2: sugere apenas para código de produção com I/O
 - Hook learn-from-vulnerabilities v2: ignora bloqueios em testes/docs/configs
 - README atualizado com seção de hooks separada em categorias
