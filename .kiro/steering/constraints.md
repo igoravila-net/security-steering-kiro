@@ -118,6 +118,84 @@ Sempre que uma dependência for adicionada ou atualizada:
 - Médio (CVSS 4.0-6.9): próximo sprint
 - Baixo (CVSS < 4.0): próxima release
 
+### Supply Chain Security — npm/Node.js
+
+#### Ataques Conhecidos e Mitigações
+
+| Ataque | Descrição | Mitigação |
+|---|---|---|
+| Typosquatting | Pacotes com nomes similares (ex: `lodahs` em vez de `lodash`) | Verificar nome exato antes de instalar, usar `npm info` |
+| Dependency Confusion | Pacote interno publicado no registry público com versão maior | Configurar registry privado com scoped packages (@org/) |
+| Malicious Postinstall | Scripts de instalação executam código malicioso | Usar `--ignore-scripts` no CI, auditar scripts manualmente |
+| Protestware | Mantenedor injeta código destrutivo em atualização | Pinnar versões exatas, revisar changelogs antes de atualizar |
+| Account Takeover | Conta de mantenedor comprometida publica versão maliciosa | Monitorar advisories, usar lockfile com integridade |
+| Starjacking | Pacote aponta para repo popular mas contém código diferente | Verificar repo real vs registry, auditar código-fonte |
+
+#### Regras OBRIGATÓRIAS para npm
+
+1. **Lockfile commitado e verificado**
+   - `package-lock.json` SEMPRE commitado no repositório
+   - CI DEVE usar `npm ci` (não `npm install`) — respeita lockfile exato
+   - Verificar integridade: `npm audit signatures`
+
+2. **Versões exatas (pinned)**
+   - `.npmrc` com `save-exact=true`
+   - NUNCA usar ranges abertos (`^`, `~`, `*`, `>=`)
+   - Atualizar dependências de forma controlada (PR dedicado com review)
+
+3. **Scoped packages para código interno**
+   - Pacotes internos DEVEM usar scope: `@cogna/nome-pacote`
+   - Configurar `.npmrc` com registry privado para scope interno
+   - NUNCA publicar pacote interno no registry público
+
+4. **Scripts de instalação**
+   - CI: executar com `--ignore-scripts` e rodar scripts explicitamente após auditoria
+   - Auditar `preinstall`, `install`, `postinstall` de novas dependências
+   - Bloquear pacotes que executam binários externos no postinstall sem justificativa
+
+5. **Auditoria e monitoramento**
+   - `npm audit --audit-level=high` obrigatório no CI (falhar build se encontrar)
+   - Revisar `npm outdated` semanalmente
+   - Monitorar GitHub Advisories e Snyk para dependências do projeto
+   - Usar `npm sbom` para gerar Software Bill of Materials
+
+6. **Overrides para dependências transitivas**
+   - Usar campo `overrides` no package.json para forçar versões seguras de dependências indiretas
+   - Documentar motivo de cada override
+
+7. **Verificação antes de instalar novo pacote**
+   - Verificar: downloads semanais, última atualização, issues abertas, mantenedores
+   - Desconfiar de: pacotes com < 1000 downloads/semana, sem atualizações há 2+ anos, mantenedor único
+   - Verificar se nome é similar a pacote popular (typosquatting)
+   - Preferir pacotes com provenance attestation (npm provenance)
+
+8. **Pacotes PROIBIDOS (supply chain risk)**
+
+   | Pacote | Motivo | Alternativa |
+   |---|---|---|
+   | event-stream | Comprometido (2018) — crypto mining | Streams nativos do Node.js |
+   | ua-parser-js < 0.7.30 | Comprometido (2021) — crypto miner | ua-parser-js >= 1.0.33 |
+   | colors >= 1.4.1 | Protestware (2022) — loop infinito | colors 1.4.0 ou chalk |
+   | faker >= 6.6.6 | Protestware (2022) — dados apagados | @faker-js/faker |
+   | node-ipc >= 10.1.1 | Protestware (2022) — wiper | node-ipc 9.x ou alternativa |
+   | coa >= 2.0.3 | Comprometido (2021) | coa 2.0.2 |
+   | rc >= 1.2.9 | Comprometido (2021) | rc 1.2.8 |
+   | peacenotwar | Malware (wiper) | Remover |
+
+9. **Configuração .npmrc segura**
+   - save-exact=true
+   - audit=true
+   - fund=false
+   - package-lock=true
+   - @cogna:registry=https://npm.pkg.github.com
+
+10. **Pipeline CI/CD — Verificações npm**
+    - Instalar com lockfile: `npm ci --ignore-scripts`
+    - Auditar dependências: `npm audit --audit-level=high`
+    - Verificar assinaturas: `npm audit signatures`
+    - Rebuild controlado: `npm rebuild`
+    - Validar lockfile: `npx lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https`
+
 ---
 
 ## Secrets Scanning — Padrões de Detecção

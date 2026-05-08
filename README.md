@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro no Grupo COGNA,
 
 ## Visão Geral
 
-Este Power contém **7 steerings temáticos consolidados** e **10 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
+Este Power contém **7 steerings temáticos consolidados** e **7 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -36,7 +36,7 @@ steering/
 
 | Steering | Conteúdo |
 |---|---|
-| **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, onboarding |
+| **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, supply chain security (npm), onboarding |
 | **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions |
 | **validation** | 20 categorias de testes de segurança, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
 | **policies** | Política Geral SI, classificação da informação, LGPD, gestão de acessos, PAM, incidentes, vulnerabilidades, SSDLC, IA segura, criptografia em BD, cloud, fornecedores |
@@ -64,9 +64,6 @@ steering/
 |---|---|---|
 | **Aprender com Vulnerabilidades** | `postToolUse` (write) | Registra padrões vulneráveis bloqueados para análise e melhoria dos steerings |
 | **Aprender com Dependências Inseguras** | `postToolUse` (read) | Registra bibliotecas com CVEs detectados para atualizar lista de proibidas |
-| **Sincronizar Versão POWER/CHANGELOG** | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md quando CHANGELOG é editado |
-| **Atualizar CVEs (Manual)** | `userTriggered` | Busca CVEs recentes na web e atualiza steerings (uso pelo time AppSec) |
-| **Atualizar README ao Modificar Steering** | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças nos steerings |
 
 ### Como Criar os Hooks
 
