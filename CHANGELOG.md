@@ -5,10 +5,14 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 ## [2.1.0] - 2026-05-08
 
 ### Adicionado
+- OWASP Top 10:2025 A10 — Mishandling of Exceptional Conditions (fail-closed, graceful degradation, cleanup, timeout, error boundaries)
+- OWASP LLM Top 10:2025 — Prompt Injection, Sensitive Disclosure, Supply Chain modelos, Output Handling, Excessive Agency, Prompt Leakage, Unbounded Consumption
+- OWASP API Security Top 10:2023 expandido — regras detalhadas para todas as 10 categorias (BOLA, auth, property-level authz, resource consumption, function-level authz, business flows, SSRF, misconfiguration, inventory, unsafe consumption)
 - Supply Chain Security para npm/Node.js no steering constraints
 - Supply Chain Security para pip/Python (5 ataques, 6 pacotes proibidos, 8 regras, CI/CD)
 - Supply Chain Security para Maven/Java (5 ataques, 7 pacotes proibidos, 8 regras, CI/CD)
 - Supply Chain Security para NuGet/.NET (4 ataques, 5 pacotes proibidos, 6 regras, CI/CD)
+- Regra Absoluta de Dependências: agente DEVE verificar CVEs via web ANTES de escrever versões
 - Hooks v4 com verificação contextual por nível de risco (reduz fricção ~70%)
 - Hook detect-secrets-files: alerta ao criar .env, .pem, .key, credentials
 - Hook detect-secrets-files-edit: alerta ao editar arquivos de secrets

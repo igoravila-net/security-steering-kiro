@@ -26,8 +26,8 @@ Princípios fundamentais:
 
 ## Available Steering Files
 
-- **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, supply chain security (npm) e scaffolding por default
-- **implementation** — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs) com exemplos multilinguagem
+- **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, supply chain security (npm, pip, Maven, NuGet) e scaffolding por default
+- **implementation** — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs, exceptional conditions OWASP A10:2025, LLM Top 10:2025, API Security Top 10:2023) com exemplos multilinguagem
 - **validation** — Testes de segurança, checklist pré-PR, threat modeling STRIDE e métricas de compliance
 - **policies** — Políticas corporativas COGNA (SI geral, LGPD, acessos, incidentes, IA segura, criptografia, cloud)
 - **infrastructure** — IaC seguro (Terraform, Docker, K8s), deployment, resiliência e secrets scanning
@@ -47,7 +47,8 @@ Toda a documentação conceitual está neste POWER.md. Os steering files contêm
 
 ## Referências
 
-- OWASP Top 10 / API Security Top 10
+- OWASP Top 10:2025 / API Security Top 10:2023 / LLM Top 10:2025
+- OWASP Cheat Sheet Series
 - ISO 27001:2022, ISO 42001:2024
 - NIST CSF, CIS Controls
 - LGPD (Lei 13.709/2018)
