@@ -11,8 +11,13 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - Lista de 8 pacotes proibidos por supply chain risk (event-stream, colors, faker, node-ipc, etc.)
 - Configuração .npmrc segura e pipeline CI/CD com verificações npm
 - Documentação completa de todos os 7 hooks no README (separados em Recomendados e Manutenção)
+- Hooks v2 com verificação contextual por nível de risco (reduz fricção ~70%)
 
 ### Alterado
+- Hook security-code-review v2: 3 níveis (SKIP/LIGHT/FULL) baseados no tipo de arquivo
+- Hook block-secrets-in-commits v2: auto-aprova testes/lint/build, verifica apenas git add/commit/push
+- Hook proactive-security-suggestions v2: sugere apenas para código de produção com I/O
+- Hook learn-from-vulnerabilities v2: ignora bloqueios em testes/docs/configs
 - README atualizado com seção de hooks separada em categorias
 - Hook update-readme-on-steering-change atualizado para novos steerings temáticos v2.0.0
 
