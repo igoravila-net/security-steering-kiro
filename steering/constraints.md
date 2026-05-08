@@ -96,6 +96,18 @@ Sempre que uma dependência for adicionada ou atualizada:
 4. Usar versões exatas (pinned)
 5. Verificar integridade (checksums)
 
+### REGRA ABSOLUTA — Versões de Dependências
+
+ANTES de escrever qualquer versão de pacote em arquivo de dependências, o agente DEVE:
+1. Consultar a versão mais recente via web search (npm info, PyPI, Maven Central, nuget.org)
+2. Verificar se a versão tem CVEs conhecidos (GitHub Advisories, Snyk, NVD)
+3. Se a versão mais recente tem CVE, buscar a versão mínima que corrige
+4. NUNCA usar versões do conhecimento interno sem verificar — sempre consultar fonte atual
+5. Após escrever arquivo de dependências, EXECUTAR audit (npm audit, pip-audit, mvn dependency-check)
+6. Se audit reportar vulnerabilidades, CORRIGIR antes de prosseguir
+
+Versões sugeridas sem verificação de CVE em fonte atual = VIOLAÇÃO CRÍTICA.
+
 ### Bibliotecas PROIBIDAS
 
 | Biblioteca | Alternativa |
