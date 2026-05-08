@@ -12,6 +12,9 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - Configuração .npmrc segura e pipeline CI/CD com verificações npm
 - Documentação completa de todos os 7 hooks no README (separados em Recomendados e Manutenção)
 - Hooks v2 com verificação contextual por nível de risco (reduz fricção ~70%)
+- Hook detect-secrets-files: alerta ao criar .env, .pem, .key, credentials
+- Hook npm-audit-on-dependency-change: executa npm audit automaticamente
+- Hook security-review-on-demand: revisão completa (20 categorias) sob demanda
 
 ### Alterado
 - Hook security-code-review v2: 3 níveis (SKIP/LIGHT/FULL) baseados no tipo de arquivo

@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "npm audit automático",
+  "description": "Executa npm audit automaticamente quando package.json ou package-lock.json são editados para detectar CVEs reais.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/package.json",
+      "**/package-lock.json"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npm audit --audit-level=moderate 2>&1 || true"
+  }
+}
