@@ -438,3 +438,99 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 - Usar versões exatas quando possível
 - `composer audit` obrigatório no CI
 - Verificar pacotes antes de instalar (packagist.org stats, repo, mantenedores)
+
+---
+
+## 16. WordPress — Segurança em Plugins e Temas
+
+> Regras específicas para desenvolvimento seguro de plugins e temas WordPress.
+
+### Funções OBRIGATÓRIAS (usar SEMPRE)
+
+| Contexto | Função Obrigatória |
+|---|---|
+| Query SQL customizada | `$wpdb->prepare($sql, $args)` |
+| Output em HTML | `esc_html($var)` |
+| Output em atributo | `esc_attr($var)` |
+| Output em URL | `esc_url($var)` |
+| Output em JS inline | `esc_js($var)` |
+| Sanitizar input texto | `sanitize_text_field($input)` |
+| Sanitizar email | `sanitize_email($input)` |
+| Sanitizar filename | `sanitize_file_name($input)` |
+| Sanitizar HTML rico | `wp_kses($html, $allowed_tags)` |
+| Verificar permissão | `current_user_can('capability')` |
+| Criar nonce | `wp_nonce_field('action', 'nonce_name')` |
+| Verificar nonce | `wp_verify_nonce($nonce, 'action')` ou `check_ajax_referer('action')` |
+
+### Funções PROIBIDAS em Plugins
+
+| Função | Motivo | Alternativa |
+|---|---|---|
+| `$wpdb->query("...{$var}...")` | SQL Injection | `$wpdb->prepare()` |
+| `echo $variable` (sem escape) | XSS | `echo esc_html($variable)` |
+| `eval()`, `assert()` | Code Injection | Whitelist de operações |
+| `unserialize($user_data)` | Object Injection | `json_decode()` ou `maybe_unserialize()` com cuidado |
+| `exec()`, `system()`, `shell_exec()` | Command Injection | APIs nativas do WP |
+| `include($user_input)` | LFI/RFI | Paths hardcoded ou whitelist |
+| `file_get_contents($user_url)` | SSRF | `wp_remote_get()` com validação |
+| `update_option()` sem cap check | Privilege Escalation | Verificar `current_user_can()` antes |
+
+### SQL Injection em WordPress
+- SEMPRE usar `$wpdb->prepare()` para queries com variáveis
+- NUNCA concatenar variáveis em `$wpdb->query()`, `$wpdb->get_results()`, `$wpdb->get_var()`
+- Usar `absint()` para IDs numéricos
+- Usar `esc_sql()` apenas como último recurso (prepare é preferido)
+
+### XSS em WordPress
+- TODA saída DEVE usar função de escape apropriada ao contexto
+- `esc_html()` para conteúdo texto
+- `esc_attr()` para atributos HTML
+- `esc_url()` para URLs
+- `wp_kses()` ou `wp_kses_post()` para HTML rico permitido
+- NUNCA usar `echo $var` sem escape em templates
+
+### CSRF em WordPress
+- TODO formulário admin DEVE ter nonce: `wp_nonce_field('meu_action', 'meu_nonce')`
+- TODO handler DEVE verificar nonce: `if (!wp_verify_nonce($_POST['meu_nonce'], 'meu_action')) die('Unauthorized')`
+- AJAX: usar `check_ajax_referer('action', 'nonce')`
+- Links com ação: usar `wp_nonce_url($url, 'action')`
+
+### Controle de Acesso em WordPress
+- TODA ação admin DEVE verificar capability: `if (!current_user_can('manage_options')) wp_die('Unauthorized')`
+- AJAX handlers: verificar capability + nonce
+- REST API endpoints: usar `permission_callback` (NUNCA `__return_true` para endpoints sensíveis)
+- Hooks de ação: verificar permissão antes de executar operações privilegiadas
+
+### Upload de Arquivos em WordPress
+- Usar `wp_handle_upload()` com `$overrides['test_form'] = true`
+- Validar tipo MIME: `wp_check_filetype($filename, $mimes)`
+- Restringir extensões permitidas via `upload_mimes` filter
+- NUNCA permitir upload de `.php`, `.phtml`, `.phar`, `.php5`
+- Armazenar em `wp-content/uploads/` (nunca em diretório de plugins)
+
+### REST API Segura
+- SEMPRE definir `permission_callback` em `register_rest_route()`
+- Sanitizar parâmetros com `sanitize_callback` no schema
+- Validar com `validate_callback`
+- Rate limiting via plugin ou .htaccess
+- Desabilitar endpoints desnecessários (ex: `/wp/v2/users` se não usado)
+
+### Configuração Segura (wp-config.php)
+- `DISALLOW_FILE_EDIT` = true (impede edição de plugins/temas via admin)
+- `DISALLOW_FILE_MODS` = true (impede instalação de plugins via admin em produção)
+- `WP_DEBUG` = false em produção
+- `FORCE_SSL_ADMIN` = true
+- Mover `wp-config.php` um nível acima do webroot
+- Prefixo de tabela customizado (não `wp_`)
+- Salts e keys únicas (gerar em api.wordpress.org/secret-key)
+
+### Plugins PROIBIDOS/Arriscados em Produção
+
+| Plugin/Prática | Risco | Alternativa |
+|---|---|---|
+| Plugins nulled/pirata | Backdoors, malware | Usar apenas plugins oficiais/licenciados |
+| Plugins abandonados (2+ anos sem update) | CVEs não corrigidos | Substituir por alternativa mantida |
+| Plugins com < 1000 instalações ativas | Baixa auditoria | Preferir plugins populares e auditados |
+| File Manager plugins | RCE, upload arbitrário | Usar SFTP/SSH |
+| Database admin plugins (Adminer, phpMyAdmin) | Exposição total do BD | Acesso via CLI/SSH apenas |
+| Plugins de backup que armazenam em /uploads | Backup acessível publicamente | Armazenar fora do webroot ou em cloud |
