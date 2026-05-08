@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Métricas de Adoção",
+  "description": "Registra métricas de uso do Power ao final de sessões com código de produção. Contabiliza regras aplicadas, bloqueios e correções automáticas.",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Se código de PRODUÇÃO foi escrito nesta sessão, registre métricas no arquivo SECURITY-METRICS.md (crie se não existir, adicione ao .gitignore):\n\n| Data | Arquivos produção escritos | Regras aplicadas | Bloqueios | Correções automáticas | Categoria principal |\n\nCategorias: injection, auth, input-validation, secrets, xss, infra, supply-chain, lgpd, crypto, api-security\n\nSe NENHUM código de produção foi escrito → não registre nada.\nResponda apenas: 'Métricas registradas' ou 'Sem métricas — sessão sem código de produção.'"
+  }
+}

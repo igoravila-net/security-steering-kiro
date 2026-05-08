@@ -326,6 +326,55 @@ Sempre que uma dependência for adicionada ou atualizada:
    - Verificar atualizações: `mvn versions:display-dependency-updates`
    - Gerar SBOM: `mvn cyclonedx:makeAggregateBom`
 
+### Supply Chain Security — NuGet/.NET
+
+#### Ataques Conhecidos e Mitigações
+
+| Ataque | Descrição | Mitigação |
+|---|---|---|
+| Typosquatting | Pacotes com nomes similares no nuget.org | Verificar autor/owner verificado, usar `dotnet nuget verify` |
+| Dependency Confusion | Pacote interno com mesmo ID no nuget.org | Configurar source privado com prioridade, usar package source mapping |
+| Malicious Build Scripts | .targets/.props executam código no restore/build | Auditar pacotes com build assets, usar `<DisableImplicitNuGetFallbackFolder>` |
+| Compromised Package | Conta de autor comprometida publica versão maliciosa | Pinnar versões exatas, monitorar GitHub Advisories |
+
+#### Regras OBRIGATÓRIAS para NuGet/.NET
+
+1. **Versões exatas no .csproj**
+   - Usar versões fixas: `<PackageReference Include="X" Version="1.2.3" />`
+   - NUNCA usar floating versions (`*`, `1.*`, `[1.0,)`)
+   - Manter `packages.lock.json` commitado
+
+2. **Package Source Mapping**
+   - Configurar `nuget.config` com source mapping para separar pacotes internos de públicos
+   - Pacotes internos: source privado (Azure Artifacts, GitHub Packages)
+   - Pacotes públicos: apenas nuget.org com prefixo reservado
+
+3. **Auditoria e monitoramento**
+   - `dotnet list package --vulnerable` obrigatório no CI
+   - `dotnet list package --deprecated` para detectar EOL
+   - Monitorar GitHub Advisories para ecossistema .NET
+   - Gerar SBOM com `dotnet CycloneDX`
+
+4. **Verificação de assinaturas**
+   - Aceitar apenas pacotes assinados por autores confiáveis
+   - `dotnet nuget verify` para validar integridade
+
+5. **Pacotes PROIBIDOS (supply chain risk)**
+
+   | Pacote | Motivo | Alternativa |
+   |---|---|---|
+   | Newtonsoft.Json < 13.0.1 | CVE-2024-21907 (DoS) | Newtonsoft.Json >= 13.0.3 ou System.Text.Json |
+   | System.Drawing.Common (Linux) | Não suportado cross-platform, CVEs | SkiaSharp ou ImageSharp |
+   | Microsoft.AspNetCore.Mvc < 2.2 | EOL, múltiplos CVEs | ASP.NET Core 8+ |
+   | log4net < 2.0.16 | CVE-2018-1285 (XXE) | log4net >= 2.0.16 ou Serilog |
+   | RestSharp < 108.0 | Múltiplos CVEs | RestSharp >= 112 ou HttpClient nativo |
+
+6. **Pipeline CI/CD — Verificações NuGet**
+   - Restaurar com lock: `dotnet restore --locked-mode`
+   - Auditar: `dotnet list package --vulnerable --include-transitive`
+   - Verificar deprecated: `dotnet list package --deprecated`
+   - Gerar SBOM: `dotnet CycloneDX -o sbom.json`
+
 ---
 
 ## Secrets Scanning — Padrões de Detecção
