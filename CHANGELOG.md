@@ -2,6 +2,35 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.2.0] - 2026-05-08
+
+### Adicionado
+- OWASP Top 10:2025 A10 — Mishandling of Exceptional Conditions
+- OWASP LLM Top 10:2025 — 7 categorias (Prompt Injection, Sensitive Disclosure, Supply Chain modelos, Output Handling, Excessive Agency, Prompt Leakage, Unbounded Consumption)
+- OWASP API Security Top 10:2023 expandido — regras detalhadas para todas as 10 categorias
+- PHP completo — padrões de código seguro (SQL, XSS, Command/Code Injection, Auth, Upload, Config)
+- WordPress Security — plugins, temas, REST API, CSRF, wp-config, plugins proibidos
+- Supply Chain para Composer/PHP (4 ataques, 5 pacotes proibidos, CI/CD)
+- Supply Chain para NuGet/.NET (4 ataques, 5 pacotes proibidos, CI/CD)
+- Templates de testes de segurança expandidos (Python pytest, C# xUnit, PHP PHPUnit, Kotlin JUnit)
+- Banco de payloads maliciosos (SQL, XSS, Command, Path Traversal, CRLF)
+- Detecção automática de framework (Spring Boot, Laravel, NestJS, Express)
+- Exemplos inline ❌→✅ por linguagem (Java, TypeScript, Python, PHP, C#)
+- Hook LGPD contextual para entidades com PII
+- Hook métricas de adoção
+- Hook mapeamento Veracode CWE
+- Hook feedback collector v2 (ignora limitações da plataforma)
+- Regra Absoluta de Dependências: verificar CVEs via web ANTES de escrever versões
+- Demo completa com 9 cenários + roteiro para apresentação à liderança
+
+### Alterado
+- Referências atualizadas para OWASP Top 10:2025
+- PHP classificado como "suportada (não homologada)" — 13 linguagens homologadas + 1 suportada
+- Hooks v4 com prompts ultra-concisos e auto-approve para UI (.svelte, .vue, .jsx, .tsx)
+- Lista explícita de hooks que NÃO devem ser criados no projeto consumidor
+
+---
+
 ## [2.1.0] - 2026-05-08
 
 ### Adicionado
