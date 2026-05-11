@@ -9,6 +9,46 @@ fileMatchPattern: "**/*Controller*,**/*controller*,**/*Handler*,**/*handler*,**/
 
 ---
 
+## Detecção Automática de Framework
+
+> O Kiro detecta o framework do projeto pelos arquivos de configuração e ativa regras específicas.
+
+### Regras de Detecção
+
+| Arquivo Detectado | Framework | Regras Ativadas |
+|---|---|---|
+| `pom.xml` | Spring Boot (Java) | Validação com `@Valid`/`@Validated`, Spring Security config, `@PreAuthorize`, CSRF via `CsrfFilter`, `@Query` com `@Param` |
+| `composer.json` | Laravel / WordPress (PHP) | Eloquent ORM (não raw queries), Blade `{{ }}` escape, `@csrf` em forms, `wp_nonce_field()`, `$wpdb->prepare()`, `esc_html()` |
+| `package.json` com `@nestjs/*` | NestJS (TypeScript) | Guards (`@UseGuards`), Pipes (`ValidationPipe`), DTOs com `class-validator`, `@Roles()` decorator, Helmet middleware |
+| `package.json` com `express` | Express.js (Node) | `helmet()` middleware, `cors()` com whitelist, `express-rate-limit`, `express-validator`, `hpp` (HTTP Parameter Pollution) |
+
+### Como funciona
+
+1. **Na abertura do projeto**, o Kiro verifica a existência dos arquivos de configuração
+2. **Se `pom.xml` existe** → ativa regras Spring Boot:
+   - Todo DTO deve ter `@Valid` no controller
+   - `SecurityFilterChain` configurado (não `permitAll()` global)
+   - Endpoints sensíveis com `@PreAuthorize("hasRole('ADMIN')")`
+   - Propriedades sensíveis: `spring.datasource.password` via env/vault
+3. **Se `composer.json` existe** → ativa regras Laravel/WordPress:
+   - Queries via Eloquent/Query Builder (não `DB::raw()` com input)
+   - Blade: `{{ $var }}` obrigatório (nunca `{!! $var !!}` com input do usuário)
+   - Formulários com `@csrf` (Laravel) ou `wp_nonce_field()` (WordPress)
+   - Upload via `Storage::putFile()` (Laravel) ou `wp_handle_upload()` (WordPress)
+4. **Se `package.json` contém `@nestjs`** → ativa regras NestJS:
+   - `ValidationPipe` global configurado no `main.ts`
+   - Todo endpoint com `@UseGuards(AuthGuard)` (exceto públicos explícitos)
+   - DTOs com decorators `class-validator` (`@IsString()`, `@MaxLength()`, `@IsEmail()`)
+   - Rate limiting via `@nestjs/throttler`
+5. **Se `package.json` contém `express`** → ativa regras Express:
+   - `helmet()` como primeiro middleware
+   - `cors({ origin: whitelist })` (nunca `cors()` sem config)
+   - `express-rate-limit` configurado por rota
+   - `express-validator` com `body().trim().escape()` em inputs
+   - Body parser com limite: `express.json({ limit: '1mb' })`
+
+---
+
 ## Controllers, Handlers e Rotas
 
 Ativado em: Controller, Handler, Route, Endpoint, routes/*, controllers/*, handlers/*

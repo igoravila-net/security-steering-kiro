@@ -20,6 +20,38 @@ inclusion: auto
 
 PROIBIDO: concatenação de strings em queries, f-strings/template literals em SQL.
 
+#### Exemplos Antes/Depois — SQL Injection
+
+**Java:**
+```
+❌ VULNERÁVEL: String query = "SELECT * FROM users WHERE email = '" + email + "'";
+✅ SEGURO:    PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE email = ?"); ps.setString(1, email);
+```
+
+**TypeScript:**
+```
+❌ VULNERÁVEL: const result = await db.query(`SELECT * FROM users WHERE email = '${email}'`);
+✅ SEGURO:    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+```
+
+**Python:**
+```
+❌ VULNERÁVEL: cursor.execute(f"SELECT * FROM users WHERE email = '{email}'")
+✅ SEGURO:    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+```
+
+**PHP:**
+```
+❌ VULNERÁVEL: $stmt = $pdo->query("SELECT * FROM users WHERE email = '$email'");
+✅ SEGURO:    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?"); $stmt->execute([$email]);
+```
+
+**C#:**
+```
+❌ VULNERÁVEL: var cmd = new SqlCommand($"SELECT * FROM users WHERE email = '{email}'", conn);
+✅ SEGURO:    var cmd = new SqlCommand("SELECT * FROM users WHERE email = @email", conn); cmd.Parameters.AddWithValue("@email", email);
+```
+
 ### Code Injection — NUNCA executar código dinâmico
 - Usar whitelist de operações (Map/Dict de funções permitidas)
 - PROIBIDO: eval(), exec(), Function(), ScriptEngine.eval(), CSharpScript com input externo
@@ -44,6 +76,38 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 - Usar DOMPurify (JS), OWASP Java HTML Sanitizer, Bleach (Python)
 - Whitelist de tags permitidas: p, b, i, em, strong, a
 - CSP header obrigatório: default-src self; script-src self
+
+#### Exemplos Antes/Depois — XSS
+
+**Java (Thymeleaf):**
+```
+❌ VULNERÁVEL: <span th:utext="${userInput}"></span>
+✅ SEGURO:    <span th:text="${userInput}"></span>
+```
+
+**TypeScript (React):**
+```
+❌ VULNERÁVEL: <div dangerouslySetInnerHTML={{ __html: userInput }} />
+✅ SEGURO:    <div>{DOMPurify.sanitize(userInput)}</div>
+```
+
+**Python (Jinja2):**
+```
+❌ VULNERÁVEL: {{ user_input | safe }}
+✅ SEGURO:    {{ user_input }}
+```
+
+**PHP (Blade/WordPress):**
+```
+❌ VULNERÁVEL: {!! $userInput !!}  |  echo $userInput;
+✅ SEGURO:    {{ $userInput }}     |  echo esc_html($userInput);
+```
+
+**C# (Razor):**
+```
+❌ VULNERÁVEL: @Html.Raw(userInput)
+✅ SEGURO:    @userInput
+```
 
 ---
 
@@ -107,6 +171,38 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 - Cookies: Secure + HttpOnly + SameSite=Strict
 - Timeout inatividade: max 30 min
 - Invalidação completa no logout (server-side)
+
+#### Exemplos Antes/Depois — Autenticação
+
+**Java (Spring Boot):**
+```
+❌ VULNERÁVEL: String hash = MessageDigest.getInstance("MD5").digest(password.getBytes()).toString();
+✅ SEGURO:    String hash = new BCryptPasswordEncoder(12).encode(password);
+```
+
+**TypeScript (Node.js):**
+```
+❌ VULNERÁVEL: const hash = crypto.createHash('md5').update(password).digest('hex');
+✅ SEGURO:    const hash = await bcrypt.hash(password, 12);
+```
+
+**Python:**
+```
+❌ VULNERÁVEL: password_hash = hashlib.md5(password.encode()).hexdigest()
+✅ SEGURO:    password_hash = argon2.PasswordHasher().hash(password)
+```
+
+**PHP:**
+```
+❌ VULNERÁVEL: $hash = md5($password);
+✅ SEGURO:    $hash = password_hash($password, PASSWORD_ARGON2ID);
+```
+
+**C#:**
+```
+❌ VULNERÁVEL: var hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(password));
+✅ SEGURO:    var hash = BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
+```
 
 ---
 
