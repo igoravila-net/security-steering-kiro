@@ -1,8 +1,8 @@
 {
-  "enabled": true,
-  "name": "Revisão de Segurança em Código",
-  "description": "Revisa escrita com profundidade proporcional ao risco. Ultra-rápido para testes/docs. Checklist completa apenas para I/O/auth.",
-  "version": "4",
+  "enabled": false,
+  "name": "Revisão de Segurança em Código (DESABILITADO - substituído por security-critical-paths)",
+  "description": "Hook genérico desabilitado. Interceptava TODOS os writes incluindo .kiro/**, testes e docs, causando ~4k tokens desperdiçados em operações de manutenção. Substituído por security-critical-paths.kiro.hook que filtra apenas paths de risco.",
+  "version": "5",
   "when": {
     "type": "preToolUse",
     "toolTypes": [
