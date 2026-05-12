@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "name": "Scanner de Output de Shell",
-  "description": "Após execução de comandos, escaneia output por credenciais. Skip para testes/lint/build/git.",
-  "version": "2",
+  "description": "Após execução de comandos, escaneia output por credenciais expostas e warnings de dependências deprecated.",
+  "version": "3",
   "when": {
     "type": "postToolUse",
     "toolTypes": [
@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Se comando foi vitest/jest/tsc/eslint/vite/webpack/git log/git status/git diff/git show/git fetch/npm test/npm run build/npm run lint/cat/type/dir/ls → 'OK'. Para outros: escanear output por sk-, pk-, AKIA, AIza, ghp_, glpat-, eyJ, BEGIN PRIVATE KEY, password/secret com valor. Detectou → ALERTE e instrua rotação. Limpo → 'OK'."
+    "prompt": "Se comando foi vitest/jest/tsc/eslint/vite/webpack/git log/git status/git diff/git show/git fetch/npm test/npm run build/npm run lint/cat/type/dir/ls → 'OK'.\n\n[CREDENCIAIS] Para outros comandos: escanear output por sk-, pk-, AKIA, AIza, ghp_, glpat-, eyJ, BEGIN PRIVATE KEY, password/secret com valor. Detectou → ALERTE e instrua rotação.\n\n[DEPRECATED] Se comando foi npm install/ci e output contém 'npm warn deprecated':\n- Liste os pacotes deprecated encontrados\n- Identifique qual dependência direta os puxa (sugerir `npm ls <pacote>`)\n- Se menciona 'security' ou 'vulnerability' ou 'memory leak' → ALERTE como prioridade alta\n- Sugira atualização da dependência direta\n\nSe output limpo e sem deprecated → 'OK'."
   }
 }
