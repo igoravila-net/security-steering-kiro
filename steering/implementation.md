@@ -630,3 +630,87 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 | File Manager plugins | RCE, upload arbitrário | Usar SFTP/SSH |
 | Database admin plugins (Adminer, phpMyAdmin) | Exposição total do BD | Acesso via CLI/SSH apenas |
 | Plugins de backup que armazenam em /uploads | Backup acessível publicamente | Armazenar fora do webroot ou em cloud |
+
+---
+
+## 17. Go — Padrões de Código Seguro
+
+> Regras específicas para Go (net/http, Gin, Echo, Fiber, gRPC).
+
+### SQL Injection
+- SEMPRE usar prepared statements com `database/sql`: `db.Query("SELECT * FROM users WHERE id = $1", id)`
+- NUNCA concatenar strings em queries: `db.Query("SELECT * FROM users WHERE id = " + id)` ← PROIBIDO
+- ORMs seguros: GORM com `Where("email = ?", email)`, sqlx com named params
+- Para queries dinâmicas: usar query builders (squirrel, goqu)
+
+### Command Injection
+- NUNCA usar `os/exec` com input do usuário sem validação
+- Usar `exec.Command(name, args...)` com argumentos separados (não shell string)
+- NUNCA usar `exec.Command("sh", "-c", userInput)` ← PROIBIDO
+- Validar input contra whitelist regex antes de passar como argumento
+
+### XSS (Templates)
+- `html/template` escapa automaticamente — NUNCA usar `text/template` para HTML
+- NUNCA usar `template.HTML(userInput)` para bypass de escape ← PROIBIDO
+- Para APIs JSON: `encoding/json` é seguro por padrão
+
+### Path Traversal
+- Usar `filepath.Clean()` + verificar que path começa com base dir
+- NUNCA usar `os.Open(userInput)` sem validação ← PROIBIDO
+- `filepath.Join(baseDir, userInput)` + `strings.HasPrefix(resolved, baseDir)`
+
+### Autenticação e Sessão
+- Hash de senhas: `golang.org/x/crypto/bcrypt` com cost >= 12
+- JWT: `github.com/golang-jwt/jwt/v5` com validação completa (issuer, audience, exp)
+- NUNCA usar `jwt.Parse` sem `jwt.WithValidMethods([]string{"RS256"})` ← verificar algoritmo
+- Cookies: Secure=true, HttpOnly=true, SameSite=Strict
+
+### Criptografia
+- AES-256-GCM: `crypto/aes` + `crypto/cipher` com GCM mode
+- Random seguro: `crypto/rand` (NUNCA `math/rand` para segurança)
+- TLS: `crypto/tls` com MinVersion TLS 1.2
+- NUNCA usar MD5/SHA1 para segurança: usar SHA-256+ ou bcrypt/argon2
+
+### Error Handling (Go-specific)
+- NUNCA ignorar erros: `result, _ := doSomething()` ← PROIBIDO em código de produção
+- Erros de segurança (auth, crypto) DEVEM ser tratados explicitamente
+- Não expor erros internos ao cliente: retornar mensagem genérica
+- Usar `errors.Is()` e `errors.As()` para type-safe error handling
+
+### Race Conditions
+- Usar `sync.Mutex` ou `sync.RWMutex` para dados compartilhados
+- Preferir channels para comunicação entre goroutines
+- Usar `-race` flag em testes: `go test -race ./...`
+- NUNCA acessar maps concorrentemente sem lock
+
+### Input Validation
+- Usar `github.com/go-playground/validator/v10` para struct validation
+- Limitar body size: `http.MaxBytesReader(w, r.Body, maxBytes)`
+- Timeout em handlers: `http.TimeoutHandler(handler, timeout, msg)`
+- Rate limiting: `golang.org/x/time/rate`
+
+### Configuração Segura
+- Secrets via variáveis de ambiente (NUNCA hardcoded)
+- `GOGC`, `GOMAXPROCS` configurados para produção
+- Graceful shutdown com `context.WithTimeout`
+- Health check endpoint obrigatório
+
+### Dependências (Go Modules)
+- `go.sum` SEMPRE commitado (verificação de integridade)
+- `go mod verify` no CI
+- `govulncheck` obrigatório: `go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...`
+- Usar versões exatas no go.mod (não `latest`)
+- `go mod tidy` para remover dependências não utilizadas
+
+### Funções PROIBIDAS em Go
+
+| Função/Padrão | Motivo | Alternativa |
+|---|---|---|
+| `fmt.Sprintf` em SQL | SQL Injection | Prepared statements |
+| `exec.Command("sh", "-c", input)` | Command Injection | `exec.Command(bin, args...)` |
+| `template.HTML(input)` | XSS | Deixar html/template escapar |
+| `text/template` para HTML | XSS | `html/template` |
+| `math/rand` para tokens | Previsível | `crypto/rand` |
+| `result, _ := ...` (ignorar erro) | Bypass de segurança | Tratar todo erro |
+| `os.Open(userInput)` sem validação | Path Traversal | filepath.Clean + HasPrefix |
+| `http.ListenAndServe` sem TLS | Sem criptografia | `http.ListenAndServeTLS` |

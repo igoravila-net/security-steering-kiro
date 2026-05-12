@@ -12,7 +12,7 @@ author: "Segurança da Informação - Grupo COGNA"
 Framework automatizado de segurança para desenvolvimento seguro no Grupo COGNA. Garante conformidade com políticas corporativas, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 Linguagens cobertas: C#, Java, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell e Bash/Shell.
-Linguagens suportadas (não homologadas): PHP (WordPress, Laravel — amplamente utilizada em produtos existentes).
+Linguagens suportadas (não homologadas): PHP (WordPress, Laravel), Go (microserviços, APIs).
 
 ## Execução Automática
 
@@ -27,7 +27,7 @@ Princípios fundamentais:
 
 ## Available Steering Files
 
-- **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, supply chain security (npm, pip, Maven, NuGet) e scaffolding por default
+- **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet) e scaffolding por default
 - **implementation** — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs, exceptional conditions OWASP A10:2025, LLM Top 10:2025, API Security Top 10:2023) com exemplos multilinguagem
 - **validation** — Testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE e métricas de compliance
 - **policies** — Políticas corporativas COGNA (SI geral, LGPD, acessos, incidentes, IA segura, criptografia, cloud)

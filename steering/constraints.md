@@ -460,6 +460,39 @@ Dependências instaladas mas não importadas/usadas no código representam risco
    - Validar: `composer validate --strict`
    - Scripts: executar apenas após auditoria manual
 
+### Supply Chain Security — Go Modules
+
+#### Ataques Conhecidos e Mitigações
+
+| Ataque | Descrição | Mitigação |
+|---|---|---|
+| Typosquatting | Módulos com paths similares | Verificar module path exato, usar go.sum |
+| Dependency Confusion | Módulo privado com mesmo path público | Usar GOPRIVATE para módulos internos |
+| Malicious Module | Código malicioso em init() ou go generate | Auditar novos módulos, verificar repo |
+| Vanity Import Attack | Redirect de import path para módulo malicioso | Verificar go.sum, usar GONOSUMCHECK apenas para privados |
+
+#### Regras OBRIGATÓRIAS para Go Modules
+
+1. **go.sum commitado e verificado**
+   - `go.sum` SEMPRE commitado (garante integridade)
+   - CI DEVE executar `go mod verify`
+   - GONOSUMCHECK apenas para módulos privados internos
+
+2. **GOPRIVATE para módulos internos**
+   - Configurar: `GOPRIVATE=github.com/cogna/*,gitlab.cogna.com.br/*`
+   - Módulos internos NUNCA passam pelo proxy público (sum.golang.org)
+
+3. **Auditoria obrigatória**
+   - `govulncheck ./...` obrigatório no CI (falhar em vulnerabilidades)
+   - `go mod tidy` para remover dependências não utilizadas
+   - Verificar licenças: `go-licenses check ./...`
+
+4. **Pipeline CI/CD — Verificações Go**
+   - Verificar integridade: `go mod verify`
+   - Scan de vulnerabilidades: `govulncheck ./...`
+   - Remover unused: `go mod tidy`
+   - Race detector em testes: `go test -race ./...`
+
 ---
 
 ## Secrets Scanning — Padrões de Detecção
