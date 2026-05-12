@@ -108,6 +108,35 @@ ANTES de escrever qualquer versão de pacote em arquivo de dependências, o agen
 
 Versões sugeridas sem verificação de CVE em fonte atual = VIOLAÇÃO CRÍTICA.
 
+### Dependências Não Utilizadas — Redução de Superfície de Ataque
+
+Dependências instaladas mas não importadas/usadas no código representam risco desnecessário:
+- Aumentam superfície de ataque (CVEs em código que nem é executado)
+- Aumentam tamanho do build/container
+- Dificultam auditoria e manutenção
+
+#### Regras OBRIGATÓRIAS
+
+1. **Ao revisar código ou dependências**, verificar se há pacotes não utilizados:
+   - npm: `npx depcheck` ou `npx knip`
+   - pip: `pip-extra-reqs` ou verificar imports vs. requirements
+   - Maven: `mvn dependency:analyze` (lista unused dependencies)
+   - NuGet: `dotnet list package` + verificar usings
+   - Composer: `composer-unused`
+
+2. **Ao adicionar nova dependência**, justificar a necessidade:
+   - Existe alternativa nativa (sem dependência externa)?
+   - O pacote é realmente necessário ou é convenience?
+   - Pode ser devDependency em vez de dependency?
+
+3. **Ao remover funcionalidade**, verificar se dependências associadas podem ser removidas
+
+4. **No CI/CD**, considerar adicionar check de dependências não utilizadas:
+   - npm: `npx depcheck --ignores="@types/*"`
+   - Maven: `mvn dependency:analyze -DignoreNonCompile`
+
+5. **devDependencies vs dependencies**: pacotes de teste, lint, build DEVEM estar em devDependencies (não vão para produção)
+
 ### Bibliotecas PROIBIDAS
 
 | Biblioteca | Alternativa |
