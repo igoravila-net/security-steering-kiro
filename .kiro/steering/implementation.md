@@ -714,3 +714,67 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 | `result, _ := ...` (ignorar erro) | Bypass de segurança | Tratar todo erro |
 | `os.Open(userInput)` sem validação | Path Traversal | filepath.Clean + HasPrefix |
 | `http.ListenAndServe` sem TLS | Sem criptografia | `http.ListenAndServeTLS` |
+
+---
+
+## 18. Memory Safety — CWE-787, CWE-125, CWE-416, CWE-119, CWE-190
+
+> Vulnerabilidades de memória em contexto de linguagens managed. Embora Java/C#/Python/JS tenham garbage collector, existem cenários onde memory safety pode ser comprometida.
+
+### CWE-787 / CWE-125 / CWE-119 — Buffer Overflow / Out-of-bounds
+
+#### Go
+- NUNCA usar `unsafe.Pointer` sem justificativa documentada e revisão de segurança
+- CGo (`import "C"`) herda todas as vulnerabilidades de C — tratar como código C
+- Validar bounds em slices: `if index >= len(slice)` antes de acessar
+- NUNCA usar `reflect.SliceHeader` ou `reflect.StringHeader` (deprecated, unsafe)
+
+#### C# (.NET)
+- NUNCA usar `unsafe` blocks em código de produção sem revisão de segurança
+- Se `unsafe` necessário: validar bounds explicitamente antes de pointer arithmetic
+- Preferir `Span<T>` e `Memory<T>` (bounds-checked) sobre raw pointers
+- `stackalloc` com tamanho variável: validar que não excede stack size
+- `Marshal.Copy` e P/Invoke: validar tamanhos de buffer
+
+#### Node.js / TypeScript
+- `Buffer.allocUnsafe()`: NUNCA expor ao cliente sem `.fill(0)` primeiro (pode conter dados de memória anteriores)
+- Preferir `Buffer.alloc(size)` (zero-filled) sobre `Buffer.allocUnsafe(size)`
+- Validar offset e length em `Buffer.copy()`, `Buffer.slice()`, `Buffer.write()`
+- TypedArrays: validar bounds antes de acesso por index
+
+#### Java
+- `sun.misc.Unsafe`: PROIBIDO em código de aplicação (apenas frameworks internos)
+- JNI (Java Native Interface): tratar como código C — validar todos os buffers
+- `ByteBuffer.allocateDirect()`: liberar explicitamente quando não mais necessário
+
+### CWE-416 — Use After Free
+
+#### Go
+- Goroutines com referências a objetos que podem ser GC'd: usar sync ou channels
+- `runtime.SetFinalizer`: NUNCA acessar objeto após finalizer executar
+- CGo: NUNCA manter referência Go para memória alocada em C após `C.free()`
+
+#### C# (.NET)
+- `IDisposable`: NUNCA usar objeto após `Dispose()` — usar `using` statement
+- `WeakReference<T>`: verificar `TryGetTarget()` antes de usar
+- Unmanaged resources: implementar Dispose pattern corretamente
+
+#### Node.js
+- Streams: NUNCA ler de stream após `destroy()` ou `end()`
+- Worker threads: NUNCA acessar `SharedArrayBuffer` após worker terminar sem sync
+
+### CWE-190 — Integer Overflow
+
+#### Todas as linguagens
+- Validar que operações aritméticas não excedem limites do tipo
+- JavaScript/TypeScript: `Number.MAX_SAFE_INTEGER` (2^53 - 1) — usar `BigInt` para valores maiores
+- Java: `Math.addExact()`, `Math.multiplyExact()` (lançam ArithmeticException em overflow)
+- C#: `checked { }` block para detectar overflow em runtime
+- Go: verificar overflow antes de operação: `if a > math.MaxInt64 - b { overflow }`
+- Python: integers têm precisão arbitrária (sem overflow), mas atenção com `numpy` arrays
+
+#### Cenários de risco em linguagens managed
+- Cálculos financeiros: usar tipos decimais (BigDecimal, decimal, Decimal.js)
+- Tamanho de arrays/buffers calculado a partir de input: validar antes de alocar
+- Conversão entre tipos (int32 → int16): verificar que valor cabe no tipo destino
+- IDs sequenciais: considerar overflow em sistemas de longa duração
