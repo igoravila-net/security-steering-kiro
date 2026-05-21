@@ -1,0 +1,33 @@
+{
+  "enabled": true,
+  "name": "Correção Automática de Vulnerabilidades em Arquivo Editado",
+  "description": "Quando um arquivo de código de produção é editado, analisa contra todas as regras de segurança COGNA e corrige vulnerabilidades encontradas automaticamente.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/src/**/*.ts",
+      "**/src/**/*.js",
+      "**/src/**/*.tsx",
+      "**/src/**/*.jsx",
+      "**/src/**/*.py",
+      "**/src/**/*.java",
+      "**/src/**/*.cs",
+      "**/src/**/*.go",
+      "**/src/**/*.php",
+      "**/src/**/*.kt",
+      "**/src/**/*.swift",
+      "**/app/**/*.ts",
+      "**/app/**/*.js",
+      "**/app/**/*.py",
+      "**/app/**/*.java",
+      "**/app/**/*.php",
+      "**/lib/**/*.ts",
+      "**/lib/**/*.js"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Um arquivo de código de produção foi editado. Analise as MUDANÇAS contra as regras de segurança COGNA:\n\n[SKIP] Se o arquivo está em test/, spec/, __test__/, demo/, .kiro/, node_modules/, ou é domain/models/types/interfaces puro → 'OK'.\n\n[VERIFICAR E CORRIGIR] Para código de produção com I/O:\n1. SQL Injection: concatenação em queries → corrigir para prepared statements\n2. Credenciais hardcoded: API keys, senhas, tokens → corrigir para env vars\n3. XSS: innerHTML/dangerouslySetInnerHTML sem sanitização → corrigir\n4. Command Injection: exec/eval com input → corrigir para APIs seguras\n5. Input sem validação: campos sem limite → adicionar validação\n6. Endpoints sem auth: rotas sem middleware → adicionar autenticação\n7. Dados sensíveis em logs: PII logada → mascarar\n8. Criptografia fraca: MD5/SHA1 → corrigir para bcrypt/argon2\n\nSe encontrar vulnerabilidade:\n- Corrija AUTOMATICAMENTE o arquivo\n- Liste: ✅ [tipo] corrigido: [descrição]\n\nSe seguro → 'OK'."
+  }
+}
