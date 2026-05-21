@@ -37,7 +37,7 @@ steering/
 | Steering | Conteúdo |
 |---|---|
 | **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet), onboarding |
-| **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress), Go (net/http, Gin, Echo, Fiber, gRPC) |
+| **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, memory safety (CWE-787/125/416/119/190 — buffer overflow, use-after-free, integer overflow em Go/C#/Node.js/Java), exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress), Go (net/http, Gin, Echo, Fiber, gRPC) |
 | **validation** | 20 categorias de testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
 | **policies** | Política Geral SI, classificação da informação, LGPD, gestão de acessos, PAM, incidentes, vulnerabilidades, SSDLC, IA segura, criptografia em BD, cloud, fornecedores |
 | **infrastructure** | Terraform, Docker, Kubernetes, Helm, deployment config, server config, resiliência, CI/CD security, anti-backdoor |
@@ -67,6 +67,9 @@ steering/
 | **Coletor de Feedback** | `power-feedback-collector.kiro.hook` | `agentStop` | Coleta feedback automático de fricção/redundância/falsos positivos | Baixa |
 | **LGPD — Dados Pessoais** | `lgpd-data-review.kiro.hook` | `fileEdited` (user*, customer*, aluno*, profile*) | Verifica mascaramento, consentimento e retenção de PII | Média |
 | **Métricas de Adoção** | `adoption-metrics.kiro.hook` | `agentStop` | Registra regras aplicadas, bloqueios e correções por sessão | Baixa |
+| **Auto-Fix em Arquivo Novo** | `auto-fix-vulnerabilities-on-create.kiro.hook` | `fileCreated` (*.ts, *.js, *.py, *.java, etc.) | Corrige automaticamente TODAS as vulnerabilidades ao criar arquivo | Alta |
+| **Auto-Fix em Arquivo Editado** | `auto-fix-vulnerabilities-on-edit.kiro.hook` | `fileEdited` (src/**, app/**, lib/**) | Corrige automaticamente vulnerabilidades ao editar código de produção | Alta |
+| **Verificação de Saúde de Dependências** | `dependency-health-check.kiro.hook` | `userTriggered` | Verifica outdated, deprecated e CVEs sob demanda | Média |
 
 ### Desenvolvimento e Manutenção do Power
 
@@ -79,23 +82,46 @@ steering/
 | **Mapear Findings Veracode** | `veracode-cwe-mapping.kiro.hook` | `userTriggered` | Mapeia CWEs do Veracode para steerings e sugere melhorias |
 | **Atualizar README ao Modificar Steering** | `update-readme-on-steering-change.kiro.hook` | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças |
 
-### Como Criar os Hooks
+### Como Criar os Hooks no Seu Projeto
 
-No seu projeto, crie arquivos `.kiro/hooks/<nome>.kiro.hook` com o formato JSON:
+**Passo 1:** Crie a pasta `.kiro/hooks/` na raiz do seu projeto (se não existir).
+
+**Passo 2:** Copie os hooks desejados do diretório `.kiro/hooks/` deste repositório para o seu projeto. Ou crie manualmente com o formato JSON:
 
 ```json
 {
-  "name": "Revisão de Segurança em Código",
-  "version": "1.0.0",
+  "enabled": true,
+  "name": "Nome do Hook",
+  "version": "1",
   "when": {
-    "type": "preToolUse",
-    "toolTypes": ["write"]
+    "type": "fileCreated",
+    "patterns": ["**/*.ts", "**/*.js"]
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Revise o código contra padrões de segurança proibidos..."
+    "prompt": "Instrução para o agente..."
   }
 }
+```
+
+**Passo 3 (Recomendado — Setup Rápido):** Cole este prompt no Kiro para criar todos os hooks essenciais de uma vez:
+
+```
+Crie os seguintes hooks em .kiro/hooks/ para ativar o Security Guardrails:
+
+1. auto-fix-vulnerabilities-on-create.kiro.hook — fileCreated em *.ts,*.js,*.py,*.java,*.cs,*.go,*.php
+   Prompt: "Analise o arquivo criado contra regras de segurança COGNA. Se encontrar vulnerabilidade (SQL concat, credenciais hardcoded, XSS, command injection, input sem validação, endpoint sem auth, PII em logs, crypto fraca), corrija AUTOMATICAMENTE. Liste correções aplicadas."
+
+2. auto-fix-vulnerabilities-on-edit.kiro.hook — fileEdited em src/**/*.ts, src/**/*.js, app/**/*.ts, lib/**/*.ts
+   Prompt: "Analise as mudanças contra regras de segurança. Se encontrar vulnerabilidade, corrija automaticamente."
+
+3. block-secrets-in-commits.kiro.hook — preToolUse shell
+   Prompt: "Se comando é teste/lint/build → APROVADO. Se git add/commit/push → verificar segredos (sk-, AKIA, eyJ, BEGIN PRIVATE KEY). Segredo → BLOQUEIE. Limpo → APROVADO."
+
+4. check-dependency-security.kiro.hook — fileEdited em **/package.json, **/pom.xml, **/requirements.txt
+   Prompt: "Pesquise CVEs na web para cada dependência. Se encontrar, corrija automaticamente para versão segura."
+
+Consulte github.com/igoravila-net/security-steering-kiro/.kiro/hooks/ para os prompts completos.
 ```
 
 Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
