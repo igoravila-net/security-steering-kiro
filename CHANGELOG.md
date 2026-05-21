@@ -2,6 +2,32 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.3.0] - 2026-05-12
+
+### Adicionado
+- Go completo — padrões de código seguro (SQL, Command Injection, XSS, Path Traversal, Auth, Crypto, Error Handling, Race Conditions, Input Validation)
+- Supply Chain para Go Modules (govulncheck, GOPRIVATE, go.sum)
+- CWE Top 25 MITRE 2024 — cobertura 100% (25/25) incluindo Memory Safety (CWE-787, 125, 416, 119, 190)
+- 21 CWEs adicionais mapeadas (total: 46 CWEs cobertas)
+- CVEs 2025-2026: Next.js CVE-2025-29927, React RSC CVE-2025-55182, Spring Cloud Gateway CVE-2025-41243, Spring AI data exposure
+- Ataques supply chain 2025-2026: Mini Shai-Hulud (worm npm), PhantomRaven (Remote Dynamic Dependencies)
+- Regra: Bloquear Remote Dynamic Dependencies (URLs externas em package.json)
+- Hook auto-fix-vulnerabilities-on-create: correção automática ao criar arquivo de código
+- Hook auto-fix-vulnerabilities-on-edit: correção automática ao editar código de produção
+- Hook dependency-health-check: verificação completa sob demanda (outdated + deprecated + CVEs)
+- Hook security-critical-paths v2: auto-approve para barrel exports e ports/
+- Shell-output-scanner v3: detecta npm deprecated warnings
+- Regra de dependências não utilizadas (depcheck, knip, dependency:analyze)
+- Documento CWE-MAPPING com mapeamento completo de 46 CWEs → steerings
+- Instruções de setup rápido para projetos consumidores no README
+
+### Alterado
+- Check-dependency-security v2: correção automática + npm audit obrigatório
+- README expandido com hooks auto-fix e instruções passo-a-passo de criação
+- Linguagens suportadas: adicionado Go (microserviços, APIs)
+
+---
+
 ## [2.2.0] - 2026-05-08
 
 ### Adicionado

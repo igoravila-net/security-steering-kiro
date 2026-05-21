@@ -1,8 +1,8 @@
 ---
 name: "security-steering-kiro"
 displayName: "COGNA Security Guardrails"
-version: "2.2.0"
-description: "v2.2.0 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas."
+version: "2.3.0"
+description: "v2.3.0 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas."
 keywords: ["segurança", "security", "owasp", "cogna", "lgpd", "vulnerabilidade", "appsec", "devsecops"]
 author: "Segurança da Informação - Grupo COGNA"
 ---
@@ -28,7 +28,7 @@ Princípios fundamentais:
 ## Available Steering Files
 
 - **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet) e scaffolding por default
-- **implementation** — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs, exceptional conditions OWASP A10:2025, LLM Top 10:2025, API Security Top 10:2023) com exemplos multilinguagem
+- **implementation** — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs, memory safety CWE-787/125/416/119/190, exceptional conditions OWASP A10:2025, LLM Top 10:2025, API Security Top 10:2023) com exemplos multilinguagem
 - **validation** — Testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE e métricas de compliance
 - **policies** — Políticas corporativas COGNA (SI geral, LGPD, acessos, incidentes, IA segura, criptografia, cloud)
 - **infrastructure** — IaC seguro (Terraform, Docker, K8s), deployment, resiliência e secrets scanning
