@@ -633,101 +633,11 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 
 ---
 
-## 17. Go — Padrões de Código Seguro
-
-> Regras específicas para Go (net/http, Gin, Echo, Fiber, gRPC).
-
-### SQL Injection
-- SEMPRE usar prepared statements com `database/sql`: `db.Query("SELECT * FROM users WHERE id = $1", id)`
-- NUNCA concatenar strings em queries: `db.Query("SELECT * FROM users WHERE id = " + id)` ← PROIBIDO
-- ORMs seguros: GORM com `Where("email = ?", email)`, sqlx com named params
-- Para queries dinâmicas: usar query builders (squirrel, goqu)
-
-### Command Injection
-- NUNCA usar `os/exec` com input do usuário sem validação
-- Usar `exec.Command(name, args...)` com argumentos separados (não shell string)
-- NUNCA usar `exec.Command("sh", "-c", userInput)` ← PROIBIDO
-- Validar input contra whitelist regex antes de passar como argumento
-
-### XSS (Templates)
-- `html/template` escapa automaticamente — NUNCA usar `text/template` para HTML
-- NUNCA usar `template.HTML(userInput)` para bypass de escape ← PROIBIDO
-- Para APIs JSON: `encoding/json` é seguro por padrão
-
-### Path Traversal
-- Usar `filepath.Clean()` + verificar que path começa com base dir
-- NUNCA usar `os.Open(userInput)` sem validação ← PROIBIDO
-- `filepath.Join(baseDir, userInput)` + `strings.HasPrefix(resolved, baseDir)`
-
-### Autenticação e Sessão
-- Hash de senhas: `golang.org/x/crypto/bcrypt` com cost >= 12
-- JWT: `github.com/golang-jwt/jwt/v5` com validação completa (issuer, audience, exp)
-- NUNCA usar `jwt.Parse` sem `jwt.WithValidMethods([]string{"RS256"})` ← verificar algoritmo
-- Cookies: Secure=true, HttpOnly=true, SameSite=Strict
-
-### Criptografia
-- AES-256-GCM: `crypto/aes` + `crypto/cipher` com GCM mode
-- Random seguro: `crypto/rand` (NUNCA `math/rand` para segurança)
-- TLS: `crypto/tls` com MinVersion TLS 1.2
-- NUNCA usar MD5/SHA1 para segurança: usar SHA-256+ ou bcrypt/argon2
-
-### Error Handling (Go-specific)
-- NUNCA ignorar erros: `result, _ := doSomething()` ← PROIBIDO em código de produção
-- Erros de segurança (auth, crypto) DEVEM ser tratados explicitamente
-- Não expor erros internos ao cliente: retornar mensagem genérica
-- Usar `errors.Is()` e `errors.As()` para type-safe error handling
-
-### Race Conditions
-- Usar `sync.Mutex` ou `sync.RWMutex` para dados compartilhados
-- Preferir channels para comunicação entre goroutines
-- Usar `-race` flag em testes: `go test -race ./...`
-- NUNCA acessar maps concorrentemente sem lock
-
-### Input Validation
-- Usar `github.com/go-playground/validator/v10` para struct validation
-- Limitar body size: `http.MaxBytesReader(w, r.Body, maxBytes)`
-- Timeout em handlers: `http.TimeoutHandler(handler, timeout, msg)`
-- Rate limiting: `golang.org/x/time/rate`
-
-### Configuração Segura
-- Secrets via variáveis de ambiente (NUNCA hardcoded)
-- `GOGC`, `GOMAXPROCS` configurados para produção
-- Graceful shutdown com `context.WithTimeout`
-- Health check endpoint obrigatório
-
-### Dependências (Go Modules)
-- `go.sum` SEMPRE commitado (verificação de integridade)
-- `go mod verify` no CI
-- `govulncheck` obrigatório: `go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...`
-- Usar versões exatas no go.mod (não `latest`)
-- `go mod tidy` para remover dependências não utilizadas
-
-### Funções PROIBIDAS em Go
-
-| Função/Padrão | Motivo | Alternativa |
-|---|---|---|
-| `fmt.Sprintf` em SQL | SQL Injection | Prepared statements |
-| `exec.Command("sh", "-c", input)` | Command Injection | `exec.Command(bin, args...)` |
-| `template.HTML(input)` | XSS | Deixar html/template escapar |
-| `text/template` para HTML | XSS | `html/template` |
-| `math/rand` para tokens | Previsível | `crypto/rand` |
-| `result, _ := ...` (ignorar erro) | Bypass de segurança | Tratar todo erro |
-| `os.Open(userInput)` sem validação | Path Traversal | filepath.Clean + HasPrefix |
-| `http.ListenAndServe` sem TLS | Sem criptografia | `http.ListenAndServeTLS` |
-
----
-
-## 18. Memory Safety — CWE-787, CWE-125, CWE-416, CWE-119, CWE-190
+## 17. Memory Safety — CWE-787, CWE-125, CWE-416, CWE-119, CWE-190
 
 > Vulnerabilidades de memória em contexto de linguagens managed. Embora Java/C#/Python/JS tenham garbage collector, existem cenários onde memory safety pode ser comprometida.
 
 ### CWE-787 / CWE-125 / CWE-119 — Buffer Overflow / Out-of-bounds
-
-#### Go
-- NUNCA usar `unsafe.Pointer` sem justificativa documentada e revisão de segurança
-- CGo (`import "C"`) herda todas as vulnerabilidades de C — tratar como código C
-- Validar bounds em slices: `if index >= len(slice)` antes de acessar
-- NUNCA usar `reflect.SliceHeader` ou `reflect.StringHeader` (deprecated, unsafe)
 
 #### C# (.NET)
 - NUNCA usar `unsafe` blocks em código de produção sem revisão de segurança
@@ -749,11 +659,6 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 
 ### CWE-416 — Use After Free
 
-#### Go
-- Goroutines com referências a objetos que podem ser GC'd: usar sync ou channels
-- `runtime.SetFinalizer`: NUNCA acessar objeto após finalizer executar
-- CGo: NUNCA manter referência Go para memória alocada em C após `C.free()`
-
 #### C# (.NET)
 - `IDisposable`: NUNCA usar objeto após `Dispose()` — usar `using` statement
 - `WeakReference<T>`: verificar `TryGetTarget()` antes de usar
@@ -770,7 +675,6 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 - JavaScript/TypeScript: `Number.MAX_SAFE_INTEGER` (2^53 - 1) — usar `BigInt` para valores maiores
 - Java: `Math.addExact()`, `Math.multiplyExact()` (lançam ArithmeticException em overflow)
 - C#: `checked { }` block para detectar overflow em runtime
-- Go: verificar overflow antes de operação: `if a > math.MaxInt64 - b { overflow }`
 - Python: integers têm precisão arbitrária (sem overflow), mas atenção com `numpy` arrays
 
 #### Cenários de risco em linguagens managed

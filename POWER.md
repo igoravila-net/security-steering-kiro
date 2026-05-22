@@ -12,7 +12,7 @@ author: "Segurança da Informação - Grupo COGNA"
 Framework automatizado de segurança para desenvolvimento seguro no Grupo COGNA. Garante conformidade com políticas corporativas, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 Linguagens cobertas: C#, Java, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell e Bash/Shell.
-Linguagens suportadas (não homologadas): PHP (WordPress, Laravel), Go (microserviços, APIs).
+Linguagens suportadas (não homologadas): PHP (WordPress, Laravel).
 
 ## Execução Automática
 

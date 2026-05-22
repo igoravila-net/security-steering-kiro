@@ -37,7 +37,7 @@ steering/
 | Steering | Conteúdo |
 |---|---|
 | **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet), onboarding |
-| **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, memory safety (CWE-787/125/416/119/190 — buffer overflow, use-after-free, integer overflow em Go/C#/Node.js/Java), exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress), Go (net/http, Gin, Echo, Fiber, gRPC) |
+| **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, memory safety (CWE-787/125/416/119/190 — buffer overflow, use-after-free, integer overflow em C#/Node.js/Java), exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress) |
 | **validation** | 20 categorias de testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
 | **policies** | Política Geral SI, classificação da informação, LGPD, gestão de acessos, PAM, incidentes, vulnerabilidades, SSDLC, IA segura, criptografia em BD, cloud, fornecedores |
 | **infrastructure** | Terraform, Docker, Kubernetes, Helm, deployment config, server config, resiliência, CI/CD security, anti-backdoor |
@@ -109,7 +109,7 @@ steering/
 ```
 Crie os seguintes hooks em .kiro/hooks/ para ativar o Security Guardrails:
 
-1. auto-fix-vulnerabilities-on-create.kiro.hook — fileCreated em *.ts,*.js,*.py,*.java,*.cs,*.go,*.php
+1. auto-fix-vulnerabilities-on-create.kiro.hook — fileCreated em *.ts,*.js,*.py,*.java,*.cs,*.php
    Prompt: "Analise o arquivo criado contra regras de segurança COGNA. Se encontrar vulnerabilidade (SQL concat, credenciais hardcoded, XSS, command injection, input sem validação, endpoint sem auth, PII em logs, crypto fraca), corrija AUTOMATICAMENTE. Liste correções aplicadas."
 
 2. auto-fix-vulnerabilities-on-edit.kiro.hook — fileEdited em src/**/*.ts, src/**/*.js, app/**/*.ts, lib/**/*.ts
@@ -139,7 +139,7 @@ Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
 **Homologadas:** C#, Java, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell, Bash/Shell
 
-**Suportadas (não homologadas):** PHP (WordPress, Laravel), Go (microserviços, APIs)
+**Suportadas (não homologadas):** PHP (WordPress, Laravel)
 
 ## SLAs de Correção
 
