@@ -244,6 +244,29 @@ Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 - **`|| true`** pode ser adicionado ao comando para evitar que falhas do test runner bloqueiem o fluxo, mas esconde erros reais.
 - **vite-plugin-svelte warning** — se o projeto usa SvelteKit, o vitest pode carregar config do Svelte desnecessariamente. Adicione `{ hot: false }` no `vite.config.ts` para suprimir.
 
+#### ✅ Abordagem Recomendada: `askAgent` em vez de `runCommand`
+
+A abordagem `runCommand` com `${file}` é frágil. A solução comprovada é usar `askAgent` com lógica inteligente:
+
+```json
+{
+  "enabled": true,
+  "name": "🧪 Testes de Segurança ao Salvar",
+  "description": "Ao salvar arquivo de código, verifica se existe teste correspondente e executa.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/**/*.ts", "src/**/*.js", "src/**/*.py", "src/**/*.java", "src/**/*.cs", "src/**/*.kt", "src/**/*.swift", "src/**/*.php", "src/**/*.rb", "app/**/*.ts", "app/**/*.js", "app/**/*.py", "app/**/*.java", "app/**/*.cs", "app/**/*.kt", "app/**/*.php"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Um arquivo de código foi salvo. Verifique:\n1. Existe arquivo de teste correspondente?\n   - TypeScript/JavaScript: *.test.ts, *.spec.ts, *.property.test.ts\n   - Java/Kotlin: *Test.java, *Tests.java, *Test.kt\n   - Python: test_*.py, *_test.py\n   - C#: *Tests.cs, *Test.cs\n   - PHP: *Test.php\n   - Swift: *Tests.swift\n   - Ruby: *_spec.rb, *_test.rb\n2. Se SIM → execute o test runner adequado:\n   - TS/JS: `npx vitest run <teste>`\n   - Java/Kotlin: `mvn test -pl <módulo> -Dtest=<classe>` ou `gradle test --tests <classe>`\n   - Python: `pytest <teste> -v`\n   - C#: `dotnet test --filter <classe>`\n   - PHP: `php artisan test --filter=<classe>` ou `phpunit <teste>`\n   - Swift: `swift test --filter <classe>`\n   - Ruby: `bundle exec rspec <teste>`\n3. Se NÃO existe teste → responda '🧪 Sem teste correspondente — considere criar.' sem erro\n\n⏭️ SKIP: Se arquivo é .kiro/, node_modules/, dist/, build/, vendor/, config, migration → 'OK'."
+  }
+}
+```
+
+Esta abordagem evita: exit code 1 falso, `${file}` não resolvido, e testes rodando sem match.
+
 ### Arquivos de Demonstração / Exemplos
 - **Nunca commitar credenciais fake** em arquivos de exemplo — scanners como GitGuardian detectam padrões (`AKIA`, `sk-`, `password=`) mesmo em código de demo e geram alertas.
 - Manter exemplos vulneráveis em pasta local ignorada pelo git (`.gitignore`).
