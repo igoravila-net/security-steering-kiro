@@ -18,6 +18,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Arquivo de infraestrutura EDITADO. Verifique se a edição introduziu regressões:\n\nDocker:\n- USER não-root mantido? (NUNCA remover USER ou adicionar USER root)\n- HEALTHCHECK mantido?\n- Nenhum segredo adicionado na imagem?\n- Tag não mudou para :latest?\n\nTerraform:\n- Security Groups: nenhum 0.0.0.0/0 adicionado em portas sensíveis?\n- publicly_accessible não mudou para true?\n- encryption não foi desabilitada?\n- Outputs sensíveis com sensitive=true?\n\nKubernetes:\n- runAsNonRoot mantido? allowPrivilegeEscalation não mudou para true?\n- Resource limits mantidos?\n- Secrets não expostos em env value direto?\n\nSe detectar regressão, BLOQUEIE e explique o risco."
+    "prompt": "🏗️ Arquivo de infraestrutura EDITADO. Verifique se a edição introduziu regressões:\n\n🐳 Docker:\n- 👤 USER não-root mantido? (NUNCA remover USER ou adicionar USER root)\n- 💓 HEALTHCHECK mantido?\n- 🔑 Nenhum segredo adicionado na imagem?\n- 🏷️ Tag não mudou para :latest?\n\n☁️ Terraform:\n- 🌐 Security Groups: nenhum 0.0.0.0/0 adicionado em portas sensíveis?\n- 🔓 publicly_accessible não mudou para true?\n- 🔐 encryption não foi desabilitada?\n- 🙈 Outputs sensíveis com sensitive=true?\n\n☸️ Kubernetes:\n- 👤 runAsNonRoot mantido? allowPrivilegeEscalation não mudou para true?\n- 📏 Resource limits mantidos?\n- 🔑 Secrets não expostos em env value direto?\n\n🚫 Se detectar regressão, BLOQUEIE e explique o risco.\n✅ Se seguro → 'OK'."
   }
 }

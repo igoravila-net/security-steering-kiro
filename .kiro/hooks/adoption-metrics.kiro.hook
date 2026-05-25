@@ -8,6 +8,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Se código de PRODUÇÃO foi escrito nesta sessão, registre métricas no arquivo SECURITY-METRICS.md (crie se não existir, adicione ao .gitignore):\n\n| Data | Arquivos produção escritos | Regras aplicadas | Bloqueios | Correções automáticas | Categoria principal |\n\nCategorias: injection, auth, input-validation, secrets, xss, infra, supply-chain, lgpd, crypto, api-security\n\nSe NENHUM código de produção foi escrito → não registre nada.\nResponda apenas: 'Métricas registradas' ou 'Sem métricas — sessão sem código de produção.'"
+    "prompt": "FAST-PATH: Se NENHUM arquivo em src/application/, src/infrastructure/, controllers/, services/, repositories/, middleware/, handlers/ foi criado ou editado nesta sessão → 'Sem métricas — sessão sem código de produção.'\n\nSe código de PRODUÇÃO foi escrito, registre métricas no SECURITY-METRICS.md (crie se não existir):\n| Data | Arquivos produção escritos | Regras aplicadas | Bloqueios | Correções automáticas | Categoria principal |\nCategorias: injection, auth, input-validation, secrets, xss, infra, supply-chain, lgpd, crypto, api-security\nResponda: 'Métricas registradas' ou 'Sem métricas — sessão sem código de produção.'"
   }
 }

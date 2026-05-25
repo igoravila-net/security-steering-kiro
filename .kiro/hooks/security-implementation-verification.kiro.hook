@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Verificação de Implementação de Segurança",
+  "description": "Após escrita em paths de produção (application/infrastructure), verifica se mitigações STRIDE identificadas foram implementadas no código.",
+  "version": "1",
+  "when": {
+    "type": "postToolUse",
+    "toolTypes": [
+      "write"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "⏭️ SKIP → 'OK': Se path contém .kiro/ | test/spec/mock/__test__ | domain/models/types/enums/interfaces | *.md/json/yml/css/html/kiro.hook | components/lib/routes/ports | *.test.ts/spec.ts.\n\n🔎 VERIFICAR (apenas src/application/** e src/infrastructure/**):\nSe um STRIDE assessment foi feito para a tarefa atual (preTaskExecution), cruze as mitigações identificadas com o código escrito:\n\n1. 🎭 Spoofing identificado → código tem validação de token/session?\n2. ✏️ Tampering identificado → código tem validação de input com limites?\n3. 📝 Repudiation identificado → código tem log de auditoria com correlationId?\n4. 👁️ Information Disclosure identificado → dados sensíveis mascarados?\n5. 💥 DoS identificado → rate limiting/timeout implementado?\n6. ⬆️ Elevation identificado → ownership/role check presente?\n\nSe mitigação FALTANTE → ⚠️ [Ameaça] não mitigada: [o que falta]\nSe todas implementadas ou não houve STRIDE assessment → ✅ 'OK'."
+  }
+}

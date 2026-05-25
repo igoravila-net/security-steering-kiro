@@ -24,6 +24,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Arquivo com possíveis dados pessoais editado. Verifique LGPD:\n1. Dados pessoais (nome, email, CPF, telefone) mascarados em logs e respostas de API?\n2. Coleta mínima — apenas campos necessários para a finalidade?\n3. Mecanismo de exclusão (direito ao esquecimento) considerado?\n4. Dados sensíveis (saúde, biometria) com criptografia em nível de coluna?\n5. Consentimento registrado se compartilhamento com terceiros?\n\nSe o arquivo NÃO contém campos de dados pessoais (ex: é um UserService sem PII, apenas IDs) → 'OK - sem PII neste arquivo'.\nSe contém PII e está adequado → 'OK'.\nSe contém PII sem proteção → sugira correção."
+    "prompt": "🏛️ Arquivo com possíveis dados pessoais editado. Verifique LGPD:\n1. 🙈 Dados pessoais (nome, email, CPF, telefone) mascarados em logs e respostas de API?\n2. 📋 Coleta mínima — apenas campos necessários para a finalidade?\n3. 🗑️ Mecanismo de exclusão (direito ao esquecimento) considerado?\n4. 🔐 Dados sensíveis (saúde, biometria) com criptografia em nível de coluna?\n5. ✍️ Consentimento registrado se compartilhamento com terceiros?\n\n✅ Se o arquivo NÃO contém campos de dados pessoais (ex: é um UserService sem PII, apenas IDs) → 'OK - sem PII neste arquivo'.\n✅ Se contém PII e está adequado → 'OK'.\n⚠️ Se contém PII sem proteção → sugira correção."
   }
 }
