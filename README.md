@@ -164,6 +164,32 @@ Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 | Restrita | Criptografia + RBAC + auditoria |
 | Confidencial | Criptografia forte + acesso mínimo + auditoria completa |
 
+## Limitações Conhecidas e Boas Práticas
+
+### Hooks `preToolUse` / `postToolUse`
+- **Sem cache nativo** — o mesmo arquivo pode ser interceptado múltiplas vezes na mesma sessão. Os prompts usam "Se já aprovou nesta sessão → APROVADO" como mitigação via agente.
+- **Sem filtro por conteúdo** — o `when.toolTypes` filtra por categoria (write/shell/read), mas não por path ou conteúdo do comando. A classificação SKIP/APROVADO é feita pelo agente via prompt.
+- **Interceptação inevitável** — hooks disparam para `.md`, `.json`, `.kiro.hook` mesmo que a resposta seja sempre APROVADO. Os prompts são otimizados para resposta mínima (~1 token) nesses casos.
+
+### Hook de Testes (`runCommand` com vitest/jest)
+- **Patterns devem apontar para arquivos de TESTE** (`*.test.ts`, `*.property.test.ts`), não para código fonte. Se apontar para `src/**/*.ts`, o vitest não encontra match e falha com exit code 1.
+- **`--related ${file}`** depende de o Kiro interpolar a variável no `runCommand` — nem sempre funciona. Alternativa segura: usar patterns de teste + `npx vitest run ${file}`.
+- **`|| true`** pode ser adicionado ao comando para evitar que falhas do test runner bloqueiem o fluxo, mas esconde erros reais.
+
+### Arquivos de Demonstração / Exemplos
+- **Nunca commitar credenciais fake** em arquivos de exemplo — scanners como GitGuardian detectam padrões (`AKIA`, `sk-`, `password=`) mesmo em código de demo e geram alertas.
+- Manter exemplos vulneráveis em pasta local ignorada pelo git (`.gitignore`).
+
+### Hooks `agentStop` (fim de sessão)
+- Disparam mesmo em sessões sem código de produção. Os prompts incluem fast-path "Se nenhum arquivo de produção foi tocado → resposta mínima" para reduzir custo.
+
+### Hooks `fileEdited` / `fileCreated`
+- **Não é possível excluir paths** no `when.patterns` — apenas incluir. A exclusão é feita via prompt (SKIP para node_modules/, .kiro/, dist/, etc.).
+- Hooks de `fileEdited` não disparam para arquivos criados (e vice-versa). Para cobertura completa, criar ambos (ex: `infra-review-on-edit` + `infra-review-on-create`).
+
+### GitGuardian / Scanners de Secrets
+- Padrões como `password=valor`, `connectionString`, `AKIA` nos **prompts dos hooks** e **steerings** podem gerar falsos positivos em scanners. Marcar como falso positivo no dashboard do scanner.
+
 ## Manutenção
 
 - Steerings revisados quando políticas corporativas forem atualizadas
