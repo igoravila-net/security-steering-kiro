@@ -2,12 +2,12 @@
   "enabled": true,
   "name": "Verificação de Saúde de Dependências",
   "description": "Verificação completa sob demanda: dependências desatualizadas, deprecated e com vulnerabilidades. Detecta problemas transitivos e propõe atualização da dependência direta.",
-  "version": "1",
+  "version": "2",
   "when": {
     "type": "userTriggered"
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Execute verificação completa de saúde das dependências do projeto:\n1. `npm outdated` — liste dependências diretas desatualizadas\n2. `npm audit --audit-level=moderate` — liste vulnerabilidades\n3. `npm install --dry-run 2>&1` — capture warnings de deprecated\n4. Para cada problema encontrado:\n   - Identifique a dependência DIRETA que causa o problema (use `npm ls <pacote>`)\n   - Verifique se existe versão mais recente que resolve\n   - Proponha atualização com versão exata (sem ^ ou ~)\n5. Priorize: CVEs > deprecated com security issue > deprecated sem security issue > outdated\n6. Se não for projeto npm, adapte para o ecossistema (pip-audit, mvn dependency:analyze, composer audit)"
+    "prompt": "Execute verificação completa de saúde das dependências do projeto:\n\n1. `npm outdated --long` — liste dependências diretas desatualizadas com tipo (dependencies vs devDependencies)\n2. `npm audit --audit-level=moderate` — liste vulnerabilidades com severidade\n3. `npm install --dry-run 2>&1` — capture TODOS os warnings de deprecated\n4. `npx depcheck` — identifique dependências não utilizadas (superfície de ataque desnecessária)\n\nPara CADA problema encontrado:\n- Identifique a dependência DIRETA que causa o problema (use `npm ls <pacote>`)\n- Verifique se existe versão mais recente que resolve\n- Proponha atualização com versão exata (sem ^ ou ~)\n- Se deprecated sem substituto direto, sugira alternativa\n\nPriorização:\n🔴 CVEs HIGH/CRITICAL → corrigir imediatamente\n🟠 CVEs MODERATE → corrigir neste sprint\n🟡 Deprecated com 'security'/'vulnerability'/'no longer maintained' → prioridade alta\n🟡 Deprecated sem security issue → próximo sprint\n🔵 Outdated (major) → avaliar breaking changes\n⚪ Outdated (minor/patch) → atualizar quando conveniente\n🗑️ Não utilizadas → remover (reduz superfície de ataque)\n\nSe não for projeto npm, adapte para o ecossistema:\n- pip: pip-audit + pip list --outdated + pip-extra-reqs\n- Maven: mvn dependency-check:check + mvn versions:display-dependency-updates + mvn dependency:analyze\n- NuGet: dotnet list package --vulnerable --deprecated --outdated\n- Composer: composer audit + composer outdated + composer-unused"
   }
 }

@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "name": "Scanner de Output de Shell",
-  "description": "Após execução de comandos, escaneia output por credenciais expostas e warnings de dependências deprecated.",
-  "version": "3",
+  "description": "Após execução de comandos, escaneia output por credenciais expostas, dependências deprecated, stack traces com paths internos e erros de compilação sensíveis.",
+  "version": "4",
   "when": {
     "type": "postToolUse",
     "toolTypes": [
@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Se comando foi vitest/jest/tsc/eslint/vite/webpack/git log/git status/git diff/git show/git fetch/npm test/npm run build/npm run lint/cat/type/dir/ls → 'OK'.\n\n[CREDENCIAIS] Para outros comandos: escanear output por sk-, pk-, AKIA, AIza, ghp_, glpat-, eyJ, BEGIN PRIVATE KEY, password/secret com valor. Detectou → ALERTE e instrua rotação.\n\n[DEPRECATED] Se comando foi npm install/ci e output contém 'npm warn deprecated':\n- Liste os pacotes deprecated encontrados\n- Identifique qual dependência direta os puxa (sugerir `npm ls <pacote>`)\n- Se menciona 'security' ou 'vulnerability' ou 'memory leak' → ALERTE como prioridade alta\n- Sugira atualização da dependência direta\n\nSe output limpo e sem deprecated → 'OK'."
+    "prompt": "SKIP → 'OK': Se comando é vitest/jest/tsc/eslint/vite/webpack/git log/git status/git diff/git show/git fetch/npm test/npm run build/npm run lint/cat/type/dir/ls E output não contém credenciais nem deprecated.\n\n🔑 [CREDENCIAIS] Escanear output por: sk-, pk-, AKIA, AIza, ghp_, glpat-, eyJ, BEGIN PRIVATE KEY, password/secret com valor literal. Detectou → 🚨 ALERTE e instrua rotação.\n\n📦 [DEPRECATED] Se output contém 'npm warn deprecated' ou 'WARN deprecated':\n- Liste CADA pacote deprecated com versão\n- Identifique dependência DIRETA que puxa (sugerir `npm ls <pacote>`)\n- Se menciona 'security'/'vulnerability'/'memory leak'/'no longer maintained' → 🔴 prioridade ALTA\n- Sugira atualização ou substituição da dependência direta\n\n🔍 [STACK TRACES] Se output contém stack traces com paths absolutos internos (C:\\Users\\*, /home/*, /app/src/*):\n- ⚠️ ALERTE: paths internos expostos podem revelar estrutura do sistema\n- Sugira configurar error handling para não expor paths em produção\n\n🛠️ [COMPILATION ERRORS] Se output contém erros de compilação que revelam estrutura interna (imports, paths de módulos internos, nomes de variáveis de ambiente):\n- Verifique se esses erros poderiam vazar em logs de produção\n- Se sim, sugira configurar log level adequado\n\n✅ Se output limpo → 'OK'."
   }
 }

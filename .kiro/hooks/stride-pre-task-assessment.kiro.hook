@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "STRIDE Assessment Pré-Tarefa",
+  "description": "Antes de iniciar uma tarefa de spec, avalia ameaças STRIDE relevantes. Fast-path SKIP para tarefas de tipos/interfaces, testes, generators, checkpoints e docs.",
+  "version": "1",
+  "when": {
+    "type": "preTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "⏭️ SKIP IMEDIATO → 'OK' (sem assessment): Se a tarefa envolve APENAS criação de types/interfaces/enums/DTOs | testes (unit/integration/property/e2e) | generators/factories/fixtures | checkpoints/milestones | docs/README/comments | configs (tsconfig/eslint/vitest/jest) | barrel exports (index.ts) | refatoração sem mudança de API pública.\n\n🛡️ STRIDE ASSESSMENT (apenas para tarefas que criam/modificam controllers, services, repositories, middleware, auth, handlers, integrations, infrastructure, APIs, endpoints):\n- 🎭 Spoofing: autenticação necessária? Token/session validation?\n- ✏️ Tampering: integridade de dados? Validação de input?\n- 📝 Repudiation: logging de auditoria? Correlation ID?\n- 👁️ Information Disclosure: dados sensíveis expostos? Mascaramento?\n- 💥 Denial of Service: rate limiting? Timeout? Resource limits?\n- ⬆️ Elevation of Privilege: autorização? Ownership check? Role validation?\n\nListe apenas ameaças APLICÁVEIS à tarefa específica (máx 3). Formato: [emoji] [Ameaça]: [mitigação necessária]."
+  }
+}

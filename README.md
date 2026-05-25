@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro no Grupo COGNA,
 
 ## Visão Geral
 
-Este Power contém **7 steerings temáticos consolidados** e **21 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
+Este Power contém **7 steerings temáticos consolidados** e **26 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -52,35 +52,37 @@ steering/
 
 | Hook | Arquivo | Trigger | Ação | Prioridade |
 |---|---|---|---|---|
-| **Revisão de Segurança em Código** | `security-code-review.kiro.hook` | `preToolUse` (write) | 3 níveis: SKIP (testes/docs) → LIGHT (domain) → FULL (I/O/auth). Cache por sessão | Alta |
-| **Bloquear Segredos em Commits** | `block-secrets-in-commits.kiro.hook` | `preToolUse` (shell) | Auto-aprova testes/lint/build. Verifica segredos apenas em git add/commit/push | Alta |
-| **Detectar Arquivos de Secrets (criação)** | `detect-secrets-files.kiro.hook` | `fileCreated` (.env, .pem, .key, credentials) | Alerta ao criar arquivos de secrets. Verifica .gitignore | Alta |
-| **Detectar Arquivos de Secrets (edição)** | `detect-secrets-files-edit.kiro.hook` | `fileEdited` (.env, .pem, .key, credentials) | Alerta ao editar arquivos de secrets. Detecta credenciais reais | Alta |
-| **Revisão de Infra — Edição** | `infra-review-on-edit.kiro.hook` | `fileEdited` (Dockerfile, *.tf, k8s) | Detecta regressões: USER root, 0.0.0.0/0, encryption desabilitada | Alta |
-| **npm audit Automático** | `npm-audit-on-dependency-change.kiro.hook` | `fileEdited` (package.json/lock) | Executa `npm audit --audit-level=moderate` automaticamente | Média |
-| **Verificar Segurança de Dependências** | `check-dependency-security.kiro.hook` | `fileEdited` (package.json, pom.xml, etc.) | Pesquisa CVEs via agente e sugere versões seguras | Média |
-| **CORS e Security Headers** | `cors-security-headers-check.kiro.hook` | `fileEdited` (server.*, middleware*) | Verifica CORS restritivo e headers de segurança obrigatórios | Média |
-| **Scanner de Output de Shell** | `shell-output-scanner.kiro.hook` | `postToolUse` (shell) | Escaneia output por credenciais expostas acidentalmente | Média |
-| **SAST Pós-Tarefa** | `post-task-security-scan.kiro.hook` | `postTaskExecution` | Revisa código contra regras de segurança após completar task | Média |
-| **Sugestões Proativas** | `proactive-security-suggestions.kiro.hook` | `agentStop` | Sugere melhorias apenas para código de produção com I/O | Baixa |
-| **Security Review On-Demand** | `security-review-on-demand.kiro.hook` | `userTriggered` | Revisão completa (20 categorias) sob demanda no arquivo ativo | Baixa |
-| **Coletor de Feedback** | `power-feedback-collector.kiro.hook` | `agentStop` | Coleta feedback automático de fricção/redundância/falsos positivos | Baixa |
-| **LGPD — Dados Pessoais** | `lgpd-data-review.kiro.hook` | `fileEdited` (user*, customer*, aluno*, profile*) | Verifica mascaramento, consentimento e retenção de PII | Média |
-| **Métricas de Adoção** | `adoption-metrics.kiro.hook` | `agentStop` | Registra regras aplicadas, bloqueios e correções por sessão | Baixa |
-| **Auto-Fix em Arquivo Novo** | `auto-fix-vulnerabilities-on-create.kiro.hook` | `fileCreated` (*.ts, *.js, *.py, *.java, etc.) | Corrige automaticamente TODAS as vulnerabilidades ao criar arquivo | Alta |
-| **Auto-Fix em Arquivo Editado** | `auto-fix-vulnerabilities-on-edit.kiro.hook` | `fileEdited` (src/**, app/**, lib/**) | Corrige automaticamente vulnerabilidades ao editar código de produção | Alta |
-| **Verificação de Saúde de Dependências** | `dependency-health-check.kiro.hook` | `userTriggered` | Verifica outdated, deprecated e CVEs sob demanda | Média |
+| **🛡️ STRIDE Assessment Pré-Tarefa** | `stride-pre-task-assessment.kiro.hook` | `preTaskExecution` | Avalia ameaças STRIDE com fast-path SKIP para types/testes/generators | Alta |
+| **🔎 Verificação de Implementação** | `security-implementation-verification.kiro.hook` | `postToolUse` (write) | Cruza mitigações STRIDE com código produzido em app/infra | Alta |
+| **🔍 Revisão de Segurança — Paths Críticos** | `security-critical-paths.kiro.hook` | `preToolUse` (write) | Fast-path APROVADO + checklist 7 itens para paths de risco | Alta |
+| **🔒 Bloquear Segredos em Commits** | `block-secrets-in-commits.kiro.hook` | `preToolUse` (shell) | Auto-aprova testes/lint/build. Verifica segredos em git add/commit/push | Alta |
+| **🚨 Detectar Arquivos de Secrets (criação)** | `detect-secrets-files.kiro.hook` | `fileCreated` (.env, .pem, .key, credentials) | Alerta ao criar arquivos de secrets. Verifica .gitignore | Alta |
+| **🚨 Detectar Arquivos de Secrets (edição)** | `detect-secrets-files-edit.kiro.hook` | `fileEdited` (.env, .pem, .key, credentials) | Alerta ao editar arquivos de secrets. Detecta credenciais reais | Alta |
+| **🏗️ Revisão de Infra — Edição** | `infra-review-on-edit.kiro.hook` | `fileEdited` (Dockerfile, *.tf, k8s, CI/CD, nginx) | Detecta regressões: USER root, 0.0.0.0/0, encryption, pipelines inseguros | Alta |
+| **🆕🏗️ Revisão de Infra — Criação** | `infra-review-on-create.kiro.hook` | `fileCreated` (Dockerfile, *.tf, k8s, CI/CD, nginx) | Verifica segurança IaC desde o início, corrige automaticamente | Alta |
+| **✅ Auto-Fix em Arquivo Novo** | `auto-fix-vulnerabilities-on-create.kiro.hook` | `fileCreated` (*.ts, *.js, *.py, *.java, etc.) | Corrige automaticamente vulnerabilidades ao criar arquivo | Alta |
+| **✅ Auto-Fix em Arquivo Editado** | `auto-fix-vulnerabilities-on-edit.kiro.hook` | `fileEdited` (*.ts, *.js, *.py, *.java, etc.) | Corrige automaticamente vulnerabilidades ao editar código | Alta |
+| **📦 Verificar Segurança de Dependências** | `check-dependency-security.kiro.hook` | `fileEdited` (package.json, pom.xml, etc.) | Pesquisa CVEs via web e corrige automaticamente | Média |
+| **📦 Verificação de Saúde de Dependências** | `dependency-health-check.kiro.hook` | `userTriggered` | Verifica outdated, deprecated, CVEs e não utilizadas sob demanda | Média |
+| **🌐 CORS e Security Headers** | `cors-security-headers-check.kiro.hook` | `fileEdited` (server.*, middleware*) | Verifica CORS restritivo e headers de segurança obrigatórios | Média |
+| **🔍 Scanner de Output de Shell** | `shell-output-scanner.kiro.hook` | `postToolUse` (shell) | Escaneia output por credenciais, deprecated, stack traces | Média |
+| **🔍 SAST Pós-Tarefa** | `post-task-security-scan.kiro.hook` | `postTaskExecution` | Revisa código contra regras de segurança após completar task | Média |
+| **🏛️ LGPD — Dados Pessoais** | `lgpd-data-review.kiro.hook` | `fileEdited` (user*, customer*, aluno*, profile*) | Verifica mascaramento, consentimento e retenção de PII | Média |
+| **💡 Sugestões Proativas** | `proactive-security-suggestions.kiro.hook` | `agentStop` | Sugere melhorias apenas para código de produção com I/O | Baixa |
+| **🔍 Security Review On-Demand** | `security-review-on-demand.kiro.hook` | `userTriggered` | Revisão completa (20 categorias) sob demanda no arquivo ativo | Baixa |
+| **📊 Métricas de Adoção** | `adoption-metrics.kiro.hook` | `agentStop` | Registra regras aplicadas, bloqueios e correções por sessão | Baixa |
+| **📝 Coletor de Feedback** | `power-feedback-collector.kiro.hook` | `agentStop` | Coleta feedback automático de gaps e falsos positivos | Baixa |
 
 ### Desenvolvimento e Manutenção do Power
 
 | Hook | Arquivo | Trigger | Ação |
 |---|---|---|---|
-| **Aprender com Vulnerabilidades** | `learn-from-vulnerabilities.kiro.hook` | `postToolUse` (write) | Registra padrões vulneráveis bloqueados (ignora testes/docs) |
-| **Aprender com Dependências Inseguras** | `learn-from-insecure-dependencies.kiro.hook` | `postToolUse` (read) | Registra bibliotecas com CVEs detectados |
-| **Sincronizar Versão POWER/CHANGELOG** | `sync-version-power-changelog.kiro.hook` | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md |
-| **Atualizar CVEs (Manual)** | `update-cves-from-web.kiro.hook` | `userTriggered` | Busca CVEs recentes na web (uso pelo time AppSec) |
-| **Mapear Findings Veracode** | `veracode-cwe-mapping.kiro.hook` | `userTriggered` | Mapeia CWEs do Veracode para steerings e sugere melhorias |
-| **Atualizar README ao Modificar Steering** | `update-readme-on-steering-change.kiro.hook` | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças |
+| **📋 Verificar Docs Antes de Commit** | `docs-before-commit.kiro.hook` | `preToolUse` (shell) | Bloqueia commit se README/CHANGELOG/POWER.md não refletem mudanças |
+| **📚 Aprender com Vulnerabilidades** | `learn-from-vulnerabilities.kiro.hook` | `postToolUse` (write) | Registra padrões vulneráveis bloqueados (ignora testes/docs) |
+| **🔄 Sincronizar Versão POWER/CHANGELOG** | `sync-version-power-changelog.kiro.hook` | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md |
+| **🌐 Atualizar CVEs (Manual)** | `update-cves-from-web.kiro.hook` | `userTriggered` | Busca CVEs recentes na web (uso pelo time AppSec) |
+| **🗺️ Mapear Findings Veracode** | `veracode-cwe-mapping.kiro.hook` | `userTriggered` | Mapeia CWEs do Veracode para steerings e sugere melhorias |
+| **📝 Atualizar README ao Modificar Steering** | `update-readme-on-steering-change.kiro.hook` | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças |
 
 ### Como Criar os Hooks no Seu Projeto
 
@@ -109,17 +111,20 @@ steering/
 ```
 Crie os seguintes hooks em .kiro/hooks/ para ativar o Security Guardrails:
 
-1. auto-fix-vulnerabilities-on-create.kiro.hook — fileCreated em *.ts,*.js,*.py,*.java,*.cs,*.php
-   Prompt: "Analise o arquivo criado contra regras de segurança COGNA. Se encontrar vulnerabilidade (SQL concat, credenciais hardcoded, XSS, command injection, input sem validação, endpoint sem auth, PII em logs, crypto fraca), corrija AUTOMATICAMENTE. Liste correções aplicadas."
+1. auto-fix-vulnerabilities-on-create.kiro.hook — fileCreated em **/*.ts, **/*.js, **/*.py, **/*.java, **/*.cs, **/*.php, **/*.kt, **/*.swift, **/*.rb
+   Prompt: "🆕 Um arquivo de código foi criado. Analise contra regras COGNA. ⏭️ SKIP: test/spec/__test__/demo/.kiro/.md/.json/.yml → 'OK'. 🔍 VERIFICAR: 1.🗄️ SQL concat 2.🔑 credenciais 3.🌐 XSS 4.💉 command injection 5.📏 input sem limite 6.🔒 sem auth 7.👁️ PII em logs 8.🔐 crypto fraca 9.🌐 SSRF 10.📂 path traversal. Corrija AUTOMATICAMENTE. ✅ Se seguro → OK."
 
-2. auto-fix-vulnerabilities-on-edit.kiro.hook — fileEdited em src/**/*.ts, src/**/*.js, app/**/*.ts, lib/**/*.ts
-   Prompt: "Analise as mudanças contra regras de segurança. Se encontrar vulnerabilidade, corrija automaticamente."
+2. auto-fix-vulnerabilities-on-edit.kiro.hook — fileEdited em **/*.ts, **/*.js, **/*.py, **/*.java, **/*.cs, **/*.php, **/*.kt, **/*.swift, **/*.rb
+   Prompt: "⏭️ SKIP: node_modules/.kiro/dist/build/test/spec → 'OK'. 🔍 VERIFICAR: 1.🗄️ SQL concat 2.🔑 credenciais 3.🌐 XSS 4.💉 command injection 5.📏 input sem limite 6.🔒 sem auth 7.👁️ PII em logs 8.🔐 crypto fraca. Corrija AUTOMATICAMENTE. ✅ Se seguro → OK."
 
 3. block-secrets-in-commits.kiro.hook — preToolUse shell
-   Prompt: "Se comando é teste/lint/build → APROVADO. Se git add/commit/push → verificar segredos (sk-, AKIA, eyJ, BEGIN PRIVATE KEY). Segredo → BLOQUEIE. Limpo → APROVADO."
+   Prompt: "⏭️ Se vitest/jest/tsc/eslint/npm test/git status/git log/git diff → APROVADO. 🔒 APENAS git add/commit/push: verificar sk-/AKIA/eyJ/BEGIN PRIVATE KEY/.env/.pem/.key. 🚨 Segredo → BLOQUEIE. ✅ Limpo → APROVADO."
 
-4. check-dependency-security.kiro.hook — fileEdited em **/package.json, **/pom.xml, **/requirements.txt
-   Prompt: "Pesquise CVEs na web para cada dependência. Se encontrar, corrija automaticamente para versão segura."
+4. check-dependency-security.kiro.hook — fileEdited em **/package.json, **/pom.xml, **/requirements.txt, **/pyproject.toml, **/*.csproj, **/composer.json
+   Prompt: "📦 Dependências editadas. Para CADA lib: pesquise CVEs na web. 🔴 CVE → corrija para versão segura. 🚫 PROIBIDA → substitua. 🔍 npm audit após edição. ⚠️ EOL → substitua. ✅ Sem CVEs → OK."
+
+5. security-critical-paths.kiro.hook — preToolUse write
+   Prompt: "FAST-PATH → APROVADO: .kiro/**|*.md/json/yml/css/html/kiro.hook|test/spec/mock|domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports. 🔍 CHECKLIST (controller/service/repository/infrastructure/middleware/auth): [1]💉eval/exec [2]🔑credenciais [3]🌐innerHTML [4]🗄️SQL concat [5]📏input sem limite [6]🧹sem sanitização [7]🔒sem auth. 🚫Violação→BLOQUEIE. ✅Seguro→permita."
 
 Consulte github.com/igoravila-net/security-steering-kiro/.kiro/hooks/ para os prompts completos.
 ```

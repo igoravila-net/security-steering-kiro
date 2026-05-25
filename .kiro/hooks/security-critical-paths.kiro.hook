@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "name": "Revisão de Segurança - Paths Críticos",
-  "description": "Review de segurança APENAS para código de produção com I/O: controllers, services, repositories, middleware, auth, handlers, integrations. Não intercepta .kiro/**, testes, docs, configs, componentes UI puros, domain models, barrel exports ou ports.",
-  "version": "2",
+  "description": "Review de segurança APENAS para código de produção com I/O. Fast-path APROVADO para .kiro/**, testes, docs, configs, UI, domain, ports, lib.",
+  "version": "3",
   "when": {
     "type": "preToolUse",
     "toolTypes": [
@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "CLASSIFICAÇÃO RÁPIDA: Se path contém .kiro/ OR extensão é .md/.json/.yml/.css/.html/.gitignore/.kiro.hook/.svelte/.vue/.jsx/.tsx OR path contém test/spec/mock/__test__/stories/fixtures OR path contém domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports OR arquivo é index.ts/index.js com apenas re-exports (export * from / export {}) → 'APROVADO'. APENAS se path contém controller OR route/api OR handler OR service OR repository OR infrastructure OR middleware OR auth OR integration → CHECKLIST OBRIGATÓRIA: [1] eval/exec/Function() [2] credenciais/secrets hardcoded [3] innerHTML/dangerouslySetInnerHTML [4] SQL/query por concatenação [5] input sem validação de tamanho [6] input sem sanitização [7] endpoint sem autenticação/autorização. Se QUALQUER violação → BLOQUEIE com explicação. Se seguro → permita sem comentários."
+    "prompt": "FAST-PATH → 'APROVADO' (sem análise): .kiro/** | *.md/json/yml/css/html/gitignore/kiro.hook/svelte/vue/jsx/tsx | test/spec/mock/__test__/stories/fixtures | domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports | index.ts com re-exports | *.test.ts/spec.ts/*_test.py | vitest.config/jest.config/tsconfig/package-lock.\n\n🔍 CHECKLIST (apenas paths com controller/route/api/handler/service/repository/infrastructure/middleware/auth/integration): [1] 💉 eval/exec [2] 🔑 credenciais hardcoded [3] 🌐 innerHTML [4] 🗄️ SQL concat [5] 📏 input sem limite [6] 🧹 input sem sanitização [7] 🔒 endpoint sem auth. 🚫 Violação → BLOQUEIE. ✅ Seguro → permita sem comentários."
   }
 }

@@ -2,11 +2,52 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.4.0] - 2026-05-25
+
+### Adicionado
+- Hook `stride-pre-task-assessment` (preTaskExecution): avaliação STRIDE antes de tarefas com fast-path SKIP para types/testes/generators/checkpoints (4.4)
+- Hook `security-implementation-verification` (postToolUse write): cruza mitigações STRIDE com código produzido em application/infrastructure (4.3)
+- Detecção de stack traces com paths internos no shell-output-scanner (4.7)
+- Detecção de erros de compilação sensíveis no shell-output-scanner (4.7)
+- `npx depcheck` integrado ao dependency-health-check para detectar dependências não utilizadas (4.2)
+- Priorização visual com emojis no dependency-health-check (🔴🟠🟡🔵⚪🗑️)
+- Emojis visuais em TODOS os hooks para identificação rápida de categorias
+- Hook `infra-review-on-create` (fileCreated): verifica segurança IaC desde a criação do arquivo
+- Cobertura IaC expandida: CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins), Helm values, nginx/apache, .dockerignore
+- Hook `docs-before-commit` (preToolUse shell): bloqueia commit se documentação não estiver atualizada
+
+### Alterado
+- security-critical-paths v3: prompt reduzido ~60% com fast-path de 1 linha para AUTO-APPROVE (4.1)
+- shell-output-scanner v4: expandido para deprecated em qualquer comando npm + stack traces + compilation errors (4.7)
+- dependency-health-check v2: cobertura multi-ecossistema expandida (pip-audit, mvn, dotnet, composer) (4.2)
+- adoption-metrics: fast-path para sessões sem código de produção
+- proactive-security-suggestions: fast-path para sessões sem código de produção
+- power-feedback-collector: fast-path para sessões sem código de produção
+- Todos os hooks agentStop otimizados: ~200 tokens economizados por sessão de docs/análise
+- infra-review-on-edit: emojis por plataforma (🐳 Docker, ☁️ Terraform, ☸️ Kubernetes)
+- cors-security-headers-check: emojis por seção (🔀 CORS, 🛡️ Headers)
+- lgpd-data-review: emojis por verificação LGPD
+- post-task-security-scan: emojis por categoria de vulnerabilidade
+- auto-fix-vulnerabilities-on-create: emojis por tipo de correção
+- detect-secrets-files-edit: emojis de alerta
+- Instruções de setup rápido no README atualizadas com prompts v2.4.0
+
+### Removido
+- `security-code-review.kiro.hook` — desabilitado, substituído por security-critical-paths
+- `npm-audit-on-dependency-change.kiro.hook` — redundante com check-dependency-security
+- `learn-from-insecure-dependencies.kiro.hook` — disparava em 100% das leituras, ~1% útil
+
+### Métricas Esperadas
+- Interceptações redundantes/sessão: ~15-20 → ~3-5
+- Tokens desperdiçados/sessão: ~4.000-8.000 → ~500-1.000
+- Gap STRIDE (identificar vs verificar): ~40% → ~5%
+- Assessments desnecessários em specs grandes: ~70% → ~10%
+
 ## [2.3.0] - 2026-05-12
 
 ### Adicionado
-- Go completo — padrões de código seguro (SQL, Command Injection, XSS, Path Traversal, Auth, Crypto, Error Handling, Race Conditions, Input Validation)
-- Supply Chain para Go Modules (govulncheck, GOPRIVATE, go.sum)
+- ~~Go completo~~ *(removido em v2.4.0)*
+- ~~Supply Chain para Go Modules~~ *(removido em v2.4.0)*
 - CWE Top 25 MITRE 2024 — cobertura 100% (25/25) incluindo Memory Safety (CWE-787, 125, 416, 119, 190)
 - 21 CWEs adicionais mapeadas (total: 46 CWEs cobertas)
 - CVEs 2025-2026: Next.js CVE-2025-29927, React RSC CVE-2025-55182, Spring Cloud Gateway CVE-2025-41243, Spring AI data exposure
@@ -24,7 +65,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 ### Alterado
 - Check-dependency-security v2: correção automática + npm audit obrigatório
 - README expandido com hooks auto-fix e instruções passo-a-passo de criação
-- Linguagens suportadas: adicionado Go (microserviços, APIs)
+- ~~Linguagens suportadas: adicionado Go~~ *(removido em v2.4.0)*
 
 ---
 
