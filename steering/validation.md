@@ -752,3 +752,189 @@ class SecurityTests @Autowired constructor(
     }
 }
 ```
+
+#### JavaScript (Jest + supertest)
+
+```javascript
+const request = require('supertest');
+const app = require('../src/app');
+
+describe('Authentication - 401 Unauthorized', () => {
+  it('should_return_401_when_no_auth_token_provided', async () => {
+    const response = await request(app)
+      .get('/api/v1/users/me')
+      .set('Accept', 'application/json');
+
+    expect(response.status).toBe(401);
+    expect(response.body).not.toHaveProperty('stack');
+  });
+
+  it('should_return_401_when_token_is_expired', async () => {
+    const response = await request(app)
+      .get('/api/v1/users/me')
+      .set('Authorization', 'Bearer expired.token.here');
+
+    expect(response.status).toBe(401);
+  });
+});
+
+describe('SQL Injection Prevention', () => {
+  const sqlPayloads = [
+    "' OR '1'='1",
+    "'; DROP TABLE users; --",
+    "' UNION SELECT password FROM users --",
+  ];
+
+  it.each(sqlPayloads)(
+    'should_not_execute_sql_when_input_contains: %s',
+    async (payload) => {
+      const response = await request(app)
+        .get('/api/v1/users/search')
+        .query({ name: payload })
+        .set('Authorization', `Bearer ${validToken}`);
+
+      expect([200, 400]).toContain(response.status);
+    }
+  );
+});
+
+describe('Input Validation', () => {
+  it('should_return_400_when_name_exceeds_100_characters', async () => {
+    const response = await request(app)
+      .post('/api/v1/users')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'A'.repeat(101), email: 'test@example.com' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.errors).toBeDefined();
+  });
+});
+
+describe('XSS Prevention', () => {
+  const xssPayloads = [
+    '<script>alert("xss")</script>',
+    '<img src=x onerror=alert(1)>',
+    '"><svg onload=alert(document.cookie)>',
+  ];
+
+  it.each(xssPayloads)(
+    'should_not_reflect_xss_payload: %s',
+    async (payload) => {
+      const response = await request(app)
+        .post('/api/v1/comments')
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ content: payload });
+
+      const body = JSON.stringify(response.body);
+      expect(body).not.toContain('<script>');
+      expect(body).not.toContain('onerror=');
+    }
+  );
+});
+```
+
+#### Swift (XCTest + URLSession)
+
+```swift
+import XCTest
+@testable import App
+
+final class SecurityTests: XCTestCase {
+    var app: Application!
+    
+    override func setUp() async throws {
+        app = try await Application.make(.testing)
+        try await configure(app)
+    }
+    
+    override func tearDown() async throws {
+        try await app.asyncShutdown()
+    }
+    
+    // MARK: - Authentication (401)
+    
+    func test_should_return_401_when_no_auth_token_provided() async throws {
+        try await app.test(.GET, "/api/v1/users/me") { response in
+            XCTAssertEqual(response.status, .unauthorized)
+            let body = try response.content.decode([String: String].self)
+            XCTAssertNil(body["stack"])
+        }
+    }
+    
+    func test_should_return_401_when_token_is_expired() async throws {
+        try await app.test(.GET, "/api/v1/users/me", headers: [
+            "Authorization": "Bearer expired.token.here"
+        ]) { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        }
+    }
+    
+    // MARK: - Authorization (403)
+    
+    func test_should_return_403_when_user_accesses_other_users_resource() async throws {
+        let userAToken = try await getTokenForUser("user-a-id")
+        
+        try await app.test(.GET, "/api/v1/users/user-b-id/orders", headers: [
+            "Authorization": "Bearer \(userAToken)"
+        ]) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
+    }
+    
+    // MARK: - SQL Injection
+    
+    func test_should_not_execute_sql_injection() async throws {
+        let payloads = [
+            "' OR '1'='1",
+            "'; DROP TABLE users; --",
+            "' UNION SELECT password FROM users --"
+        ]
+        
+        for payload in payloads {
+            let encoded = payload.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            try await app.test(.GET, "/api/v1/users/search?name=\(encoded)", headers: [
+                "Authorization": "Bearer \(validToken)"
+            ]) { response in
+                XCTAssertTrue([.ok, .badRequest].contains(response.status),
+                    "SQL injection payload should not cause server error: \(payload)")
+            }
+        }
+    }
+    
+    // MARK: - Input Validation
+    
+    func test_should_return_400_when_name_exceeds_100_characters() async throws {
+        let longName = String(repeating: "A", count: 101)
+        let body = ["name": longName, "email": "test@example.com"]
+        
+        try await app.test(.POST, "/api/v1/users", headers: [
+            "Authorization": "Bearer \(adminToken)",
+            "Content-Type": "application/json"
+        ], body: .init(data: JSONEncoder().encode(body))) { response in
+            XCTAssertEqual(response.status, .badRequest)
+        }
+    }
+    
+    // MARK: - XSS Prevention
+    
+    func test_should_not_reflect_xss_payload() async throws {
+        let payloads = [
+            "<script>alert('xss')</script>",
+            "<img src=x onerror=alert(1)>",
+            "\"><svg onload=alert(document.cookie)>"
+        ]
+        
+        for payload in payloads {
+            let body = ["content": payload]
+            try await app.test(.POST, "/api/v1/comments", headers: [
+                "Authorization": "Bearer \(validToken)",
+                "Content-Type": "application/json"
+            ], body: .init(data: JSONEncoder().encode(body))) { response in
+                let responseBody = String(buffer: response.body)
+                XCTAssertFalse(responseBody.contains("<script>"))
+                XCTAssertFalse(responseBody.contains("onerror="))
+            }
+        }
+    }
+}
+```

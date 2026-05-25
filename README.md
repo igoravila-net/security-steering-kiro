@@ -38,7 +38,7 @@ steering/
 |---|---|
 | **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet), onboarding |
 | **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, memory safety (CWE-787/125/416/119/190 — buffer overflow, use-after-free, integer overflow em C#/Node.js/Java), exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress) |
-| **validation** | 20 categorias de testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
+| **validation** | 20 categorias de testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin/JavaScript/Swift), banco de payloads, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
 | **policies** | Política Geral SI, classificação da informação, LGPD, gestão de acessos, PAM, incidentes, vulnerabilidades, SSDLC, IA segura, criptografia em BD, cloud, fornecedores |
 | **infrastructure** | Terraform, Docker, Kubernetes, Helm, deployment config, server config, resiliência, CI/CD security, anti-backdoor |
 | **observability** | Níveis de log, campos GELF/COGNA, CorrelationID, implementação por linguagem, dados sensíveis em logs, logging de segurança, monitoramento |
@@ -248,8 +248,12 @@ Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
 ### Hook de Testes (`runCommand` com vitest/jest)
 - **Patterns devem apontar para arquivos de TESTE** (`*.test.ts`, `*.property.test.ts`), não para código fonte. Se apontar para `src/**/*.ts`, o vitest não encontra match e falha com exit code 1.
+- **`${file}` pode não ser resolvido** — a variável de template nem sempre é interpolada pelo Kiro em hooks `runCommand`. Quando não resolvida, fica literal no comando e o vitest falha com "No test files found, filter: ${file}". Sempre use comandos defensivos:
+  - Windows: `if exist "${file}" (npx vitest run ${file}) else (echo No file to test)`
+  - Linux: `[ -f "${file}" ] && npx vitest run ${file} || echo "No file to test"`
 - **`--related ${file}`** depende de o Kiro interpolar a variável no `runCommand` — nem sempre funciona. Alternativa segura: usar patterns de teste + `npx vitest run ${file}`.
 - **`|| true`** pode ser adicionado ao comando para evitar que falhas do test runner bloqueiem o fluxo, mas esconde erros reais.
+- **vite-plugin-svelte warning** — se o projeto usa SvelteKit, o vitest pode carregar config do Svelte desnecessariamente. Adicione `{ hot: false }` no `vite.config.ts` para suprimir.
 
 ### Arquivos de Demonstração / Exemplos
 - **Nunca commitar credenciais fake** em arquivos de exemplo — scanners como GitGuardian detectam padrões (`AKIA`, `sk-`, `password=`) mesmo em código de demo e geram alertas.
