@@ -38,7 +38,7 @@ steering/
 |---|---|
 | **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet), onboarding |
 | **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, memory safety (CWE-787/125/416/119/190 — buffer overflow, use-after-free, integer overflow em C#/Node.js/Java), exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress) |
-| **validation** | 20 categorias de testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
+| **validation** | 20 categorias de testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin/JavaScript/Swift), banco de payloads, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
 | **policies** | Política Geral SI, classificação da informação, LGPD, gestão de acessos, PAM, incidentes, vulnerabilidades, SSDLC, IA segura, criptografia em BD, cloud, fornecedores |
 | **infrastructure** | Terraform, Docker, Kubernetes, Helm, deployment config, server config, resiliência, CI/CD security, anti-backdoor |
 | **observability** | Níveis de log, campos GELF/COGNA, CorrelationID, implementação por linguagem, dados sensíveis em logs, logging de segurança, monitoramento |
@@ -109,25 +109,100 @@ steering/
 **Passo 3 (Recomendado — Setup Rápido):** Cole este prompt no Kiro para criar todos os hooks essenciais de uma vez:
 
 ```
-Crie os seguintes hooks em .kiro/hooks/ para ativar o Security Guardrails:
-
-1. auto-fix-vulnerabilities-on-create.kiro.hook — fileCreated em **/*.ts, **/*.js, **/*.py, **/*.java, **/*.cs, **/*.php, **/*.kt, **/*.swift, **/*.rb
-   Prompt: "🆕 Um arquivo de código foi criado. Analise contra regras COGNA. ⏭️ SKIP: test/spec/__test__/demo/.kiro/.md/.json/.yml → 'OK'. 🔍 VERIFICAR: 1.🗄️ SQL concat 2.🔑 credenciais 3.🌐 XSS 4.💉 command injection 5.📏 input sem limite 6.🔒 sem auth 7.👁️ PII em logs 8.🔐 crypto fraca 9.🌐 SSRF 10.📂 path traversal. Corrija AUTOMATICAMENTE. ✅ Se seguro → OK."
-
-2. auto-fix-vulnerabilities-on-edit.kiro.hook — fileEdited em **/*.ts, **/*.js, **/*.py, **/*.java, **/*.cs, **/*.php, **/*.kt, **/*.swift, **/*.rb
-   Prompt: "⏭️ SKIP: node_modules/.kiro/dist/build/test/spec → 'OK'. 🔍 VERIFICAR: 1.🗄️ SQL concat 2.🔑 credenciais 3.🌐 XSS 4.💉 command injection 5.📏 input sem limite 6.🔒 sem auth 7.👁️ PII em logs 8.🔐 crypto fraca. Corrija AUTOMATICAMENTE. ✅ Se seguro → OK."
-
-3. block-secrets-in-commits.kiro.hook — preToolUse shell
-   Prompt: "⏭️ Se vitest/jest/tsc/eslint/npm test/git status/git log/git diff → APROVADO. 🔒 APENAS git add/commit/push: verificar sk-/AKIA/eyJ/BEGIN PRIVATE KEY/.env/.pem/.key. 🚨 Segredo → BLOQUEIE. ✅ Limpo → APROVADO."
-
-4. check-dependency-security.kiro.hook — fileEdited em **/package.json, **/pom.xml, **/requirements.txt, **/pyproject.toml, **/*.csproj, **/composer.json
-   Prompt: "📦 Dependências editadas. Para CADA lib: pesquise CVEs na web. 🔴 CVE → corrija para versão segura. 🚫 PROIBIDA → substitua. 🔍 npm audit após edição. ⚠️ EOL → substitua. ✅ Sem CVEs → OK."
-
-5. security-critical-paths.kiro.hook — preToolUse write
-   Prompt: "FAST-PATH → APROVADO: .kiro/**|*.md/json/yml/css/html/kiro.hook|test/spec/mock|domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports. 🔍 CHECKLIST (controller/service/repository/infrastructure/middleware/auth): [1]💉eval/exec [2]🔑credenciais [3]🌐innerHTML [4]🗄️SQL concat [5]📏input sem limite [6]🧹sem sanitização [7]🔒sem auth. 🚫Violação→BLOQUEIE. ✅Seguro→permita."
-
-Consulte github.com/igoravila-net/security-steering-kiro/.kiro/hooks/ para os prompts completos.
+Crie os seguintes 5 hooks em .kiro/hooks/ com os JSONs EXATOS abaixo (copie literalmente):
 ```
+
+**Hook 1 — `auto-fix-vulnerabilities-on-create.kiro.hook`**
+```json
+{
+  "enabled": true,
+  "name": "Correção Automática de Vulnerabilidades em Arquivo Novo",
+  "description": "Quando um arquivo de código é criado, analisa contra regras de segurança COGNA e corrige vulnerabilidades automaticamente.",
+  "version": "1",
+  "when": {
+    "type": "fileCreated",
+    "patterns": ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.jsx", "**/*.py", "**/*.java", "**/*.cs", "**/*.php", "**/*.kt", "**/*.swift", "**/*.rb"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "🆕 Um arquivo de código foi criado. Analise-o contra TODAS as regras de segurança COGNA e corrija automaticamente:\n\n🔍 [VERIFICAR E CORRIGIR]\n1. 🗄️ SQL Injection: concatenação em queries → substituir por prepared statements\n2. 🔑 Credenciais hardcoded: API keys, senhas, tokens → substituir por env vars\n3. 🌐 XSS: innerHTML, dangerouslySetInnerHTML sem sanitização → adicionar DOMPurify/escape\n4. 💉 Command Injection: exec/eval com input → substituir por APIs seguras\n5. 📏 Input sem validação: campos sem limite/sanitização → adicionar validação\n6. 🔒 Endpoints sem auth: rotas sem middleware → adicionar autenticação\n7. 👁️ Dados sensíveis em logs: PII logada → mascarar\n8. 🔐 Criptografia fraca: MD5/SHA1 para senhas → substituir por bcrypt/argon2\n9. 🌐 SSRF: URLs externas sem whitelist → adicionar validação\n10. 📂 Path Traversal: file paths sem validação → adicionar canonical check\n\nSe encontrar vulnerabilidade:\n- Corrija o arquivo AUTOMATICAMENTE\n- Liste: ✅ [tipo] corrigido: [descrição breve]\n\n✅ Se seguro → '✅ Arquivo seguro — nenhuma correção necessária.'\n\n⏭️ [SKIP] Se o arquivo está em: test/, spec/, __test__/, demo/, .kiro/, ou é .md/.json/.yml → 'OK — arquivo não-produção.'"
+  }
+}
+```
+
+**Hook 2 — `auto-fix-vulnerabilities-on-edit.kiro.hook`**
+```json
+{
+  "enabled": true,
+  "name": "Correção Automática de Vulnerabilidades em Arquivo Editado",
+  "description": "Quando qualquer arquivo de código é editado, analisa contra regras de segurança COGNA e corrige vulnerabilidades automaticamente.",
+  "version": "2",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.jsx", "**/*.py", "**/*.java", "**/*.cs", "**/*.php", "**/*.kt", "**/*.swift", "**/*.rb"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Um arquivo de código foi editado. Analise contra as regras de segurança COGNA:\n\n⏭️ [SKIP] Se o arquivo está em: node_modules/, .kiro/, dist/, build/, ou é arquivo de teste (*.test.ts, *.spec.ts, *_test.py) → 'OK'.\n\n🔍 [VERIFICAR E CORRIGIR] Para todo código que NÃO é teste:\n1. 🗄️ SQL Injection: concatenação em queries → corrigir para prepared statements\n2. 🔑 Credenciais hardcoded: API keys, senhas, tokens → corrigir para env vars\n3. 🌐 XSS: innerHTML/dangerouslySetInnerHTML sem sanitização → corrigir\n4. 💉 Command Injection: exec/eval com input → corrigir para APIs seguras\n5. 📏 Input sem validação: campos sem limite → adicionar validação\n6. 🔒 Endpoints sem auth: rotas sem middleware → adicionar autenticação\n7. 👁️ Dados sensíveis em logs: PII logada → mascarar\n8. 🔐 Criptografia fraca: MD5/SHA1 → corrigir para bcrypt/argon2\n\nSe encontrar vulnerabilidade:\n- Corrija AUTOMATICAMENTE o arquivo\n- Liste: ✅ [tipo] corrigido: [descrição]\n\n✅ Se seguro → 'OK'."
+  }
+}
+```
+
+**Hook 3 — `block-secrets-in-commits.kiro.hook`**
+```json
+{
+  "enabled": true,
+  "name": "Bloquear Segredos em Commits",
+  "description": "Auto-aprova testes/lint/build/leitura. Verifica segredos apenas em git add/commit/push.",
+  "version": "3",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": ["shell"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "⏭️ REGRA: Se comando contém vitest, jest, mocha, pytest, tsc, eslint, prettier, vite, webpack, npm run build, npm run lint, npm test, dotnet test, cat, type, dir, ls, git status, git log, git branch, git diff, git show, git fetch, npm info, npm outdated, pip list, node ./node_modules/vitest, node ./node_modules/.bin/ → 'APROVADO'. Se já aprovou este EXATO comando nesta sessão → 'APROVADO'. 🔒 APENAS para git add/commit/push: verificar arquivos por sk-, pk-, AKIA, AIza, ghp_, glpat-, eyJ, BEGIN PRIVATE KEY, password=valor, .env/.pem/.key sendo adicionados. 🚨 Segredo → BLOQUEIE. ✅ Limpo → 'APROVADO'. Outros comandos: credenciais expostas? destrutivo? Se seguro → 'APROVADO'."
+  }
+}
+```
+
+**Hook 4 — `check-dependency-security.kiro.hook`**
+```json
+{
+  "enabled": true,
+  "name": "Verificar Segurança de Dependências",
+  "description": "Quando um arquivo de dependências for editado, pesquisa CVEs na web e corrige automaticamente.",
+  "version": "2",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["**/package.json", "**/pom.xml", "**/build.gradle", "**/build.gradle.kts", "**/requirements.txt", "**/requirements*.txt", "**/Pipfile", "**/pyproject.toml", "**/poetry.lock", "**/*.csproj", "**/Podfile", "**/Package.swift", "**/libs.versions.toml", "**/Cargo.toml", "**/composer.json"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "📦 Arquivo de dependências editado. OBRIGATÓRIO antes de prosseguir:\n\n1. Para CADA dependência adicionada/modificada, pesquise na web (GitHub Advisories, NVD, Snyk) se a versão possui CVEs conhecidos\n2. 🔴 Se encontrar CVE: atualize IMEDIATAMENTE para versão segura no arquivo (não apenas sugira — corrija)\n3. 🚫 Se a biblioteca está na lista PROIBIDA do steering (event-stream, colors>=1.4.1, faker>=6.6.6, log4j<2.17.1, etc.): BLOQUEIE e substitua pela alternativa\n4. 🔍 Se é pacote npm: execute `npm audit --audit-level=high` após a edição e corrija vulnerabilidades encontradas\n5. ⚠️ Verifique se a biblioteca está em EOL — se sim, substitua pela alternativa recomendada\n\nFormato de report:\n⚠️ [lib] vX.Y.Z → corrigido para vA.B.C (CVE-XXXX)\n🚫 [lib] PROIBIDA → substituída por [alternativa]\n✅ Todas as dependências verificadas — sem CVEs conhecidos\n\n🌐 IMPORTANTE: Pesquise SEMPRE na web. Não confie em conhecimento prévio — novas CVEs são publicadas diariamente. Se não conseguir verificar, alerte o usuário."
+  }
+}
+```
+
+**Hook 5 — `security-critical-paths.kiro.hook`**
+```json
+{
+  "enabled": true,
+  "name": "Revisão de Segurança - Paths Críticos",
+  "description": "Review de segurança APENAS para código de produção com I/O. Fast-path APROVADO para .kiro/**, testes, docs, configs, UI, domain, ports, lib.",
+  "version": "3",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": ["write"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "FAST-PATH → 'APROVADO' (sem análise): .kiro/** | *.md/json/yml/css/html/gitignore/kiro.hook/svelte/vue/jsx/tsx | test/spec/mock/__test__/stories/fixtures | domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports | index.ts com re-exports | *.test.ts/spec.ts/*_test.py | vitest.config/jest.config/tsconfig/package-lock.\n\n🔍 CHECKLIST (apenas paths com controller/route/api/handler/service/repository/infrastructure/middleware/auth/integration): [1] 💉 eval/exec [2] 🔑 credenciais hardcoded [3] 🌐 innerHTML [4] 🗄️ SQL concat [5] 📏 input sem limite [6] 🧹 input sem sanitização [7] 🔒 endpoint sem auth. 🚫 Violação → BLOQUEIE. ✅ Seguro → permita sem comentários."
+  }
+}
+```
+
+> **Todos os hooks adicionais** (IaC, LGPD, CORS, STRIDE, etc.) estão disponíveis no diretório `.kiro/hooks/` deste repositório. Copie os que forem relevantes para seu projeto.
 
 Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
@@ -173,8 +248,12 @@ Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
 ### Hook de Testes (`runCommand` com vitest/jest)
 - **Patterns devem apontar para arquivos de TESTE** (`*.test.ts`, `*.property.test.ts`), não para código fonte. Se apontar para `src/**/*.ts`, o vitest não encontra match e falha com exit code 1.
+- **`${file}` pode não ser resolvido** — a variável de template nem sempre é interpolada pelo Kiro em hooks `runCommand`. Quando não resolvida, fica literal no comando e o vitest falha com "No test files found, filter: ${file}". Sempre use comandos defensivos:
+  - Windows: `if exist "${file}" (npx vitest run ${file}) else (echo No file to test)`
+  - Linux: `[ -f "${file}" ] && npx vitest run ${file} || echo "No file to test"`
 - **`--related ${file}`** depende de o Kiro interpolar a variável no `runCommand` — nem sempre funciona. Alternativa segura: usar patterns de teste + `npx vitest run ${file}`.
 - **`|| true`** pode ser adicionado ao comando para evitar que falhas do test runner bloqueiem o fluxo, mas esconde erros reais.
+- **vite-plugin-svelte warning** — se o projeto usa SvelteKit, o vitest pode carregar config do Svelte desnecessariamente. Adicione `{ hot: false }` no `vite.config.ts` para suprimir.
 
 ### Arquivos de Demonstração / Exemplos
 - **Nunca commitar credenciais fake** em arquivos de exemplo — scanners como GitGuardian detectam padrões (`AKIA`, `sk-`, `password=`) mesmo em código de demo e geram alertas.
