@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro no Grupo COGNA,
 
 ## Visão Geral
 
-Este Power contém **7 steerings temáticos consolidados** e **26 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
+Este Power contém **7 steerings temáticos consolidados** e **18 hooks recomendados** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -72,17 +72,6 @@ steering/
 | **🔍 Security Review On-Demand** | `security-review-on-demand.kiro.hook` | `userTriggered` | Revisão completa (20 categorias) sob demanda no arquivo ativo | Baixa |
 | **📊 Métricas de Adoção** | `adoption-metrics.kiro.hook` | `agentStop` | Registra regras aplicadas, bloqueios e correções por sessão | Baixa |
 | **📝 Coletor de Feedback** | `power-feedback-collector.kiro.hook` | `agentStop` | Coleta feedback automático de gaps e falsos positivos | Baixa |
-
-### Desenvolvimento e Manutenção do Power
-
-| Hook | Arquivo | Trigger | Ação |
-|---|---|---|---|
-| **📋 Verificar Docs Antes de Commit** | `docs-before-commit.kiro.hook` | `preToolUse` (shell) | Bloqueia commit se README/CHANGELOG/POWER.md não refletem mudanças |
-| **📚 Aprender com Vulnerabilidades** | `learn-from-vulnerabilities.kiro.hook` | `postToolUse` (write) | Registra padrões vulneráveis bloqueados (ignora testes/docs) |
-| **🔄 Sincronizar Versão POWER/CHANGELOG** | `sync-version-power-changelog.kiro.hook` | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md |
-| **🌐 Atualizar CVEs (Manual)** | `update-cves-from-web.kiro.hook` | `userTriggered` | Busca CVEs recentes na web (uso pelo time AppSec) |
-| **🗺️ Mapear Findings Veracode** | `veracode-cwe-mapping.kiro.hook` | `userTriggered` | Mapeia CWEs do Veracode para steerings e sugere melhorias |
-| **📝 Atualizar README ao Modificar Steering** | `update-readme-on-steering-change.kiro.hook` | `fileEdited` (steering/*.md) | Verifica se README precisa refletir mudanças |
 
 ### Como Criar os Hooks no Seu Projeto
 
