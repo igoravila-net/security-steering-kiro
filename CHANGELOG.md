@@ -12,6 +12,8 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - `npx depcheck` integrado ao dependency-health-check para detectar dependências não utilizadas (4.2)
 - Priorização visual com emojis no dependency-health-check (🔴🟠🟡🔵⚪🗑️)
 - Emojis visuais em TODOS os hooks para identificação rápida de categorias
+- Hook `infra-review-on-create` (fileCreated): verifica segurança IaC desde a criação do arquivo
+- Cobertura IaC expandida: CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins), Helm values, nginx/apache, .dockerignore
 
 ### Alterado
 - security-critical-paths v3: prompt reduzido ~60% com fast-path de 1 linha para AUTO-APPROVE (4.1)

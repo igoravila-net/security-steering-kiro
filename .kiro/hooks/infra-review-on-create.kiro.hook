@@ -1,0 +1,32 @@
+{
+  "enabled": true,
+  "name": "Revisão de Segurança em Infraestrutura — Criação",
+  "description": "Ao criar arquivos de infraestrutura, verifica se seguem as melhores práticas de segurança desde o início. Cobre Docker, Terraform, Kubernetes, Helm, CI/CD e server configs.",
+  "version": "1",
+  "when": {
+    "type": "fileCreated",
+    "patterns": [
+      "**/Dockerfile",
+      "**/Dockerfile.*",
+      "**/docker-compose*.yml",
+      "**/docker-compose*.yaml",
+      "**/*.tf",
+      "**/*.tfvars",
+      "**/k8s/**",
+      "**/kubernetes/**",
+      "**/helm/**",
+      "**/*values*.yml",
+      "**/*values*.yaml",
+      "**/.github/workflows/**",
+      "**/.gitlab-ci.yml",
+      "**/Jenkinsfile",
+      "**/buildspec.yml",
+      "**/nginx*.conf",
+      "**/apache*.conf"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "🆕🏗️ Arquivo de infraestrutura CRIADO. Verifique segurança desde o início:\n\n🐳 [Dockerfile]\n- 👤 USER não-root definido? Se não → ADICIONE\n- 💓 HEALTHCHECK definido? Se não → ADICIONE\n- 🏷️ Imagem base com tag específica (não :latest)?\n- 🔑 Nenhum COPY de .env, secrets, credentials?\n- 📦 Multi-stage build (ferramentas de build não vão para produção)?\n- 🔒 .dockerignore existe e exclui .env, .git, node_modules?\n\n☁️ [Terraform]\n- 🔐 Encryption habilitada em todos os recursos de storage/DB?\n- 🔓 publicly_accessible = false por padrão?\n- 🌐 Security Groups restritivos (sem 0.0.0.0/0)?\n- 🙈 Outputs sensíveis com sensitive = true?\n- 📋 Backend remoto com state encryption?\n\n☸️ [Kubernetes/Helm]\n- 👤 securityContext com runAsNonRoot: true?\n- 🔒 allowPrivilegeEscalation: false?\n- 📏 Resource limits definidos?\n- 🌐 NetworkPolicy incluída?\n- 🔑 Secrets via secretKeyRef?\n\n🔄 [CI/CD Pipeline]\n- 🔒 permissions: explícitas e mínimas (não write-all)?\n- 📌 Actions de terceiros com hash pin (@sha256:...)?\n- 🔑 Secrets via ${{ secrets.* }} (não hardcoded)?\n- 🛡️ Scan de segurança incluído (audit, trivy, checkov)?\n- 🚫 Nenhum echo/print de variáveis sensíveis?\n\n🌐 [Server Config]\n- 🙈 server_tokens off?\n- 🔐 HTTPS configurado?\n- 📂 autoindex off?\n- 🛡️ Security headers incluídos?\n\n⚠️ Se faltar item obrigatório → CORRIJA automaticamente.\n✅ Se completo → 'OK — IaC seguro desde o início.'"
+  }
+}

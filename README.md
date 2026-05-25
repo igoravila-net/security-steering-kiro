@@ -58,7 +58,8 @@ steering/
 | **🔒 Bloquear Segredos em Commits** | `block-secrets-in-commits.kiro.hook` | `preToolUse` (shell) | Auto-aprova testes/lint/build. Verifica segredos em git add/commit/push | Alta |
 | **🚨 Detectar Arquivos de Secrets (criação)** | `detect-secrets-files.kiro.hook` | `fileCreated` (.env, .pem, .key, credentials) | Alerta ao criar arquivos de secrets. Verifica .gitignore | Alta |
 | **🚨 Detectar Arquivos de Secrets (edição)** | `detect-secrets-files-edit.kiro.hook` | `fileEdited` (.env, .pem, .key, credentials) | Alerta ao editar arquivos de secrets. Detecta credenciais reais | Alta |
-| **🏗️ Revisão de Infra — Edição** | `infra-review-on-edit.kiro.hook` | `fileEdited` (Dockerfile, *.tf, k8s) | Detecta regressões: USER root, 0.0.0.0/0, encryption desabilitada | Alta |
+| **🏗️ Revisão de Infra — Edição** | `infra-review-on-edit.kiro.hook` | `fileEdited` (Dockerfile, *.tf, k8s, CI/CD, nginx) | Detecta regressões: USER root, 0.0.0.0/0, encryption, pipelines inseguros | Alta |
+| **🆕🏗️ Revisão de Infra — Criação** | `infra-review-on-create.kiro.hook` | `fileCreated` (Dockerfile, *.tf, k8s, CI/CD, nginx) | Verifica segurança IaC desde o início, corrige automaticamente | Alta |
 | **✅ Auto-Fix em Arquivo Novo** | `auto-fix-vulnerabilities-on-create.kiro.hook` | `fileCreated` (*.ts, *.js, *.py, *.java, etc.) | Corrige automaticamente vulnerabilidades ao criar arquivo | Alta |
 | **✅ Auto-Fix em Arquivo Editado** | `auto-fix-vulnerabilities-on-edit.kiro.hook` | `fileEdited` (*.ts, *.js, *.py, *.java, etc.) | Corrige automaticamente vulnerabilidades ao editar código | Alta |
 | **📦 Verificar Segurança de Dependências** | `check-dependency-security.kiro.hook` | `fileEdited` (package.json, pom.xml, etc.) | Pesquisa CVEs via web e corrige automaticamente | Média |
