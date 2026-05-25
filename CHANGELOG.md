@@ -14,6 +14,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - Emojis visuais em TODOS os hooks para identificação rápida de categorias
 - Hook `infra-review-on-create` (fileCreated): verifica segurança IaC desde a criação do arquivo
 - Cobertura IaC expandida: CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins), Helm values, nginx/apache, .dockerignore
+- Hook `docs-before-commit` (preToolUse shell): bloqueia commit se documentação não estiver atualizada
 
 ### Alterado
 - security-critical-paths v3: prompt reduzido ~60% com fast-path de 1 linha para AUTO-APPROVE (4.1)

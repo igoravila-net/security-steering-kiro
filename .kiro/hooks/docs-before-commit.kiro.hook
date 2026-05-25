@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "📋 Verificar Documentação Antes de Commit",
+  "description": "Antes de git commit, verifica se README.md, CHANGELOG.md e POWER.md estão atualizados com as mudanças da sessão. Bloqueia commit se documentação estiver desatualizada.",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "shell"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "⏭️ Se comando NÃO contém 'git commit' → 'APROVADO'.\n\n📋 APENAS para git commit — verificar documentação:\n\n1. 📝 CHANGELOG.md atualizado?\n   - Se hooks foram criados/editados/removidos nesta sessão → CHANGELOG deve listar\n   - Se steering foi alterado → CHANGELOG deve mencionar\n   - Se versão mudou → CHANGELOG deve ter entrada com data\n\n2. 📖 README.md atualizado?\n   - Se hooks foram criados/removidos → tabela de hooks deve refletir\n   - Se instruções de setup mudaram (prompts alterados) → seção de setup deve refletir\n   - Contagem de hooks no overview deve estar correta\n\n3. 📦 POWER.md atualizado?\n   - Se versão mudou no CHANGELOG → POWER.md deve ter mesma versão\n   - Se description mudou → deve refletir\n\n🚫 Se documentação DESATUALIZADA → BLOQUEIE o commit e liste o que falta atualizar.\n✅ Se tudo atualizado ou sessão não alterou hooks/steering → 'APROVADO'."
+  }
+}

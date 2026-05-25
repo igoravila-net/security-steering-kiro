@@ -4,7 +4,7 @@ Framework de segurança automatizado para desenvolvimento seguro no Grupo COGNA,
 
 ## Visão Geral
 
-Este Power contém **7 steerings temáticos consolidados** e **24 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
+Este Power contém **7 steerings temáticos consolidados** e **26 hooks** que garantem que todo código produzido com auxílio do Kiro esteja em conformidade com as políticas corporativas do Grupo COGNA, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 ## Como Funciona
 
@@ -77,6 +77,7 @@ steering/
 
 | Hook | Arquivo | Trigger | Ação |
 |---|---|---|---|
+| **📋 Verificar Docs Antes de Commit** | `docs-before-commit.kiro.hook` | `preToolUse` (shell) | Bloqueia commit se README/CHANGELOG/POWER.md não refletem mudanças |
 | **📚 Aprender com Vulnerabilidades** | `learn-from-vulnerabilities.kiro.hook` | `postToolUse` (write) | Registra padrões vulneráveis bloqueados (ignora testes/docs) |
 | **🔄 Sincronizar Versão POWER/CHANGELOG** | `sync-version-power-changelog.kiro.hook` | `fileEdited` (CHANGELOG.md) | Atualiza versão no POWER.md |
 | **🌐 Atualizar CVEs (Manual)** | `update-cves-from-web.kiro.hook` | `userTriggered` | Busca CVEs recentes na web (uso pelo time AppSec) |
