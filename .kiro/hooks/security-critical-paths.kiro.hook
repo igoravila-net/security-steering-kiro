@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "FAST-PATH → 'APROVADO' (sem análise): .kiro/** | *.md/json/yml/css/html/gitignore/kiro.hook/svelte/vue/jsx/tsx | test/spec/mock/__test__/stories/fixtures | domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports | index.ts com re-exports | *.test.ts/spec.ts/*_test.go/*_test.py | vitest.config/jest.config/tsconfig/package-lock.\n\n🔍 CHECKLIST (apenas paths com controller/route/api/handler/service/repository/infrastructure/middleware/auth/integration): [1] 💉 eval/exec [2] 🔑 credenciais hardcoded [3] 🌐 innerHTML [4] 🗄️ SQL concat [5] 📏 input sem limite [6] 🧹 input sem sanitização [7] 🔒 endpoint sem auth. 🚫 Violação → BLOQUEIE. ✅ Seguro → permita sem comentários."
+    "prompt": "FAST-PATH → 'APROVADO' (sem análise): .kiro/** | *.md/json/yml/css/html/gitignore/kiro.hook/svelte/vue/jsx/tsx | test/spec/mock/__test__/stories/fixtures | domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports | index.ts com re-exports | *.test.ts/spec.ts/*_test.py | vitest.config/jest.config/tsconfig/package-lock.\n\n🔍 CHECKLIST (apenas paths com controller/route/api/handler/service/repository/infrastructure/middleware/auth/integration): [1] 💉 eval/exec [2] 🔑 credenciais hardcoded [3] 🌐 innerHTML [4] 🗄️ SQL concat [5] 📏 input sem limite [6] 🧹 input sem sanitização [7] 🔒 endpoint sem auth. 🚫 Violação → BLOQUEIE. ✅ Seguro → permita sem comentários."
   }
 }

@@ -111,16 +111,16 @@ steering/
 ```
 Crie os seguintes hooks em .kiro/hooks/ para ativar o Security Guardrails:
 
-1. auto-fix-vulnerabilities-on-create.kiro.hook — fileCreated em **/*.ts, **/*.js, **/*.py, **/*.java, **/*.cs, **/*.go, **/*.php, **/*.kt, **/*.swift, **/*.rb
+1. auto-fix-vulnerabilities-on-create.kiro.hook — fileCreated em **/*.ts, **/*.js, **/*.py, **/*.java, **/*.cs, **/*.php, **/*.kt, **/*.swift, **/*.rb
    Prompt: "🆕 Um arquivo de código foi criado. Analise contra regras COGNA. ⏭️ SKIP: test/spec/__test__/demo/.kiro/.md/.json/.yml → 'OK'. 🔍 VERIFICAR: 1.🗄️ SQL concat 2.🔑 credenciais 3.🌐 XSS 4.💉 command injection 5.📏 input sem limite 6.🔒 sem auth 7.👁️ PII em logs 8.🔐 crypto fraca 9.🌐 SSRF 10.📂 path traversal. Corrija AUTOMATICAMENTE. ✅ Se seguro → OK."
 
-2. auto-fix-vulnerabilities-on-edit.kiro.hook — fileEdited em **/*.ts, **/*.js, **/*.py, **/*.java, **/*.cs, **/*.go, **/*.php, **/*.kt, **/*.swift, **/*.rb
+2. auto-fix-vulnerabilities-on-edit.kiro.hook — fileEdited em **/*.ts, **/*.js, **/*.py, **/*.java, **/*.cs, **/*.php, **/*.kt, **/*.swift, **/*.rb
    Prompt: "⏭️ SKIP: node_modules/.kiro/dist/build/test/spec → 'OK'. 🔍 VERIFICAR: 1.🗄️ SQL concat 2.🔑 credenciais 3.🌐 XSS 4.💉 command injection 5.📏 input sem limite 6.🔒 sem auth 7.👁️ PII em logs 8.🔐 crypto fraca. Corrija AUTOMATICAMENTE. ✅ Se seguro → OK."
 
 3. block-secrets-in-commits.kiro.hook — preToolUse shell
    Prompt: "⏭️ Se vitest/jest/tsc/eslint/npm test/git status/git log/git diff → APROVADO. 🔒 APENAS git add/commit/push: verificar sk-/AKIA/eyJ/BEGIN PRIVATE KEY/.env/.pem/.key. 🚨 Segredo → BLOQUEIE. ✅ Limpo → APROVADO."
 
-4. check-dependency-security.kiro.hook — fileEdited em **/package.json, **/pom.xml, **/requirements.txt, **/pyproject.toml, **/*.csproj, **/go.mod, **/composer.json
+4. check-dependency-security.kiro.hook — fileEdited em **/package.json, **/pom.xml, **/requirements.txt, **/pyproject.toml, **/*.csproj, **/composer.json
    Prompt: "📦 Dependências editadas. Para CADA lib: pesquise CVEs na web. 🔴 CVE → corrija para versão segura. 🚫 PROIBIDA → substitua. 🔍 npm audit após edição. ⚠️ EOL → substitua. ✅ Sem CVEs → OK."
 
 5. security-critical-paths.kiro.hook — preToolUse write

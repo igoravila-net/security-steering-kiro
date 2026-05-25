@@ -13,7 +13,6 @@
       "**/*.py",
       "**/*.java",
       "**/*.cs",
-      "**/*.go",
       "**/*.php",
       "**/*.kt",
       "**/*.swift",
@@ -22,6 +21,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Um arquivo de código foi editado. Analise contra as regras de segurança COGNA:\n\n⏭️ [SKIP] Se o arquivo está em: node_modules/, .kiro/, dist/, build/, ou é arquivo de teste (*.test.ts, *.spec.ts, *_test.go, *_test.py) → 'OK'.\n\n🔍 [VERIFICAR E CORRIGIR] Para todo código que NÃO é teste:\n1. 🗄️ SQL Injection: concatenação em queries → corrigir para prepared statements\n2. 🔑 Credenciais hardcoded: API keys, senhas, tokens → corrigir para env vars\n3. 🌐 XSS: innerHTML/dangerouslySetInnerHTML sem sanitização → corrigir\n4. 💉 Command Injection: exec/eval com input → corrigir para APIs seguras\n5. 📏 Input sem validação: campos sem limite → adicionar validação\n6. 🔒 Endpoints sem auth: rotas sem middleware → adicionar autenticação\n7. 👁️ Dados sensíveis em logs: PII logada → mascarar\n8. 🔐 Criptografia fraca: MD5/SHA1 → corrigir para bcrypt/argon2\n\nSe encontrar vulnerabilidade:\n- Corrija AUTOMATICAMENTE o arquivo\n- Liste: ✅ [tipo] corrigido: [descrição]\n\n✅ Se seguro → 'OK'."
+    "prompt": "Um arquivo de código foi editado. Analise contra as regras de segurança COGNA:\n\n⏭️ [SKIP] Se o arquivo está em: node_modules/, .kiro/, dist/, build/, ou é arquivo de teste (*.test.ts, *.spec.ts, *_test.py) → 'OK'.\n\n🔍 [VERIFICAR E CORRIGIR] Para todo código que NÃO é teste:\n1. 🗄️ SQL Injection: concatenação em queries → corrigir para prepared statements\n2. 🔑 Credenciais hardcoded: API keys, senhas, tokens → corrigir para env vars\n3. 🌐 XSS: innerHTML/dangerouslySetInnerHTML sem sanitização → corrigir\n4. 💉 Command Injection: exec/eval com input → corrigir para APIs seguras\n5. 📏 Input sem validação: campos sem limite → adicionar validação\n6. 🔒 Endpoints sem auth: rotas sem middleware → adicionar autenticação\n7. 👁️ Dados sensíveis em logs: PII logada → mascarar\n8. 🔐 Criptografia fraca: MD5/SHA1 → corrigir para bcrypt/argon2\n\nSe encontrar vulnerabilidade:\n- Corrija AUTOMATICAMENTE o arquivo\n- Liste: ✅ [tipo] corrigido: [descrição]\n\n✅ Se seguro → 'OK'."
   }
 }

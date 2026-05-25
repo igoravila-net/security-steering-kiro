@@ -46,8 +46,8 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 ## [2.3.0] - 2026-05-12
 
 ### Adicionado
-- Go completo — padrões de código seguro (SQL, Command Injection, XSS, Path Traversal, Auth, Crypto, Error Handling, Race Conditions, Input Validation)
-- Supply Chain para Go Modules (govulncheck, GOPRIVATE, go.sum)
+- ~~Go completo~~ *(removido em v2.4.0)*
+- ~~Supply Chain para Go Modules~~ *(removido em v2.4.0)*
 - CWE Top 25 MITRE 2024 — cobertura 100% (25/25) incluindo Memory Safety (CWE-787, 125, 416, 119, 190)
 - 21 CWEs adicionais mapeadas (total: 46 CWEs cobertas)
 - CVEs 2025-2026: Next.js CVE-2025-29927, React RSC CVE-2025-55182, Spring Cloud Gateway CVE-2025-41243, Spring AI data exposure
@@ -65,7 +65,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 ### Alterado
 - Check-dependency-security v2: correção automática + npm audit obrigatório
 - README expandido com hooks auto-fix e instruções passo-a-passo de criação
-- Linguagens suportadas: adicionado Go (microserviços, APIs)
+- ~~Linguagens suportadas: adicionado Go~~ *(removido em v2.4.0)*
 
 ---
 
