@@ -1,6 +1,6 @@
 # Security Guardrails Power — COGNA
 
-**22/05/2026** | v2.3.0 | Segurança da Informação
+**27/05/2026** | v2.4.1 | Segurança da Informação
 
 ---
 
@@ -15,21 +15,19 @@
 | SCA (Supply Chain) | 5 ecossistemas — 26+ pacotes proibidos, CVE check automático |
 | Correção automática | Ao criar ou editar código — sem intervenção manual |
 | Observabilidade/Logs | Padrão GELF COGNA, CorrelationID, mascaramento PII |
-| Hooks ativos | 25 |
+| Hooks ativos | 26 |
+| Checklist IaC dedicado | 7 itens (image pin, non-root, secrets, healthcheck, limits, ports, privileged) |
 
 ---
 
-## Últimas atualizações (v2.3.0)
+## Últimas atualizações (v2.4.1)
 
-- Correção automática de vulnerabilidades ao criar ou editar código (sem intervenção manual)
-- Cobertura completa do CWE Top 25 MITRE 2024 (100%) + 21 CWEs adicionais
-- CVEs 2025-2026 adicionados: Next.js (auth bypass), React Server Components (RCE), Spring Cloud Gateway, Spring AI
-- Novos ataques supply chain cobertos: Mini Shai-Hulud (worm npm, 314+ pacotes), PhantomRaven (Remote Dynamic Dependencies)
-- PHP e WordPress com regras dedicadas (SQL injection, XSS, CSRF, upload, REST API, plugins proibidos)
-- Templates de testes de segurança prontos para 6 linguagens (TypeScript, Java, Python, C#, PHP, Kotlin)
-- Detecção automática de framework (Spring Boot, Laravel, NestJS, Express)
-- Verificação de dependências deprecated e não utilizadas
-- Regra absoluta: agente verifica CVEs via web antes de escrever versões de pacotes
+- Checklist IaC-específico no hook preToolUse write: verifica image pinning, non-root user, privileged mode, secrets em ENV/ARG, healthcheck, resource limits e port binding
+- Separação de checklists: App (7 itens) e IaC (7 itens) no security-critical-paths v4
+- `*.yml` removido do FAST-PATH para que docker-compose.yml seja analisado pelo checklist IaC
+- STRIDE assessment pré-tarefa com fast-path SKIP para types/testes/generators
+- Verificação de implementação pós-escrita cruza mitigações STRIDE com código produzido
+- Git hook pre-push para auto-tagging baseado na versão do POWER.md
 
 ---
 

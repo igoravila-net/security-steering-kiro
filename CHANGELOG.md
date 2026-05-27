@@ -2,6 +2,17 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.4.2] - 2026-05-27
+
+### Adicionado
+- Steering `known-limitations.md` com instrução diretiva para o agente não reportar limitações conhecidas da plataforma Kiro como feedback
+- Comandos `chmod`, `sed`, `file`, `cp`, `mv`, `echo`, `printf`, `wsl`, `git tag` adicionados à whitelist do hook `block-secrets-in-commits` v4
+- Comandos `chmod`, `sed`, `file`, `cp`, `mv`, `echo`, `printf`, `git tag` adicionados à whitelist do hook `shell-output-scanner` v5
+
+### Alterado
+- block-secrets-in-commits v4: whitelist expandida para reduzir análise em comandos de manutenção
+- shell-output-scanner v5: whitelist expandida para reduzir respostas triviais
+
 ## [2.4.1] - 2026-05-27
 
 ### Adicionado

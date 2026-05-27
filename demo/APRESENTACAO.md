@@ -10,7 +10,7 @@
 Framework automatizado de segurança para desenvolvimento seguro
 
 Segurança da Informação — Grupo COGNA
-v2.1.0 | Maio 2026
+v2.4.1 | Maio 2026
 
 ---
 
@@ -44,7 +44,7 @@ Como funciona:
 ┌─────────────────────────────────────────┐
 │              IDE (Kiro)                  │
 ├─────────────────────────────────────────┤
-│  Steering Files (7)     │  Hooks (21)   │
+│  Steering Files (7)     │  Hooks (26)   │
 │  ─────────────────      │  ───────────  │
 │  • constraints          │  • preToolUse │
 │  • implementation       │  • postToolUse│
@@ -101,7 +101,8 @@ O Power não trata tudo igual — classifica por risco:
 |-------|----------|-------------|
 | **SKIP** | Testes, docs, configs, UI | Auto-approve instantâneo |
 | **LIGHT** | Domain models, DTOs | Apenas credenciais |
-| **FULL** | Controllers, services, infra | Checklist completa (7 itens) |
+| **FULL (App)** | Controllers, services, middleware | Checklist 7 itens (injection, XSS, auth...) |
+| **FULL (IaC)** | Dockerfile, docker-compose, Terraform, K8s | Checklist 7 itens (image pin, non-root, secrets...) |
 
 **Resultado:** -83% de interrupções vs. v1, mantendo 100% de proteção em código de produção.
 
@@ -158,9 +159,10 @@ O Power garante que logs sigam o padrão COGNA:
 | Proteção em código de produção | **100%** |
 | CWEs cobertas | **46** (Top 25 MITRE 2024 + 21 adicionais) |
 | Linguagens homologadas | **13** |
-| Hooks ativos | **21** |
+| Hooks ativos | **26** |
 | Pacotes proibidos monitorados | **26** |
 | Políticas COGNA automatizadas | **12** |
+| Checklist IaC dedicado | **7 itens** (Docker, Terraform, K8s) |
 | Redução de fricção vs. v1 | **-83%** |
 
 ---
