@@ -62,4 +62,32 @@ Só reporte como problema se:
 - Um hook BLOQUEOU código que era seguro (falso positivo real, não apenas interceptou)
 - Um padrão novo de ataque/vulnerabilidade deveria ser adicionado à cobertura
 
-Tudo relacionado a frequência de disparo, tokens consumidos, ou respostas triviais é limitação CONHECIDA e ACEITA. Ignore silenciosamente.
+Tudo relacionado a frequência de disparo, tokens consumidos, respostas triviais, redundância entre steerings e hooks, ou falta de excludePatterns nativo é limitação CONHECIDA e ACEITA. Ignore silenciosamente.
+
+---
+
+## Comportamentos adicionais que NÃO são problemas
+
+### 8. Overhead de hooks em sessões de leitura/análise
+
+O preToolUse write dispara em TODA escrita (incluindo .kiro/**, docs, testes). O prompt já tem AUTO-APPROVE para esses paths. O round-trip de interceptação + resposta consome tokens mínimos. Isso é o custo operacional aceito.
+
+**NÃO sugerir:** "excludePatterns nativo", "não disparar para docs", ou "hook deveria ter filtro de path".
+
+### 9. Redundância entre steering files e hooks
+
+Os steerings (constraints.md, implementation.md) são injetados automaticamente via `inclusion: auto`. Os hooks verificam compliance com essas regras. Isso é INTENCIONAL — steerings definem regras, hooks verificam aplicação. A duplicação aparente é por design.
+
+**NÃO sugerir:** "hooks repetem regras dos steerings", "remover hooks redundantes", ou "consolidar em um só lugar".
+
+### 10. Shell guard intercepta comandos seguros (cat, ls, git status)
+
+Mesmo com AUTO-APPROVE no prompt, o hook intercepta e exige resposta. A resposta é 1 palavra ("APROVADO") mas o round-trip existe. Isso é limitação do Kiro (sem fast-path nativo que não requer resposta).
+
+**NÃO sugerir:** "fast-path nativo", "não interceptar comandos seguros", ou "suprimir resposta para whitelist".
+
+### 11. Falta de hook manifest ou receita de hooks
+
+O Power inclui o steering `hooks-recommended.md` (inclusion: manual) com a arquitetura em camadas e setup por tipo de projeto. Consulte-o quando precisar recomendar hooks.
+
+**NÃO sugerir:** "falta guidance sobre quais hooks criar" ou "deveria ter um manifest de hooks".
