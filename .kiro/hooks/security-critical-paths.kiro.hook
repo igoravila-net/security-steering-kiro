@@ -2,7 +2,7 @@
   "enabled": true,
   "name": "Revisão de Segurança - Paths Críticos",
   "description": "Review de segurança APENAS para código de produção com I/O. Fast-path APROVADO para .kiro/**, testes, docs, configs, UI, domain, ports, lib.",
-  "version": "3",
+  "version": "4",
   "when": {
     "type": "preToolUse",
     "toolTypes": [
@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "FAST-PATH → 'APROVADO' (sem análise): .kiro/** | *.md/json/yml/css/html/gitignore/kiro.hook/svelte/vue/jsx/tsx | test/spec/mock/__test__/stories/fixtures | domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports | index.ts com re-exports | *.test.ts/spec.ts/*_test.py | vitest.config/jest.config/tsconfig/package-lock.\n\n🔍 CHECKLIST (apenas paths com controller/route/api/handler/service/repository/infrastructure/middleware/auth/integration): [1] 💉 eval/exec [2] 🔑 credenciais hardcoded [3] 🌐 innerHTML [4] 🗄️ SQL concat [5] 📏 input sem limite [6] 🧹 input sem sanitização [7] 🔒 endpoint sem auth. 🚫 Violação → BLOQUEIE. ✅ Seguro → permita sem comentários."
+    "prompt": "FAST-PATH → 'APROVADO' (sem análise): .kiro/** | *.md/json/gitignore/kiro.hook/svelte/vue/jsx/tsx/css/html | test/spec/mock/__test__/stories/fixtures | domain/models/types/DTOs/enums/interfaces/components/lib/routes/ports | index.ts com re-exports | *.test.ts/spec.ts/*_test.py | vitest.config/jest.config/tsconfig/package-lock.\n\n🐳 CHECKLIST IaC (apenas Dockerfile*/docker-compose*.yml/*.tf/*.tfvars/k8s/**/helm/**/nginx*.conf): [1] 🏷️ imagem base sem :latest (usar tag+digest) [2] 👤 USER não-root [3] 🔒 sem --privileged/cap-add ALL [4] 🔑 secrets não em ENV/ARG/COPY .env [5] 💓 HEALTHCHECK presente [6] 📏 resource limits definidos [7] 🌐 portas sensíveis não em 0.0.0.0. 🚫 Violação → BLOQUEIE. ✅ Seguro → 'APROVADO'.\n\n🔍 CHECKLIST App (apenas paths com controller/route/api/handler/service/repository/infrastructure/middleware/auth/integration): [1] 💉 eval/exec [2] 🔑 credenciais hardcoded [3] 🌐 innerHTML [4] 🗄️ SQL concat [5] 📏 input sem limite [6] 🧹 input sem sanitização [7] 🔒 endpoint sem auth. 🚫 Violação → BLOQUEIE. ✅ Seguro → permita sem comentários."
   }
 }

@@ -2,6 +2,16 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.4.1] - 2026-05-27
+
+### Adicionado
+- Checklist IaC-específico no hook `security-critical-paths` (preToolUse write): verifica image pinning, non-root user, privileged mode, secrets em ENV/ARG, healthcheck, resource limits e port binding para Dockerfile/docker-compose/Terraform/K8s
+- Campo `description` no frontmatter do steering `infrastructure.md`
+- Git hook `pre-push` para auto-tagging baseado na versão do POWER.md
+
+### Alterado
+- security-critical-paths v4: separação em CHECKLIST IaC e CHECKLIST App; `*.yml` removido do FAST-PATH para que docker-compose.yml seja analisado
+
 ## [2.4.0] - 2026-05-25
 
 ### Adicionado
