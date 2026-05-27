@@ -34,6 +34,8 @@ Princípios fundamentais:
 - **infrastructure** — IaC seguro (Terraform, Docker, K8s), deployment, resiliência e secrets scanning
 - **observability** — Padrão de logs COGNA (GELF, CorrelationID, níveis), monitoramento e auditoria
 - **conditional** — Regras ativadas por tipo de arquivo (controllers, repositories, templates, infra)
+- **known-limitations** — Limitações conhecidas da plataforma Kiro que NÃO devem ser reportadas como feedback (auto-inclusion)
+- **hooks-recommended** — Arquitetura de hooks em camadas (Core/Contextual/On-demand) com setup por tipo de projeto (manual)
 
 Toda a documentação conceitual está neste POWER.md. Os steering files contêm regras detalhadas com exemplos de código.
 
