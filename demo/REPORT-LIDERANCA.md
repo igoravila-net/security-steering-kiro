@@ -1,6 +1,6 @@
 # Security Guardrails Power — COGNA
 
-**27/05/2026** | v2.4.1 | Segurança da Informação
+**29/05/2026** | v2.4.2 | Segurança da Informação
 
 ---
 

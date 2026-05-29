@@ -10,7 +10,7 @@
 Framework automatizado de segurança para desenvolvimento seguro
 
 Segurança da Informação — Grupo COGNA
-v2.4.1 | Maio 2026
+v2.4.2 | Maio 2026
 
 ---
 
