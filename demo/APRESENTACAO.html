@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>APRESENTACAO</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/black.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+
+<section id="cogna-security-guardrails-apresentação"
+class="slide level1">
+<h1>COGNA Security Guardrails — Apresentação</h1>
+<blockquote>
+<p>Arquivo local — NÃO commitar</p>
+</blockquote>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-1-título">Slide 1 — Título</h2>
+<p><strong>COGNA Security Guardrails</strong> Framework automatizado de
+segurança para desenvolvimento seguro</p>
+<p>Segurança da Informação — Grupo COGNA v2.4.1 | Maio 2026</p>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-2-o-problema">Slide 2 — O Problema</h2>
+<ul>
+<li>Vulnerabilidades são detectadas <strong>tarde demais</strong> (PR
+review, Veracode, produção)</li>
+<li>Custo de correção aumenta 10x a cada fase do ciclo</li>
+<li>Desenvolvedores não são especialistas em segurança</li>
+<li>Dependências com CVEs entram no código sem verificação</li>
+<li>Políticas corporativas existem mas não são aplicadas
+automaticamente</li>
+</ul>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-3-a-solução">Slide 3 — A Solução</h2>
+<p><strong>Plugin para o IDE Kiro</strong> que bloqueia código
+vulnerável <strong>em tempo real</strong>, antes de ser escrito.</p>
+<p>Como funciona: 1. Desenvolvedor escreve código normalmente 2. Power
+intercepta e verifica contra 20+ categorias de ataque 3. Se inseguro →
+bloqueia e sugere correção 4. Se seguro → permite sem fricção</p>
+<p><strong>Transparente para o desenvolvedor — proteção
+automática.</strong></p>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-4-arquitetura">Slide 4 — Arquitetura</h2>
+<pre><code>┌─────────────────────────────────────────┐
+│              IDE (Kiro)                  │
+├─────────────────────────────────────────┤
+│  Steering Files (7)     │  Hooks (26)   │
+│  ─────────────────      │  ───────────  │
+│  • constraints          │  • preToolUse │
+│  • implementation       │  • postToolUse│
+│  • validation           │  • fileEdited │
+│  • policies             │  • agentStop  │
+│  • infrastructure       │  • userTrigger│
+│  • observability        │               │
+│  • conditional          │               │
+├─────────────────────────────────────────┤
+│         Código do Desenvolvedor         │
+└─────────────────────────────────────────┘</code></pre>
+<p><strong>Steerings</strong> = regras carregadas automaticamente
+<strong>Hooks</strong> = automações que interceptam ações de risco</p>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-5-cobertura">Slide 5 — Cobertura</h2>
+<table>
+<colgroup>
+<col style="width: 55%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Dimensão</th>
+<th>Escopo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Vulnerabilidades</td>
+<td>46 CWEs (Top 25 MITRE completo + 21 adicionais, OWASP Top 10:2025 +
+API + LLM)</td>
+</tr>
+<tr class="even">
+<td>Linguagens</td>
+<td>13 (C#, Java, TS, JS, PHP, Python, Swift, Kotlin, etc.)</td>
+</tr>
+<tr class="odd">
+<td>Supply Chain (SCA)</td>
+<td>5 ecossistemas (npm, pip, Maven, NuGet, Composer), 26 pacotes
+proibidos</td>
+</tr>
+<tr class="even">
+<td>Políticas COGNA</td>
+<td>12 automatizadas</td>
+</tr>
+<tr class="odd">
+<td>Infraestrutura</td>
+<td>Terraform, Docker, K8s</td>
+</tr>
+<tr class="even">
+<td>LGPD</td>
+<td>Hook dedicado para PII</td>
+</tr>
+<tr class="odd">
+<td>WordPress</td>
+<td>Plugins, temas, REST API</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-6-como-protege-exemplos">Slide 6 — Como Protege
+(Exemplos)</h2>
+<p><strong>SQL Injection:</strong> - ❌
+<code>"SELECT * FROM users WHERE id = " + userId</code> → BLOQUEADO - ✅
+<code>SELECT * FROM users WHERE id = ?</code> com parâmetro →
+PERMITIDO</p>
+<p><strong>Credenciais:</strong> - ❌
+<code>const API_KEY = "sk-abc123..."</code> → BLOQUEADO - ✅
+<code>const API_KEY = process.env.API_KEY</code> → PERMITIDO</p>
+<p><strong>Supply Chain:</strong> - ❌ <code>"faker": "^6.6.6"</code> →
+BLOQUEADO (protestware) - ✅ <code>"@faker-js/faker": "9.0.0"</code> →
+PERMITIDO (alternativa segura)</p>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-7-classificação-inteligente">Slide 7 — Classificação
+Inteligente</h2>
+<p>O Power não trata tudo igual — classifica por risco:</p>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 33%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Nível</th>
+<th>Arquivos</th>
+<th>Verificação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>SKIP</strong></td>
+<td>Testes, docs, configs, UI</td>
+<td>Auto-approve instantâneo</td>
+</tr>
+<tr class="even">
+<td><strong>LIGHT</strong></td>
+<td>Domain models, DTOs</td>
+<td>Apenas credenciais</td>
+</tr>
+<tr class="odd">
+<td><strong>FULL (App)</strong></td>
+<td>Controllers, services, middleware</td>
+<td>Checklist 7 itens (injection, XSS, auth…)</td>
+</tr>
+<tr class="even">
+<td><strong>FULL (IaC)</strong></td>
+<td>Dockerfile, docker-compose, Terraform, K8s</td>
+<td>Checklist 7 itens (image pin, non-root, secrets…)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado:</strong> -83% de interrupções vs. v1, mantendo
+100% de proteção em código de produção.</p>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-8-supply-chain-sca">Slide 8 — Supply Chain (SCA)</h2>
+<p>Maior vetor de ataque atual — dependências vulneráveis.</p>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 38%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ecossistema</th>
+<th>Pacotes proibidos</th>
+<th>Ataques cobertos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>npm</td>
+<td>8</td>
+<td>Typosquatting, dependency confusion, protestware, worm (Shai-Hulud),
+remote dynamic deps (PhantomRaven)</td>
+</tr>
+<tr class="even">
+<td>pip</td>
+<td>6</td>
+<td>Typosquatting, malicious setup.py</td>
+</tr>
+<tr class="odd">
+<td>Maven</td>
+<td>7</td>
+<td>Log4Shell, transitive attacks</td>
+</tr>
+<tr class="even">
+<td>NuGet</td>
+<td>5</td>
+<td>Dependency confusion, build scripts</td>
+</tr>
+<tr class="odd">
+<td>Composer</td>
+<td>5</td>
+<td>Abandoned packages, malicious autoload</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regra absoluta:</strong> Agente DEVE verificar CVEs via web
+ANTES de escrever versões.</p>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-8.5-observabilidade-e-logs">Slide 8.5 — Observabilidade e
+Logs</h2>
+<p>O Power garante que logs sigam o padrão COGNA:</p>
+<table>
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 31%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Regra</th>
+<th>Antes</th>
+<th>Depois</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PII em logs</td>
+<td><code>console.log(user.cpf)</code></td>
+<td>Mascarado: <code>***.456.***-**</code></td>
+</tr>
+<tr class="even">
+<td>Formato</td>
+<td><code>console.log("msg")</code></td>
+<td>GELF estruturado com campos obrigatórios</td>
+</tr>
+<tr class="odd">
+<td>Rastreabilidade</td>
+<td>Sem correlação</td>
+<td>CorrelationID em toda request</td>
+</tr>
+<tr class="even">
+<td>Níveis</td>
+<td>Tudo <code>console.log</code></td>
+<td>INFO/WARN/ERROR conforme contexto</td>
+</tr>
+<tr class="odd">
+<td>Dados de cartão</td>
+<td>Logado em plaintext</td>
+<td>NUNCA logado (PCI-DSS)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Padrão GELF COGNA:</strong> timestamp, level, correlationId,
+service, message, userId (sem PII)</p>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-9-integração-com-processos">Slide 9 — Integração com
+Processos</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Processo</th>
+<th>Como o Power ajuda</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Veracode</td>
+<td>Hook mapeia CWEs → steerings (feedback loop)</td>
+</tr>
+<tr class="even">
+<td>LGPD</td>
+<td>Hook dedicado verifica mascaramento/consentimento</td>
+</tr>
+<tr class="odd">
+<td>Incidentes</td>
+<td>Regras atualizadas quando novas vulnerabilidades surgem</td>
+</tr>
+<tr class="even">
+<td>Onboarding</td>
+<td>10 regras fundamentais carregadas automaticamente</td>
+</tr>
+<tr class="odd">
+<td>CI/CD</td>
+<td>Regras de pipeline (npm audit, pip-audit, OWASP DC)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-10-métricas">Slide 10 — Métricas</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Proteção em código de produção</td>
+<td><strong>100%</strong></td>
+</tr>
+<tr class="even">
+<td>CWEs cobertas</td>
+<td><strong>46</strong> (Top 25 MITRE 2024 + 21 adicionais)</td>
+</tr>
+<tr class="odd">
+<td>Linguagens homologadas</td>
+<td><strong>13</strong></td>
+</tr>
+<tr class="even">
+<td>Hooks ativos</td>
+<td><strong>21</strong></td>
+</tr>
+<tr class="odd">
+<td>Pacotes proibidos monitorados</td>
+<td><strong>26</strong></td>
+</tr>
+<tr class="even">
+<td>Políticas COGNA automatizadas</td>
+<td><strong>12</strong></td>
+</tr>
+<tr class="odd">
+<td>Redução de fricção vs. v1</td>
+<td><strong>-83%</strong></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-11-próximos-passos">Slide 11 — Próximos Passos</h2>
+<ol type="1">
+<li><strong>Piloto com squads</strong> — ativar em projetos
+selecionados</li>
+<li><strong>Métricas de adoção</strong> — hook coleta dados
+automaticamente</li>
+<li><strong>Feedback loop Veracode</strong> — mapear findings para
+melhorar regras</li>
+<li><strong>Mobile-specific</strong> — certificate pinning, jailbreak
+detection</li>
+<li><strong>Evolução contínua</strong> — hook de feedback coleta gaps
+reais</li>
+</ol>
+</section>
+<section class="slide level1">
+
+<h2 id="slide-12-como-usar">Slide 12 — Como Usar</h2>
+<ol type="1">
+<li>Instalar o Power no Kiro (marketplace ou manual)</li>
+<li>Steerings carregam automaticamente — zero configuração</li>
+<li>Opcionalmente: criar hooks recomendados no projeto
+(<code>.kiro/hooks/</code>)</li>
+<li>Desenvolver normalmente — proteção é transparente</li>
+</ol>
+<p><strong>Repositório:</strong>
+github.com/igoravila-net/security-steering-kiro</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

@@ -2,6 +2,16 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.4.4] - 2026-05-29
+
+### Adicionado
+- Hook `check-dependency-security-on-create` (fileCreated): verifica CVEs em novos manifestos de dependência
+- `**/package.json` e `**/composer.json` adicionados aos patterns do `auto-fix-vulnerabilities-on-create`
+
+### Corrigido
+- Gap: novos manifestos de dependência não eram analisados (só fileEdited, não fileCreated)
+- Gap: package.json não coberto pelo hook de auto-fix na criação
+
 ## [2.4.3] - 2026-05-29
 
 ### Adicionado

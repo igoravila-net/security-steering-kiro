@@ -16,7 +16,9 @@
       "**/*.php",
       "**/*.kt",
       "**/*.swift",
-      "**/*.rb"
+      "**/*.rb",
+      "**/package.json",
+      "**/composer.json"
     ]
   },
   "then": {
