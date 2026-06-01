@@ -1,38 +1,30 @@
-# Security Guardrails Power — COGNA
+# Security Guardrails — Report Semanal
 
-**29/05/2026** | v2.4.2 | Segurança da Informação
+**29/05/2026** | v2.4.2 | Segurança da Informação — COGNA
 
 ---
 
-## Números
+## Entregas da semana (25–29/05)
 
-| | |
+1. **Avaliação STRIDE automática** — análise de ameaças antes de cada tarefa de desenvolvimento
+2. **Checklist IaC dedicado** — 7 verificações específicas para Docker, Terraform e K8s
+3. **Otimização de performance** — tokens consumidos por sessão reduzidos em 50%
+4. **Documentação de arquitetura de hooks** — guia de setup por tipo de projeto (API, Frontend, Infra, Mobile)
+
+---
+
+## Impacto
+
+| Antes | Depois |
 |---|---|
-| CWEs cobertas | 46 (Top 25 MITRE 2024 completo + 21 adicionais) |
-| Linguagens | 14 (13 homologadas + PHP) |
-| Políticas COGNA automatizadas | 12 |
-| Proteção em código de produção | 100% |
-| SCA (Supply Chain) | 5 ecossistemas — 26+ pacotes proibidos, CVE check automático |
-| Correção automática | Ao criar ou editar código — sem intervenção manual |
-| Observabilidade/Logs | Padrão GELF COGNA, CorrelationID, mascaramento PII |
-| Hooks ativos | 26 |
-| Checklist IaC dedicado | 7 itens (image pin, non-root, secrets, healthcheck, limits, ports, privileged) |
-
----
-
-## Últimas atualizações (v2.4.1)
-
-- Checklist IaC-específico no hook preToolUse write: verifica image pinning, non-root user, privileged mode, secrets em ENV/ARG, healthcheck, resource limits e port binding
-- Separação de checklists: App (7 itens) e IaC (7 itens) no security-critical-paths v4
-- `*.yml` removido do FAST-PATH para que docker-compose.yml seja analisado pelo checklist IaC
-- STRIDE assessment pré-tarefa com fast-path SKIP para types/testes/generators
-- Verificação de implementação pós-escrita cruza mitigações STRIDE com código produzido
-- Git hook pre-push para auto-tagging baseado na versão do POWER.md
+| Avaliação de ameaças manual | STRIDE automático pré-tarefa |
+| IaC com checklist genérico | Checklist dedicado (7 itens) |
+| ~6000 tokens/sessão em hooks | ~3000 tokens/sessão (-50%) |
 
 ---
 
 ## Próximos passos
 
-- Piloto com squads selecionados
-- Métricas de adoção (hook automático coleta dados por sessão)
-- Feedback loop com findings Veracode
+1. Piloto com squads selecionados
+2. Métricas de adoção (coleta automática)
+3. Feedback loop com Veracode

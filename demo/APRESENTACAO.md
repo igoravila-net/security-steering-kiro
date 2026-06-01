@@ -10,7 +10,7 @@
 Framework automatizado de segurança para desenvolvimento seguro
 
 Segurança da Informação — Grupo COGNA
-v2.4.2 | Maio 2026
+v2.4.1 | Maio 2026
 
 ---
 
@@ -159,10 +159,9 @@ O Power garante que logs sigam o padrão COGNA:
 | Proteção em código de produção | **100%** |
 | CWEs cobertas | **46** (Top 25 MITRE 2024 + 21 adicionais) |
 | Linguagens homologadas | **13** |
-| Hooks ativos | **26** |
+| Hooks ativos | **21** |
 | Pacotes proibidos monitorados | **26** |
 | Políticas COGNA automatizadas | **12** |
-| Checklist IaC dedicado | **7 itens** (Docker, Terraform, K8s) |
 | Redução de fricção vs. v1 | **-83%** |
 
 ---

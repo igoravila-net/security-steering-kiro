@@ -2,6 +2,18 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.4.3] - 2026-05-29
+
+### Adicionado
+- Seção "Setup de Hooks (Obrigatório)" no POWER.md com lista completa de hooks Core/Contextual/On-demand
+- Destaque para `auto-fix-vulnerabilities-on-create` e `auto-fix-vulnerabilities-on-edit` como essenciais
+- Apresentação executiva HTML com 12 slides, gráficos SVG e cores COGNA
+- Report de liderança resumido (entregas da semana 25-29/05)
+
+### Alterado
+- FAST-PATH expandido: `src/lib/**`, stores, facades, utils, `*.svelte.ts`, `+server`, `+page.server`
+- Whitelist de shell expandida: `head`, `tail`, `grep`, `find`, `which`, `pwd`, `curl`, `wget`
+
 ## [2.4.2] - 2026-05-27
 
 ### Adicionado

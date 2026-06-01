@@ -1,8 +1,8 @@
 ---
 name: "security-steering-kiro"
 displayName: "COGNA Security Guardrails"
-version: "2.4.2"
-description: "v2.4.2 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas. STRIDE assessment pré-tarefa, verificação de implementação pós-escrita, checklist IaC-específico no preToolUse, fast-paths otimizados."
+version: "2.4.3"
+description: "v2.4.3 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas. STRIDE assessment pré-tarefa, verificação de implementação pós-escrita, checklist IaC-específico no preToolUse, fast-paths otimizados."
 keywords: ["segurança", "security", "owasp", "cogna", "lgpd", "vulnerabilidade", "appsec", "devsecops"]
 author: "Segurança da Informação - Grupo COGNA"
 ---
@@ -38,6 +38,42 @@ Princípios fundamentais:
 - **hooks-recommended** — Arquitetura de hooks em camadas (Core/Contextual/On-demand) com setup por tipo de projeto (manual)
 
 Toda a documentação conceitual está neste POWER.md. Os steering files contêm regras detalhadas com exemplos de código.
+
+## Setup de Hooks (Obrigatório)
+
+Após instalar o Power, peça ao agente: **"Crie os hooks de segurança recomendados"**. Os hooks abaixo devem ser criados em `.kiro/hooks/` do projeto:
+
+### Hooks Core (obrigatórios em todo projeto)
+
+| Hook | Evento | Função |
+|------|--------|--------|
+| `security-critical-paths` | preToolUse write | Checklist de segurança antes de escrever código (App 7 itens + IaC 7 itens) |
+| `block-secrets-in-commits` | preToolUse shell | Bloqueia credenciais em git add/commit/push |
+| `shell-output-scanner` | postToolUse shell | Detecta credenciais e deprecated em outputs |
+| `auto-fix-vulnerabilities-on-create` | fileCreated | Corrige vulnerabilidades automaticamente ao criar arquivo |
+| `auto-fix-vulnerabilities-on-edit` | fileEdited | Corrige vulnerabilidades automaticamente ao editar arquivo |
+
+### Hooks Contextuais (ativar conforme stack)
+
+| Hook | Evento | Quando usar |
+|------|--------|-------------|
+| `infra-review-on-create` | fileCreated | Projetos com Docker/Terraform/K8s |
+| `infra-review-on-edit` | fileEdited | Projetos com Docker/Terraform/K8s |
+| `check-dependency-security` | fileEdited | Projetos com package.json/requirements.txt/pom.xml |
+| `lgpd-data-review` | fileCreated | Projetos que processam dados pessoais |
+| `cors-security-headers-check` | fileCreated | Projetos com APIs HTTP |
+| `stride-pre-task-assessment` | preTaskExecution | Projetos usando specs/tasks do Kiro |
+| `security-implementation-verification` | postToolUse write | Projetos usando specs/tasks do Kiro |
+
+### Hooks On-demand (ativar manualmente)
+
+| Hook | Evento | Quando usar |
+|------|--------|-------------|
+| `security-review-on-demand` | userTriggered | Review manual antes de PR |
+| `veracode-cwe-mapping` | userTriggered | Mapear findings Veracode |
+| `update-cves-from-web` | userTriggered | Atualizar base de CVEs |
+
+**IMPORTANTE:** Os hooks `auto-fix-vulnerabilities-on-create` e `auto-fix-vulnerabilities-on-edit` são essenciais — sem eles, o Power detecta mas NÃO corrige vulnerabilidades automaticamente.
 
 ## SLAs de Correção
 
