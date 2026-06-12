@@ -1,5 +1,6 @@
 ---
-inclusion: auto
+inclusion: always
+description: "Padrões de código seguro por tipo de vulnerabilidade com exemplos multilinguagem"
 ---
 
 # Secure Implementation — Padrões de Código Seguro

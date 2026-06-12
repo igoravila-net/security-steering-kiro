@@ -1,5 +1,6 @@
 ---
-inclusion: auto
+inclusion: always
+description: "Testes de segurança, templates prontos, banco de payloads, checklist pré-PR e threat modeling STRIDE"
 ---
 
 # Validation — Testes, Checklist e Threat Modeling

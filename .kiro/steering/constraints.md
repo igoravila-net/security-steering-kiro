@@ -1,5 +1,6 @@
 ---
-inclusion: auto
+inclusion: always
+description: "Regras críticas de segurança, violações automáticas, princípios de input/sanitização, dependências seguras e supply chain security"
 ---
 
 # Security Constraints — Regras Fundamentais

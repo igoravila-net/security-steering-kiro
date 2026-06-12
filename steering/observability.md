@@ -1,5 +1,6 @@
 ---
-inclusion: auto
+inclusion: always
+description: "Padrão de logs COGNA (GELF, CorrelationID, níveis), monitoramento e auditoria"
 ---
 
 # Observability — Logs, Monitoramento e Auditoria

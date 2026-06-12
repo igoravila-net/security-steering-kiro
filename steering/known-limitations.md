@@ -1,5 +1,5 @@
 ---
-inclusion: auto
+inclusion: always
 description: "Limitações conhecidas da plataforma Kiro que afetam hooks. NÃO reportar como feedback."
 ---
 

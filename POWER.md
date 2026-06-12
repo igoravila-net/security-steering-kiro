@@ -60,6 +60,7 @@ Após instalar o Power, peça ao agente: **"Crie os hooks de segurança recomend
 | `infra-review-on-create` | fileCreated | Projetos com Docker/Terraform/K8s |
 | `infra-review-on-edit` | fileEdited | Projetos com Docker/Terraform/K8s |
 | `check-dependency-security` | fileEdited | Projetos com package.json/requirements.txt/pom.xml |
+| `check-dependency-security-on-create` | fileCreated | Projetos com package.json/composer.json/requirements.txt/pom.xml |
 | `lgpd-data-review` | fileCreated | Projetos que processam dados pessoais |
 | `cors-security-headers-check` | fileCreated | Projetos com APIs HTTP |
 | `stride-pre-task-assessment` | preTaskExecution | Projetos usando specs/tasks do Kiro |

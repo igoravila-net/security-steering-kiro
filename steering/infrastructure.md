@@ -1,5 +1,6 @@
 ---
-inclusion: auto
+inclusion: always
+description: "Regras de segurança para IaC (Terraform, Docker, Kubernetes), deployment, resiliência e secrets scanning"
 ---
 
 # Infrastructure — IaC, Containers, Cloud e Deployment

@@ -1,5 +1,6 @@
 ---
-inclusion: auto
+inclusion: always
+description: "Políticas corporativas COGNA: SI geral, LGPD, acessos, incidentes, IA segura, criptografia, cloud"
 ---
 
 # Policies — Políticas Corporativas COGNA
