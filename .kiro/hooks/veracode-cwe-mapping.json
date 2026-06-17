@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Mapear Findings Veracode para Steerings",
+      "description": "Hook manual para o time de AppSec. Ao receber findings do Veracode, mapeia CWEs para steerings específicos e sugere melhorias nas regras.",
+      "trigger": "UserPromptSubmit",
+      "action": {
+        "type": "agent",
+        "prompt": "O time de AppSec solicitou mapeamento de findings Veracode. Analise os CWEs reportados e para cada um:\n\n1. Identifique o steering que deveria ter prevenido (constraints, implementation, validation, policies, infrastructure, observability, conditional)\n2. Verifique se a regra correspondente existe e está adequada\n3. Se a regra existe mas não preveniu: sugira melhoria no prompt/exemplo\n4. Se a regra NÃO existe: sugira adição ao steering apropriado\n\nMapeamento CWE → Steering:\n- CWE-89 (SQL Injection) → implementation.md seção 1\n- CWE-79 (XSS) → implementation.md seção 2\n- CWE-918 (SSRF) → implementation.md seção 3\n- CWE-502 (Desserialização) → implementation.md seção 3\n- CWE-327 (Crypto fraca) → implementation.md seção 4\n- CWE-798 (Credenciais hardcoded) → constraints.md Secrets Scanning\n- CWE-611 (XXE) → implementation.md seção 3\n- CWE-22 (Path Traversal) → implementation.md seção 9\n- CWE-862 (Missing Auth) → implementation.md seção 6\n- CWE-1035 (Supply Chain) → constraints.md Supply Chain\n\nRegistre o mapeamento no arquivo VERACODE-MAPPING.md (crie se não existir)."
+      },
+      "enabled": true
+    }
+  ]
+}

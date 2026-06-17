@@ -70,9 +70,9 @@ Após instalar o Power, peça ao agente: **"Crie os hooks de segurança recomend
 
 | Hook | Evento | Quando usar |
 |------|--------|-------------|
-| `security-review-on-demand` | userTriggered | Review manual antes de PR |
-| `veracode-cwe-mapping` | userTriggered | Mapear findings Veracode |
-| `update-cves-from-web` | userTriggered | Atualizar base de CVEs |
+| `security-review-on-demand` | UserPromptSubmit | Review manual antes de PR |
+| `veracode-cwe-mapping` | UserPromptSubmit | Mapear findings Veracode |
+| `update-cves-from-web` | UserPromptSubmit | Atualizar base de CVEs |
 
 **IMPORTANTE:** Os hooks `auto-fix-vulnerabilities-on-create` e `auto-fix-vulnerabilities-on-edit` são essenciais — sem eles, o Power detecta mas NÃO corrige vulnerabilidades automaticamente.
 

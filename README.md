@@ -69,7 +69,7 @@ steering/
 | **🔍 SAST Pós-Tarefa** | `post-task-security-scan.kiro.hook` | `postTaskExecution` | Revisa código contra regras de segurança após completar task | Média |
 | **🏛️ LGPD — Dados Pessoais** | `lgpd-data-review.kiro.hook` | `fileEdited` (user*, customer*, aluno*, profile*) | Verifica mascaramento, consentimento e retenção de PII | Média |
 | **💡 Sugestões Proativas** | `proactive-security-suggestions.kiro.hook` | `agentStop` | Sugere melhorias apenas para código de produção com I/O | Baixa |
-| **🔍 Security Review On-Demand** | `security-review-on-demand.kiro.hook` | `userTriggered` | Revisão completa (20 categorias) sob demanda no arquivo ativo | Baixa |
+| **🔍 Security Review On-Demand** | `security-review-on-demand.json` | `UserPromptSubmit` | Revisão completa (20 categorias) sob demanda no arquivo ativo | Baixa |
 | **📊 Métricas de Adoção** | `adoption-metrics.kiro.hook` | `agentStop` | Registra regras aplicadas, bloqueios e correções por sessão | Baixa |
 | **📝 Coletor de Feedback** | `power-feedback-collector.kiro.hook` | `agentStop` | Coleta feedback automático de gaps e falsos positivos | Baixa |
 
@@ -195,7 +195,7 @@ Crie os seguintes 5 hooks em .kiro/hooks/ com os JSONs EXATOS abaixo (copie lite
 
 Consulte os exemplos completos no diretório `.kiro/hooks/` deste repositório.
 
-> **Importante:** NÃO crie hooks do tipo `promptSubmit` para injetar regras de segurança. Os steering files deste Power já são carregados automaticamente (`inclusion: auto`) em toda interação. Um hook `promptSubmit` duplicaria as regras, consumindo ~300+ tokens extras por mensagem sem ganho de segurança.
+> **Importante:** NÃO crie hooks do tipo `promptSubmit` para injetar regras de segurança. Os steering files deste Power já são carregados automaticamente (`inclusion: always`) em toda interação. Um hook `promptSubmit` duplicaria as regras, consumindo ~300+ tokens extras por mensagem sem ganho de segurança.
 
 > **Hooks que NÃO devem ser criados no projeto consumidor:**
 > - `security-context-reminder` (promptSubmit) — redundante com steerings auto-incluídos

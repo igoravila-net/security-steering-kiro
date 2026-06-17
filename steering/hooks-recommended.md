@@ -47,9 +47,9 @@ Hooks para situações específicas. Não precisam estar ativos o tempo todo.
 
 | Hook | Evento | Quando usar |
 |------|--------|-------------|
-| `security-review-on-demand` | userTriggered | Review manual de segurança antes de PR |
-| `veracode-cwe-mapping` | userTriggered | Mapear findings Veracode para steerings |
-| `update-cves-from-web` | userTriggered | Atualizar base de CVEs conhecidos |
+| `security-review-on-demand` | UserPromptSubmit | Review manual de segurança antes de PR |
+| `veracode-cwe-mapping` | UserPromptSubmit | Mapear findings Veracode para steerings |
+| `update-cves-from-web` | UserPromptSubmit | Atualizar base de CVEs conhecidos |
 
 **Tokens estimados:** 0 (só disparam quando acionados manualmente)
 
