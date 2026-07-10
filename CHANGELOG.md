@@ -2,6 +2,12 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [2.4.5] - 2026-07-10
+
+### Removido
+- Referências a Go (gin, echo, fiber, net/http) e Rust (actix-web, axum, rocket, warp) do README.md, steerings e hook patterns
+- Linguagens Go e Rust removidas da lista de "Suportadas (não homologadas)"
+
 ## [2.4.4] - 2026-05-29
 
 ### Adicionado

@@ -1,8 +1,8 @@
 ---
 name: "security-steering-kiro"
 displayName: "COGNA Security Guardrails"
-version: "2.4.4"
-description: "v2.4.4 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas. STRIDE assessment pré-tarefa, verificação de implementação pós-escrita, checklist IaC-específico no preToolUse, fast-paths otimizados."
+version: "2.4.5"
+description: "v2.4.5 - Framework completo de segurança para desenvolvimento seguro no Grupo COGNA. Inclui 50+ regras baseadas em OWASP, políticas corporativas e LGPD, com exemplos em todas as linguagens homologadas. STRIDE assessment pré-tarefa, verificação de implementação pós-escrita, checklist IaC-específico no preToolUse, fast-paths otimizados."
 keywords: ["segurança", "security", "owasp", "cogna", "lgpd", "vulnerabilidade", "appsec", "devsecops"]
 author: "Segurança da Informação - Grupo COGNA"
 ---
