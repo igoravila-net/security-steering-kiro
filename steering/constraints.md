@@ -162,6 +162,8 @@ Dependências instaladas mas não importadas/usadas no código representam risco
 
 ### Supply Chain Security — npm/Node.js
 
+> **lastReviewed: 2026-07** — Ao ativar este Power em um projeto novo, o agente DEVE verificar via web search se há novos comprometimentos conhecidos desde a última revisão.
+
 #### Ataques Conhecidos e Mitigações
 
 | Ataque | Descrição | Mitigação |
@@ -251,6 +253,8 @@ Dependências instaladas mas não importadas/usadas no código representam risco
 
 ### Supply Chain Security — pip/Python
 
+> **lastReviewed: 2026-07** — Ao ativar este Power em um projeto novo, o agente DEVE verificar via web search se há novos comprometimentos conhecidos desde a última revisão.
+
 #### Ataques Conhecidos e Mitigações
 
 | Ataque | Descrição | Mitigação |
@@ -314,6 +318,8 @@ Dependências instaladas mas não importadas/usadas no código representam risco
    - Scan de vulnerabilidades: `safety check --full-report`
 
 ### Supply Chain Security — Maven/Java
+
+> **lastReviewed: 2026-07** — Ao ativar este Power em um projeto novo, o agente DEVE verificar via web search se há novos comprometimentos conhecidos desde a última revisão.
 
 #### Ataques Conhecidos e Mitigações
 
@@ -383,6 +389,8 @@ Dependências instaladas mas não importadas/usadas no código representam risco
 
 ### Supply Chain Security — NuGet/.NET
 
+> **lastReviewed: 2026-07** — Ao ativar este Power em um projeto novo, o agente DEVE verificar via web search se há novos comprometimentos conhecidos desde a última revisão.
+
 #### Ataques Conhecidos e Mitigações
 
 | Ataque | Descrição | Mitigação |
@@ -431,6 +439,8 @@ Dependências instaladas mas não importadas/usadas no código representam risco
    - Gerar SBOM: `dotnet CycloneDX -o sbom.json`
 
 ### Supply Chain Security — Composer/PHP
+
+> **lastReviewed: 2026-07** — Ao ativar este Power em um projeto novo, o agente DEVE verificar via web search se há novos comprometimentos conhecidos desde a última revisão.
 
 #### Ataques Conhecidos e Mitigações
 
@@ -496,6 +506,40 @@ Se detectar qualquer padrão abaixo, BLOQUEAR e instruir a usar vault/env:
 ### Variáveis Suspeitas
 Bloquear quando variável com estes nomes receber valor literal:
 password, passwd, secret, api_key, token, access_token, private_key, encryption_key, connection_string, client_secret
+
+---
+
+## Escopo de Aplicação — Quando Relaxar Regras
+
+> Nem todo projeto precisa de TODAS as regras. O nível de rigor depende do escopo e classificação do projeto.
+
+### Classificação de Projetos
+
+| Escopo | Descrição | Regras Aplicáveis |
+|---|---|---|
+| `production` | APIs, serviços e apps acessados por usuários finais ou parceiros | **TODAS** — sem exceções |
+| `internal-tool` | Ferramentas internas (dashboards admin, scripts de operação) | Relaxar: CORS (pode ser permissivo), rate limiting (pode ser básico), CSRF (se API-only com token). Manter: auth, authz, input validation, SQL parametrizado, logs, secrets management |
+| `prototype` | POCs, spikes, hackathons — código descartável | Relaxar: rate limiting, paginação, CORS, InputSanitizer completo, testes de segurança. Manter: SQL parametrizado, sem credenciais hardcoded, sem eval/exec com input |
+| `cli-script` | Scripts one-off, migrations, ferramentas de build | Relaxar: auth/authz (rodando localmente), CORS, rate limiting, DTO, headers. Manter: input validation básica, sem credenciais hardcoded, command injection prevention |
+| `library` | Pacotes/módulos reutilizáveis | Manter TUDO que se aplica ao contexto (sem endpoint-specific como CORS, rate limiting) |
+
+### Como Declarar o Escopo
+
+Adicionar no README.md ou em `.kiro/steering/project.md`:
+
+```markdown
+## Project Scope: internal-tool
+```
+
+Se não declarado, assume-se `production` (máximo rigor).
+
+### Regras que NUNCA podem ser relaxadas (independente do escopo)
+
+1. SQL/queries parametrizadas — NUNCA concatenar em nenhum contexto
+2. Credenciais via vault/env — NUNCA hardcoded em nenhum contexto
+3. Sem eval/exec com input externo — NUNCA em nenhum contexto
+4. Dados sensíveis mascarados em logs — NUNCA logar PII/secrets em nenhum contexto
+5. Dependências sem CVEs críticos — NUNCA em nenhum contexto
 
 ---
 

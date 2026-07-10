@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Sincronizar Versão POWER.md e CHANGELOG",
+      "description": "Quando o CHANGELOG.md for editado, verifica se a versão no POWER.md (description e corpo) está sincronizada com a versão mais recente do CHANGELOG. Se não estiver, atualiza automaticamente.",
+      "trigger": "PostFileSave",
+      "matcher": ".*CHANGELOG\\.md$",
+      "action": {
+        "type": "agent",
+        "prompt": "O CHANGELOG.md foi editado. Verifique se a versão mais recente no CHANGELOG corresponde à versão no POWER.md (tanto no campo description do frontmatter quanto no campo \"Versão:\" no corpo). Se estiverem diferentes, atualize o POWER.md para refletir a mesma versão do CHANGELOG, incluindo o changelog resumido."
+      },
+      "enabled": true
+    }
+  ]
+}

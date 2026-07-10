@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Métricas de Adoção",
+      "description": "Registra métricas de uso do Power ao final de sessões com código de produção. Contabiliza regras aplicadas, bloqueios e correções automáticas.",
+      "trigger": "Stop",
+      "action": {
+        "type": "agent",
+        "prompt": "FAST-PATH: Se NENHUM arquivo em src/application/, src/infrastructure/, controllers/, services/, repositories/, middleware/, handlers/ foi criado ou editado nesta sessão → 'Sem métricas — sessão sem código de produção.'\n\nSe código de PRODUÇÃO foi escrito, registre métricas no SECURITY-METRICS.md (crie se não existir):\n| Data | Arquivos produção escritos | Regras aplicadas | Bloqueios | Correções automáticas | Categoria principal |\nCategorias: injection, auth, input-validation, secrets, xss, infra, supply-chain, lgpd, crypto, api-security\nResponda: 'Métricas registradas' ou 'Sem métricas — sessão sem código de produção.'"
+      },
+      "enabled": true
+    }
+  ]
+}

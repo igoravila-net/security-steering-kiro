@@ -8,7 +8,7 @@ Este Power contém **7 steerings temáticos consolidados** e **18 hooks recomend
 
 ## Como Funciona
 
-Os steerings são regras carregadas automaticamente em toda interação com o Kiro. Os hooks interceptam ações específicas para validar segurança em tempo real. Código inseguro é corrigido antes de ser apresentado ao desenvolvedor.
+Os steerings são regras carregadas automaticamente (ou condicionalmente via fileMatch) em interações com o Kiro. Os hooks interceptam ações específicas para validar segurança em tempo real. Código inseguro é corrigido antes de ser apresentado ao desenvolvedor.
 
 ### Princípios Fundamentais
 
@@ -24,11 +24,11 @@ Os steerings são regras carregadas automaticamente em toda interação com o Ki
 POWER.md                    # Overview do Power (enxuto)
 steering/
   constraints.md            # Regras críticas, input, sanitização, dependências, scaffolding
-  implementation.md         # Padrões de código seguro por vulnerabilidade (multilinguagem)
+  implementation.md         # Padrões de código seguro por vulnerabilidade (multilinguagem) [fileMatch: código-fonte]
   validation.md             # Testes de segurança, checklist pré-PR, threat modeling
   policies.md               # Políticas corporativas COGNA (SI, LGPD, acessos, IA)
   infrastructure.md         # IaC seguro (Terraform, Docker, K8s), deployment, CI/CD
-  observability.md          # Padrão de logs COGNA (GELF, CorrelationID), monitoramento
+  observability.md          # Padrão de logs COGNA (GELF, CorrelationID), monitoramento [fileMatch: código-fonte e logging/middleware]
   conditional.md            # Regras por tipo de arquivo (controllers, repos, templates, infra)
 ```
 
@@ -36,12 +36,12 @@ steering/
 
 | Steering | Conteúdo |
 |---|---|
-| **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet), onboarding |
-| **implementation** | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, memory safety (CWE-787/125/416/119/190 — buffer overflow, use-after-free, integer overflow em C#/Node.js/Java), exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress) |
+| **constraints** | Regras absolutas, scaffolding seguro, input malicioso, secrets scanning, dependências proibidas, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet), escopo de aplicação (classificação de projetos com relaxamento contextual de regras), onboarding |
+| **implementation** *(fileMatch)* | Injection (SQL/Code/Command), XSS, SSRF, desserialização, criptografia, autenticação, OAuth2/JWT, API security, CRLF, credentials, directory traversal, information leakage, race conditions, memory safety (CWE-787/125/416/119/190 — buffer overflow, use-after-free, integer overflow em C#/Node.js/Java), exceptional conditions (OWASP A10:2025), LLM Top 10:2025, API Security Top 10:2023 expandido, PHP (Laravel/Symfony/WordPress). Ativado ao editar código-fonte. |
 | **validation** | 20 categorias de testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin/JavaScript/Swift), banco de payloads, checklist pré-PR, threat modeling STRIDE, métricas de compliance |
 | **policies** | Política Geral SI, classificação da informação, LGPD, gestão de acessos, PAM, incidentes, vulnerabilidades, SSDLC, IA segura, criptografia em BD, cloud, fornecedores |
 | **infrastructure** | Terraform, Docker, Kubernetes, Helm, deployment config, server config, resiliência, CI/CD security, anti-backdoor |
-| **observability** | Níveis de log, campos GELF/COGNA, CorrelationID, implementação por linguagem, dados sensíveis em logs, logging de segurança, monitoramento |
+| **observability** *(fileMatch)* | Níveis de log, campos GELF/COGNA, CorrelationID, implementação por linguagem, dados sensíveis em logs, logging de segurança, monitoramento. Ativado ao editar código-fonte ou arquivos de logging/middleware. |
 | **conditional** | Regras ativadas por fileMatch: controllers/APIs, repositories/SQL, templates/views, infra/IaC |
 
 ## Hooks

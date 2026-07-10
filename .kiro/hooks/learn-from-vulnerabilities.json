@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Aprender com Vulnerabilidades Detectadas",
+      "description": "Após escrita de código de produção, registra padrões vulneráveis bloqueados para análise. Ignora arquivos de teste, docs e configs.",
+      "trigger": "PostToolUse",
+      "matcher": "^(fs_write|fs_append|str_replace|delete_file|code)$",
+      "action": {
+        "type": "agent",
+        "prompt": "Se a última operação de escrita foi BLOQUEADA pelo hook de segurança (security-code-review) em um arquivo de PRODUÇÃO (não teste/doc/config), registre o padrão no arquivo .kiro/steering/seguranca-aprendizado-vulnerabilidades.md:\n\n1. Na seção '## Registro de Padrões Detectados', adicione: Data | Tipo | Linguagem | Padrão | Steering relacionado\n2. Se o padrão NÃO está coberto por nenhum steering, adicione na seção '## Gaps Identificados'\n\nSe a operação NÃO foi bloqueada, ou foi em arquivo de teste/doc/config, ignore esta instrução."
+      },
+      "enabled": false
+    }
+  ]
+}

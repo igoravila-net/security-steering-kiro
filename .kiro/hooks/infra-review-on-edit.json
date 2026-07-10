@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Revisão de Segurança em Infraestrutura — Edição",
+      "description": "Ao editar arquivos de infraestrutura, verifica regressões de segurança. Cobre Docker, Terraform, Kubernetes, Helm, CI/CD pipelines e server configs.",
+      "trigger": "PostFileSave",
+      "matcher": "(.*Dockerfile$|.*Dockerfile\\.[^/]*$|.*docker-compose[^/]*\\.yml$|.*docker-compose[^/]*\\.yaml$|.*[^/]*\\.tf$|.*[^/]*\\.tfvars$|.*k8s/.*$|.*kubernetes/.*$|.*helm/.*$|.*[^/]*values[^/]*\\.yml$|.*[^/]*values[^/]*\\.yaml$|.*\\.github/workflows/.*$|.*\\.gitlab-ci\\.yml$|.*Jenkinsfile$|.*buildspec\\.yml$|.*nginx[^/]*\\.conf$|.*apache[^/]*\\.conf$|.*\\.dockerignore$)",
+      "action": {
+        "type": "agent",
+        "prompt": "🏗️ Arquivo de infraestrutura EDITADO. Verifique regressões por tipo:\n\n🐳 [Docker/Compose]\n- 👤 USER não-root mantido? (NUNCA USER root)\n- 💓 HEALTHCHECK presente?\n- 🔑 Nenhum segredo (ARG/ENV com senha, COPY de .env)?\n- 🏷️ Tag não é :latest? (usar digest sha256)\n- 🔒 privileged: false? cap_drop: ALL?\n- 📏 Resource limits (memory/cpus) definidos?\n- 🌐 Portas bind em 127.0.0.1 (não 0.0.0.0) quando possível?\n\n☁️ [Terraform]\n- 🌐 Nenhum 0.0.0.0/0 em portas sensíveis (22, 3389, 3306, 5432)?\n- 🔓 publicly_accessible = false mantido?\n- 🔐 encryption habilitada (storage_encrypted, server_side_encryption)?\n- 🙈 Outputs sensíveis com sensitive = true?\n- 🔑 Credenciais via data source de secrets manager (não hardcoded)?\n\n☸️ [Kubernetes/Helm]\n- 👤 runAsNonRoot: true? allowPrivilegeEscalation: false?\n- 📏 Resource limits (memory/cpu) definidos?\n- 🔑 Secrets via secretKeyRef (não env value direto)?\n- 🌐 NetworkPolicy aplicada?\n- 🏷️ Imagens com digest (não :latest)?\n- 🔒 automountServiceAccountToken: false?\n\n🔄 [CI/CD Pipelines]\n- 🔑 Secrets não expostos em logs (echo, printenv, set -x com secrets)?\n- 📌 Actions/images de terceiros com hash pin (não @latest/@main)?\n- 🔒 Permissions mínimas (contents: read, não write-all)?\n- 🚫 Nenhum token/credential em plaintext no pipeline?\n- 🛡️ CODEOWNERS protegendo workflows?\n\n🌐 [Server Config (nginx/apache)]\n- 🙈 server_tokens off (ocultar versão)?\n- 🔒 Métodos HTTP desnecessários bloqueados?\n- 📂 Listagem de diretórios desabilitada?\n- 🔐 HTTPS obrigatório (redirect 80→443)?\n\n🚫 Se detectar regressão → BLOQUEIE e explique o risco.\n✅ Se seguro → 'OK'."
+      },
+      "enabled": true
+    }
+  ]
+}

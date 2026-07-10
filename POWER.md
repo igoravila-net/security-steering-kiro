@@ -12,7 +12,7 @@ author: "Segurança da Informação - Grupo COGNA"
 Framework automatizado de segurança para desenvolvimento seguro no Grupo COGNA. Garante conformidade com políticas corporativas, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 Linguagens cobertas: C#, Java, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell e Bash/Shell.
-Linguagens suportadas (não homologadas): PHP (WordPress, Laravel).
+Linguagens suportadas (não homologadas): PHP (WordPress, Laravel), Go (gin, echo, fiber, net/http), Rust (actix-web, axum, rocket, warp).
 
 ## Execução Automática
 
@@ -27,15 +27,16 @@ Princípios fundamentais:
 
 ## Available Steering Files
 
-- **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet) e scaffolding por default
-- **implementation** — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs, memory safety CWE-787/125/416/119/190, exceptional conditions OWASP A10:2025, LLM Top 10:2025, API Security Top 10:2023) com exemplos multilinguagem
-- **validation** — Testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE e métricas de compliance
-- **policies** — Políticas corporativas COGNA (SI geral, LGPD, acessos, incidentes, IA segura, criptografia, cloud)
+- **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet), escopo de aplicação (classificação de projetos: production/internal-tool/prototype/cli-script/library) e scaffolding por default
+- **implementation** *(fileMatch: código-fonte)* — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs, memory safety CWE-787/125/416/119/190, exceptional conditions OWASP A10:2025, LLM Top 10:2025, API Security Top 10:2023, Go, Rust) com exemplos multilinguagem. Ativado ao editar código-fonte.
+- **validation** *(fileMatch: testes)* — Testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE e métricas de compliance. Ativado ao editar arquivos de teste.
+- **policies** *(manual: #policies)* — Políticas corporativas COGNA (SI geral, LGPD, acessos, incidentes, IA segura, criptografia, cloud). Referência sob demanda.
 - **infrastructure** — IaC seguro (Terraform, Docker, K8s), deployment, resiliência e secrets scanning
-- **observability** — Padrão de logs COGNA (GELF, CorrelationID, níveis), monitoramento e auditoria
-- **conditional** — Regras ativadas por tipo de arquivo (controllers, repositories, templates, infra)
-- **known-limitations** — Limitações conhecidas da plataforma Kiro que NÃO devem ser reportadas como feedback (auto-inclusion)
-- **hooks-recommended** — Arquitetura de hooks em camadas (Core/Contextual/On-demand) com setup por tipo de projeto (manual)
+- **observability** *(fileMatch: código-fonte e arquivos de logging/middleware)* — Padrão de logs COGNA (GELF, CorrelationID, níveis), monitoramento, auditoria e templates de middleware CorrelationID. Ativado ao editar código-fonte ou arquivos relacionados a logging/middleware.
+- **conditional** *(fileMatch: controllers/repos/templates/infra)* — Regras ativadas por tipo de arquivo com detecção de framework via SessionStart hook
+- **known-limitations** *(manual: #known-limitations)* — Limitações conhecidas da plataforma Kiro que NÃO devem ser reportadas. Referência interna.
+- **hooks-recommended** *(manual: #hooks-recommended)* — Arquitetura de hooks em camadas (Core/Contextual/On-demand) com JSON snippets prontos e setup por tipo de projeto
+- **input-sanitizer-templates** *(manual: #input-sanitizer-templates)* — Templates de InputSanitizer para TypeScript, Java, Python e C#. Referência para garantir consistência entre projetos.
 
 Toda a documentação conceitual está neste POWER.md. Os steering files contêm regras detalhadas com exemplos de código.
 
@@ -43,38 +44,54 @@ Toda a documentação conceitual está neste POWER.md. Os steering files contêm
 
 Após instalar o Power, peça ao agente: **"Crie os hooks de segurança recomendados"**. Os hooks abaixo devem ser criados em `.kiro/hooks/` do projeto:
 
+### Mapeamento de Triggers Kiro
+
+| Nome informal | Trigger oficial (PascalCase) | Matcher regex |
+|---|---|---|
+| preToolUse write | `PreToolUse` | `fs_write\|str_replace\|fs_append` |
+| preToolUse shell | `PreToolUse` | `execute_pwsh` |
+| postToolUse shell | `PostToolUse` | `execute_pwsh` |
+| postToolUse write | `PostToolUse` | `fs_write\|str_replace\|fs_append` |
+| fileCreated | `PostFileCreate` | (path regex) |
+| fileEdited | `PostFileSave` | (path regex) |
+| preTaskExecution | `PreTaskExec` | — |
+| postTaskExecution | `PostTaskExec` | — |
+| agentStop | `Stop` | — |
+| userTriggered | `UserPromptSubmit` | (keyword regex) |
+
 ### Hooks Core (obrigatórios em todo projeto)
 
-| Hook | Evento | Função |
-|------|--------|--------|
-| `security-critical-paths` | preToolUse write | Checklist de segurança antes de escrever código (App 7 itens + IaC 7 itens) |
-| `block-secrets-in-commits` | preToolUse shell | Bloqueia credenciais em git add/commit/push |
-| `shell-output-scanner` | postToolUse shell | Detecta credenciais e deprecated em outputs |
-| `auto-fix-vulnerabilities-on-create` | fileCreated | Corrige vulnerabilidades automaticamente ao criar arquivo |
-| `auto-fix-vulnerabilities-on-edit` | fileEdited | Corrige vulnerabilidades automaticamente ao editar arquivo |
+| Hook | Trigger | Matcher | Função |
+|------|---------|---------|--------|
+| `security-critical-paths` | `PreToolUse` | `fs_write\|str_replace\|fs_append` | Checklist de segurança antes de escrever código (App 7 itens + IaC 7 itens) |
+| `block-secrets-in-commits` | `PreToolUse` | `execute_pwsh` | Bloqueia credenciais em git add/commit/push |
+| `shell-output-scanner` | `PostToolUse` | `execute_pwsh` | Detecta credenciais e deprecated em outputs |
+| `auto-fix-vulnerabilities-on-create` | `PostFileCreate` | `\.(ts\|js\|py\|java\|cs\|kt\|php\|go\|rs)$` | Corrige vulnerabilidades automaticamente ao criar arquivo |
+| `auto-fix-vulnerabilities-on-edit` | `PostFileSave` | `\.(ts\|js\|py\|java\|cs\|kt\|php\|go\|rs)$` | Corrige vulnerabilidades automaticamente ao editar arquivo |
 
 ### Hooks Contextuais (ativar conforme stack)
 
-| Hook | Evento | Quando usar |
-|------|--------|-------------|
-| `infra-review-on-create` | fileCreated | Projetos com Docker/Terraform/K8s |
-| `infra-review-on-edit` | fileEdited | Projetos com Docker/Terraform/K8s |
-| `check-dependency-security` | fileEdited | Projetos com package.json/requirements.txt/pom.xml |
-| `check-dependency-security-on-create` | fileCreated | Projetos com package.json/composer.json/requirements.txt/pom.xml |
-| `lgpd-data-review` | fileCreated | Projetos que processam dados pessoais |
-| `cors-security-headers-check` | fileCreated | Projetos com APIs HTTP |
-| `stride-pre-task-assessment` | preTaskExecution | Projetos usando specs/tasks do Kiro |
-| `security-implementation-verification` | postToolUse write | Projetos usando specs/tasks do Kiro |
+| Hook | Trigger | Matcher | Quando usar |
+|------|---------|---------|-------------|
+| `infra-review-on-create` | `PostFileCreate` | `(Dockerfile\|docker-compose\|\.tf\|\.tfvars)` | Projetos com Docker/Terraform/K8s |
+| `infra-review-on-edit` | `PostFileSave` | `(Dockerfile\|docker-compose\|\.tf\|\.tfvars)` | Projetos com Docker/Terraform/K8s |
+| `check-dependency-security` | `PostFileSave` | `(package\.json\|requirements\|pom\.xml\|\.csproj\|composer\.json\|Cargo\.toml\|go\.mod)` | Projetos com gerenciador de deps |
+| `lgpd-data-review` | `PostFileCreate` | `\.(ts\|js\|py\|java\|cs\|kt\|php\|go\|rs)$` | Projetos que processam dados pessoais |
+| `cors-security-headers-check` | `PostFileCreate` | `(middleware\|server\|app\|main)\.(ts\|js\|py\|java\|cs\|go\|rs)$` | Projetos com APIs HTTP |
+| `stride-pre-task-assessment` | `PreTaskExec` | — | Projetos usando specs/tasks do Kiro |
+| `security-implementation-verification` | `PostToolUse` | `fs_write\|str_replace\|fs_append` | Projetos usando specs/tasks do Kiro |
 
 ### Hooks On-demand (ativar manualmente)
 
-| Hook | Evento | Quando usar |
-|------|--------|-------------|
-| `security-review-on-demand` | UserPromptSubmit | Review manual antes de PR |
-| `veracode-cwe-mapping` | UserPromptSubmit | Mapear findings Veracode |
-| `update-cves-from-web` | UserPromptSubmit | Atualizar base de CVEs |
+| Hook | Trigger | Matcher | Quando usar |
+|------|---------|---------|-------------|
+| `security-review-on-demand` | `UserPromptSubmit` | `security review\|revisão de segurança` | Review manual antes de PR |
+| `veracode-cwe-mapping` | `UserPromptSubmit` | `veracode\|cwe\|findings` | Mapear findings Veracode |
+| `update-cves-from-web` | `UserPromptSubmit` | `cve\|atualizar vulnerabilidades` | Atualizar base de CVEs |
 
 **IMPORTANTE:** Os hooks `auto-fix-vulnerabilities-on-create` e `auto-fix-vulnerabilities-on-edit` são essenciais — sem eles, o Power detecta mas NÃO corrige vulnerabilidades automaticamente.
+
+> Para JSON snippets completos de cada hook, consulte o steering `hooks-recommended.md`.
 
 ## SLAs de Correção
 

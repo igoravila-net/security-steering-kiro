@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Verificar Segurança de Dependências — Criação",
+      "description": "Quando um novo arquivo de dependências for criado, pesquisa CVEs e verifica pacotes proibidos.",
+      "trigger": "PostFileCreate",
+      "matcher": "(.*package\\.json$|.*pom\\.xml$|.*build\\.gradle$|.*build\\.gradle\\.kts$|.*requirements\\.txt$|.*requirements[^/]*\\.txt$|.*Pipfile$|.*pyproject\\.toml$|.*[^/]*\\.csproj$|.*Podfile$|.*Package\\.swift$|.*libs\\.versions\\.toml$|.*Cargo\\.toml$|.*composer\\.json$)",
+      "action": {
+        "type": "agent",
+        "prompt": "🆕📦 Novo arquivo de dependências criado. OBRIGATÓRIO:\n\n1. Para CADA dependência listada, pesquise na web se a versão possui CVEs conhecidos\n2. 🔴 Se encontrar CVE: corrija IMEDIATAMENTE para versão segura\n3. 🚫 Se a biblioteca está na lista PROIBIDA (event-stream, colors>=1.4.1, faker>=6.6.6, log4j<2.17.1): BLOQUEIE e substitua\n4. ⚠️ Verifique se alguma biblioteca está em EOL\n\nFormato:\n⚠️ [lib] vX.Y.Z → corrigido para vA.B.C (CVE-XXXX)\n🚫 [lib] PROIBIDA → substituída por [alternativa]\n✅ Todas verificadas — sem CVEs\n\n🌐 Pesquise SEMPRE na web — novas CVEs são publicadas diariamente."
+      },
+      "enabled": true
+    }
+  ]
+}

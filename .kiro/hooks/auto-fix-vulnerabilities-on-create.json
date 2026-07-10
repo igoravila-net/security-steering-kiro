@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Correção Automática de Vulnerabilidades em Arquivo Novo",
+      "description": "Quando um arquivo de código é criado, analisa automaticamente contra todas as regras de segurança COGNA e corrige vulnerabilidades encontradas sem necessidade de solicitação manual.",
+      "trigger": "PostFileCreate",
+      "matcher": "(.*[^/]*\\.ts$|.*[^/]*\\.js$|.*[^/]*\\.tsx$|.*[^/]*\\.jsx$|.*[^/]*\\.py$|.*[^/]*\\.java$|.*[^/]*\\.cs$|.*[^/]*\\.php$|.*[^/]*\\.kt$|.*[^/]*\\.swift$|.*[^/]*\\.rb$|.*package\\.json$|.*composer\\.json$)",
+      "action": {
+        "type": "agent",
+        "prompt": "🆕 Um arquivo de código foi criado. Analise-o contra TODAS as regras de segurança COGNA e corrija automaticamente:\n\n🔍 [VERIFICAR E CORRIGIR]\n1. 🗄️ SQL Injection: concatenação em queries → substituir por prepared statements\n2. 🔑 Credenciais hardcoded: API keys, senhas, tokens → substituir por env vars\n3. 🌐 XSS: innerHTML, dangerouslySetInnerHTML sem sanitização → adicionar DOMPurify/escape\n4. 💉 Command Injection: exec/eval com input → substituir por APIs seguras\n5. 📏 Input sem validação: campos sem limite/sanitização → adicionar validação\n6. 🔒 Endpoints sem auth: rotas sem middleware → adicionar autenticação\n7. 👁️ Dados sensíveis em logs: PII logada → mascarar\n8. 🔐 Criptografia fraca: MD5/SHA1 para senhas → substituir por bcrypt/argon2\n9. 🌐 SSRF: URLs externas sem whitelist → adicionar validação\n10. 📂 Path Traversal: file paths sem validação → adicionar canonical check\n\nSe encontrar vulnerabilidade:\n- Corrija o arquivo AUTOMATICAMENTE\n- Liste: ✅ [tipo] corrigido: [descrição breve]\n\n✅ Se seguro → '✅ Arquivo seguro — nenhuma correção necessária.'\n\n⏭️ [SKIP] Se o arquivo está em: test/, spec/, __test__/, demo/, .kiro/, ou é .md/.json/.yml → 'OK — arquivo não-produção.'"
+      },
+      "enabled": true
+    }
+  ]
+}

@@ -13,13 +13,47 @@ fileMatchPattern: "**/*Controller*,**/*controller*,**/*Handler*,**/*handler*,**/
 
 > O Kiro detecta o framework do projeto pelos arquivos de configuração e ativa regras específicas.
 
+### Ativação via SessionStart Hook (Recomendado)
+
+Para garantir que as regras framework-specific sejam ativadas corretamente em toda sessão, crie um hook `SessionStart` que detecta o framework e injeta o contexto:
+
+```json
+{
+  "version": "v1",
+  "hooks": [{
+    "name": "Detect Project Framework",
+    "trigger": "SessionStart",
+    "action": {
+      "type": "command",
+      "command": "node -e \"const fs=require('fs');const pkg=fs.existsSync('package.json')?JSON.parse(fs.readFileSync('package.json','utf8')):{};const deps={...pkg.dependencies,...pkg.devDependencies};let fw='unknown';if(deps['@nestjs/core'])fw='nestjs';else if(deps['express'])fw='express';else if(deps['next'])fw='nextjs';else if(deps['react'])fw='react';else if(fs.existsSync('pom.xml'))fw='spring-boot';else if(fs.existsSync('composer.json'))fw='laravel-or-php';else if(fs.existsSync('requirements.txt')||fs.existsSync('pyproject.toml'))fw='python';console.log(JSON.stringify({framework:fw,hasDeps:Object.keys(deps).length>0}))\""
+    }
+  }]
+}
+```
+
+Alternativa mais simples (agent-based):
+
+```json
+{
+  "version": "v1",
+  "hooks": [{
+    "name": "Detect Project Framework",
+    "trigger": "SessionStart",
+    "action": {
+      "type": "agent",
+      "prompt": "Ao iniciar esta sessão, verifique se existe package.json, pom.xml, composer.json, requirements.txt ou pyproject.toml na raiz do projeto. Identifique o framework (NestJS, Express, Next.js, Spring Boot, Laravel, Django, Flask, ASP.NET) e mantenha em mente as regras específicas do framework conforme o steering conditional.md ao longo de toda a sessão."
+    }
+  }]
+}
+```
+
 ### Regras de Detecção
 
 | Arquivo Detectado | Framework | Regras Ativadas |
 |---|---|---|
 | `pom.xml` | Spring Boot (Java) | Validação com `@Valid`/`@Validated`, Spring Security config, `@PreAuthorize`, CSRF via `CsrfFilter`, `@Query` com `@Param` |
 | `composer.json` | Laravel / WordPress (PHP) | Eloquent ORM (não raw queries), Blade `{{ }}` escape, `@csrf` em forms, `wp_nonce_field()`, `$wpdb->prepare()`, `esc_html()` |
-| `package.json` com `@nestjs/*` | NestJS (TypeScript) | Guards (`@UseGuards`), Pipes (`ValidationPipe`), DTOs com `class-validator`, `@Roles()` decorator, Helmet middleware |
+| `package.json` com `@nestjs/*` | NestJS (TypeScript) | Guards (`@UseGuards`), Pipes (`ValidationPipe`), DTOs com `class-validator`, `@Roles()` decorator, Helmet middleware, `@nestjs/throttler` |
 | `package.json` com `express` | Express.js (Node) | `helmet()` middleware, `cors()` com whitelist, `express-rate-limit`, `express-validator`, `hpp` (HTTP Parameter Pollution) |
 
 ### Como funciona

@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Sugestões Proativas de Segurança",
+      "description": "Sugere melhorias apenas quando código de produção com I/O foi escrito. Resposta mínima para sessões sem código.",
+      "trigger": "Stop",
+      "action": {
+        "type": "agent",
+        "prompt": "FAST-PATH: Se NENHUM arquivo em src/application/, src/infrastructure/, controllers/, services/, repositories/, middleware/, handlers/ foi criado ou editado nesta sessão → 'Sem sugestões.'\n\nSe código de produção com I/O FOI escrito (controllers, services, repositories, middleware, integrações) → verificar: rate limiting, logging auditoria, timeout, health check, correlation ID, testes 401/403/400, dados sensíveis mascarados, circuit breaker. Sugestões concisas apenas quando aplicáveis."
+      },
+      "enabled": true
+    }
+  ]
+}

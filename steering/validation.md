@@ -1,6 +1,7 @@
 ---
-inclusion: always
-description: "Testes de segurança, templates prontos, banco de payloads, checklist pré-PR e threat modeling STRIDE"
+inclusion: fileMatch
+fileMatchPattern: "**/*.test.*,**/*.spec.*,**/*Test.java,**/*Test.kt,**/*Tests.cs,**/test_*.py,**/tests/**,**/__tests__/**,**/spec/**,**/test/**"
+description: "Testes de segurança, templates prontos, banco de payloads, checklist pré-PR e threat modeling STRIDE. Ativado ao editar arquivos de teste."
 ---
 
 # Validation — Testes, Checklist e Threat Modeling

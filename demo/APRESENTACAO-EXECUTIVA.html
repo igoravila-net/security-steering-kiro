@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>COGNA Security Guardrails</title>
+<style>
+:root{--p:#6B2D8B;--g:#F5A623;--w:#FFFFFF;--gr:#4B5563;--lp:#F3EDF7;--dp:#4A1D6B;--r:#DC2626;--gn:#16A34A}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,sans-serif;background:var(--w)}
+.S{width:100vw;height:100vh;position:absolute;top:0;left:0;display:none;flex-direction:column;padding:50px 80px;justify-content:space-between}
+.S.a{display:flex}.st{font-size:56px;font-weight:700;color:var(--p);line-height:1.15}
+.ss{font-size:24px;color:var(--gr);margin-top:8px}.sc{flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.card{background:var(--lp);border-radius:16px;padding:24px 30px;box-shadow:0 2px 12px rgba(107,45,139,.08)}
+.badge{display:inline-block;background:var(--p);color:#fff;border-radius:20px;padding:5px 16px;font-size:15px;font-weight:600;margin:3px}
+.bg{background:var(--g);color:#333}.mv{font-size:60px;font-weight:800;color:var(--p);line-height:1.1}
+.ml{font-size:18px;color:var(--gr);margin-top:8px}
+.mc{background:var(--lp);border-radius:16px;padding:28px;text-align:center;box-shadow:0 2px 12px rgba(107,45,139,.08)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1;align-content:center}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.g23{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:20px;flex:1;align-content:center}
+table{width:100%;border-collapse:collapse;font-size:18px}
+th{background:var(--p);color:#fff;padding:14px 18px;text-align:left}
+td{padding:14px 18px;border-bottom:1px solid #e5e7eb;color:var(--gr)}
+tr:nth-child(even){background:var(--lp)}
+.nd{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:100}
+.ndot{width:13px;height:13px;border-radius:50%;background:#ccc;cursor:pointer;border:none;transition:background .2s}
+.ndot.a{background:var(--p)}
+.na{position:fixed;top:50%;transform:translateY(-50%);z-index:100;width:52px;height:52px;border-radius:50%;background:var(--p);color:white;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.7;transition:opacity .2s}
+.na:hover{opacity:1}.na.l{left:20px}.na.r{right:20px}
+.mono{font-family:'Cascadia Code','Fira Code',monospace;font-size:16px;background:#f8f8f8;padding:3px 8px;border-radius:4px}
+.tr{color:var(--r);font-weight:600}.tg{color:var(--gn);font-weight:600}
+.ab{width:80px;height:5px;background:var(--g);border-radius:3px;margin:12px 0}
+.tc{min-width:44px;height:44px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;flex-shrink:0}
+.li{font-size:20px;color:var(--gr);padding:8px 0 8px 28px;position:relative;line-height:1.4}
+.li::before{content:"";position:absolute;left:0;top:16px;width:10px;height:10px;background:var(--g);border-radius:50%}
+.ft{font-size:16px;color:var(--gr);opacity:.7;text-align:center;padding-top:10px}
+</style></head><body>
+<div class="S a" id="s1">
+<div><div class="st">COGNA Security Guardrails</div><div class="ab"></div>
+<div class="ss">Framework automatizado de segurança para desenvolvimento seguro</div></div>
+<div class="sc" style="align-items:center;flex-direction:row;justify-content:center;gap:60px">
+<div style="flex:1"><div style="font-size:20px;color:var(--gr);margin-bottom:16px">Segurança da Informação — Grupo COGNA</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap"><span class="badge">v2.4.2</span><span class="badge bg">Maio 2026</span><span class="badge">12 Políticas</span><span class="badge bg">46 CWEs</span></div></div>
+<div><svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="85" fill="none" stroke="#e5e7eb" stroke-width="18"/><circle cx="100" cy="100" r="85" fill="none" stroke="#6B2D8B" stroke-width="18" stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 100 100)"/><text x="100" y="92" text-anchor="middle" font-size="32" font-weight="800" fill="#6B2D8B">100%</text><text x="100" y="118" text-anchor="middle" font-size="14" fill="#4B5563">PROTEGIDO</text></svg></div></div>
+<div class="ft">Segurança da Informação — Grupo COGNA | v2.4.2 | Maio 2026</div></div>
+<div class="S" id="s2">
+<div><div class="st">O Problema</div><div class="ab"></div></div>
+<div class="sc">
+<div class="g2">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div class="li">Vulnerabilidades detectadas tarde demais (PR review, Veracode, produção)</div>
+<div class="li">Custo de correção aumenta 10x a cada fase</div>
+<div class="li">Devs não são especialistas em segurança</div>
+<div class="li">Dependências com CVEs entram sem verificação</div>
+<div class="li">Políticas existem mas não são aplicadas</div></div>
+<div style="display:flex;align-items:center;justify-content:center">
+<svg width="340" height="260" viewBox="0 0 340 260">
+<rect x="20" y="200" width="70" height="40" rx="6" fill="#16A34A"/>
+<text x="55" y="225" text-anchor="middle" font-size="14" font-weight="700" fill="white">1x</text>
+<text x="55" y="250" text-anchor="middle" font-size="11" fill="#4B5563">Código</text>
+<rect x="120" y="140" width="70" height="100" rx="6" fill="#F5A623"/>
+<text x="155" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="white">10x</text>
+<text x="155" y="250" text-anchor="middle" font-size="11" fill="#4B5563">PR/QA</text>
+<rect x="220" y="60" width="70" height="180" rx="6" fill="#DC2626"/>
+<text x="255" y="155" text-anchor="middle" font-size="14" font-weight="700" fill="white">100x</text>
+<text x="255" y="250" text-anchor="middle" font-size="11" fill="#4B5563">Produção</text>
+<text x="170" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#4B5563">Custo de Correção</text>
+</svg></div></div></div>
+<div class="ft">Quanto mais tarde, mais caro e arriscado</div></div>
+<div class="S" id="s3">
+<div><div class="st">A Solução</div><div class="ab"></div>
+<div class="ss">Plugin para o IDE Kiro que bloqueia código vulnerável em tempo real</div></div>
+<div class="sc" style="gap:28px">
+<div style="display:flex;gap:24px;align-items:flex-start">
+<div class="tc">1</div><div style="flex:1"><div style="font-size:20px;font-weight:600;color:var(--p)">Dev escreve normalmente</div><div style="font-size:18px;color:var(--gr);margin-top:4px">Sem mudança no fluxo de trabalho</div></div></div>
+<div style="display:flex;gap:24px;align-items:flex-start">
+<div class="tc">2</div><div style="flex:1"><div style="font-size:20px;font-weight:600;color:var(--p)">Power intercepta e verifica</div><div style="font-size:18px;color:var(--gr);margin-top:4px">Contra 20+ categorias de ataque em tempo real</div></div></div>
+<div style="display:flex;gap:24px;align-items:flex-start">
+<div class="tc">3</div><div style="flex:1"><div style="font-size:20px;font-weight:600;color:var(--p)">Inseguro → bloqueia e corrige</div><div style="font-size:18px;color:var(--gr);margin-top:4px">Sugere correção automática seguindo padrões COGNA</div></div></div>
+<div style="display:flex;gap:24px;align-items:flex-start">
+<div class="tc">4</div><div style="flex:1"><div style="font-size:20px;font-weight:600;color:var(--p)">Seguro → permite sem fricção</div><div style="font-size:18px;color:var(--gr);margin-top:4px">Zero interrupção para código seguro</div></div></div>
+</div>
+<div class="card" style="text-align:center;font-size:20px;font-weight:600;color:var(--p)">Transparente para o desenvolvedor — proteção automática.</div></div>
+<div class="S" id="s4">
+<div><div class="st">Arquitetura</div><div class="ab"></div></div>
+<div class="sc" style="align-items:center;justify-content:center">
+<svg width="800" height="420" viewBox="0 0 800 420">
+<rect x="10" y="10" width="780" height="400" rx="16" fill="none" stroke="#6B2D8B" stroke-width="3"/>
+<text x="400" y="45" text-anchor="middle" font-size="20" font-weight="700" fill="#6B2D8B">IDE (Kiro)</text>
+<rect x="40" y="65" width="340" height="270" rx="12" fill="#F3EDF7" stroke="#6B2D8B" stroke-width="1.5"/>
+<text x="210" y="95" text-anchor="middle" font-size="16" font-weight="700" fill="#6B2D8B">7 Steering Files</text>
+<text x="70" y="125" font-size="15" fill="#4B5563">&#8226; constraints</text>
+<text x="70" y="150" font-size="15" fill="#4B5563">&#8226; implementation</text>
+<text x="70" y="175" font-size="15" fill="#4B5563">&#8226; validation</text>
+<text x="70" y="200" font-size="15" fill="#4B5563">&#8226; policies</text>
+<text x="70" y="225" font-size="15" fill="#4B5563">&#8226; infrastructure</text>
+<text x="70" y="250" font-size="15" fill="#4B5563">&#8226; observability</text>
+<text x="70" y="275" font-size="15" fill="#4B5563">&#8226; conditional</text>
+<text x="210" y="315" text-anchor="middle" font-size="13" fill="#6B2D8B" font-style="italic">Regras carregadas automaticamente</text>
+<rect x="420" y="65" width="350" height="270" rx="12" fill="#F3EDF7" stroke="#F5A623" stroke-width="1.5"/>
+<text x="595" y="95" text-anchor="middle" font-size="16" font-weight="700" fill="#6B2D8B">26 Hooks</text>
+<text x="450" y="125" font-size="15" fill="#4B5563">&#8226; preToolUse (segurança em escrita)</text>
+<text x="450" y="155" font-size="15" fill="#4B5563">&#8226; postToolUse (validação pós-ação)</text>
+<text x="450" y="185" font-size="15" fill="#4B5563">&#8226; fileEdited (monitoramento contínuo)</text>
+<text x="450" y="215" font-size="15" fill="#4B5563">&#8226; agentStop (verificação final)</text>
+<text x="450" y="245" font-size="15" fill="#4B5563">&#8226; userTriggered (sob demanda)</text>
+<text x="595" y="315" text-anchor="middle" font-size="13" fill="#F5A623" font-style="italic">Automações que interceptam ações</text>
+<rect x="40" y="355" width="730" height="45" rx="10" fill="#6B2D8B"/>
+<text x="405" y="383" text-anchor="middle" font-size="16" font-weight="600" fill="white">Código do Desenvolvedor</text>
+</svg></div>
+<div class="ft">Steerings = regras automáticas | Hooks = interceptadores de ações de risco</div></div>
+<div class="S" id="s5">
+<div><div class="st">Cobertura</div><div class="ab"></div></div>
+<div class="sc"><table>
+<tr><th>Dimensão</th><th>Escopo</th><th>Status</th></tr>
+<tr><td><strong>Vulnerabilidades</strong></td><td>46 CWEs (Top 25 MITRE + 21 adicionais)</td><td><span class="badge">Completo</span></td></tr>
+<tr><td><strong>Linguagens</strong></td><td>13 (C#, Java, TS, JS, PHP, Python, Swift, Kotlin...)</td><td><span class="badge">Ativo</span></td></tr>
+<tr><td><strong>Supply Chain</strong></td><td>5 ecossistemas, 26 pacotes proibidos</td><td><span class="badge bg">SCA</span></td></tr>
+<tr><td><strong>Políticas COGNA</strong></td><td>12 automatizadas</td><td><span class="badge">Enforced</span></td></tr>
+<tr><td><strong>Infraestrutura</strong></td><td>Terraform, Docker, K8s</td><td><span class="badge bg">IaC</span></td></tr>
+<tr><td><strong>LGPD</strong></td><td>Hook dedicado para PII</td><td><span class="badge">Privacy</span></td></tr>
+<tr><td><strong>WordPress</strong></td><td>Plugins, temas, REST API</td><td><span class="badge bg">CMS</span></td></tr>
+</table></div>
+<div class="ft">Proteção abrangente em todas as camadas do desenvolvimento</div></div>
+<div class="S" id="s6">
+<div><div class="st">Como Protege (Exemplos)</div><div class="ab"></div></div>
+<div class="sc"><div class="g2">
+<div class="card" style="border-left:5px solid var(--r)">
+<div style="font-size:20px;font-weight:700;color:var(--r);margin-bottom:16px">&#10060; BLOQUEADO</div>
+<div style="margin-bottom:14px"><div style="font-size:16px;font-weight:600;color:var(--gr);margin-bottom:4px">SQL Injection:</div><div class="mono tr">"SELECT * FROM users WHERE id=" + userId</div></div>
+<div style="margin-bottom:14px"><div style="font-size:16px;font-weight:600;color:var(--gr);margin-bottom:4px">Credenciais:</div><div class="mono tr">const API_KEY = "sk-abc123..."</div></div>
+<div><div style="font-size:16px;font-weight:600;color:var(--gr);margin-bottom:4px">Supply Chain:</div><div class="mono tr">"faker": "^6.6.6" (protestware)</div></div>
+</div>
+<div class="card" style="border-left:5px solid var(--gn)">
+<div style="font-size:20px;font-weight:700;color:var(--gn);margin-bottom:16px">&#9989; PERMITIDO</div>
+<div style="margin-bottom:14px"><div style="font-size:16px;font-weight:600;color:var(--gr);margin-bottom:4px">Parametrizado:</div><div class="mono tg">SELECT * FROM users WHERE id = ?</div></div>
+<div style="margin-bottom:14px"><div style="font-size:16px;font-weight:600;color:var(--gr);margin-bottom:4px">Env vars:</div><div class="mono tg">const API_KEY = process.env.API_KEY</div></div>
+<div><div style="font-size:16px;font-weight:600;color:var(--gr);margin-bottom:4px">Seguro:</div><div class="mono tg">"@faker-js/faker": "9.0.0"</div></div>
+</div></div></div>
+<div class="ft">Bloqueio em tempo real com sugestão de correção automática</div></div>
+<div class="S" id="s7">
+<div><div class="st">Classificação Inteligente</div><div class="ab"></div></div>
+<div class="sc"><div class="g2">
+<div><table>
+<tr><th>Nível</th><th>Arquivos</th><th>Verificação</th></tr>
+<tr><td><strong>SKIP</strong></td><td>Testes, docs, configs, UI</td><td>Auto-approve instantâneo</td></tr>
+<tr><td><strong>LIGHT</strong></td><td>Domain models, DTOs</td><td>Apenas credenciais</td></tr>
+<tr><td><strong>FULL (App)</strong></td><td>Controllers, services</td><td>Checklist 7 itens</td></tr>
+<tr><td><strong>FULL (IaC)</strong></td><td>Dockerfile, Terraform</td><td>Checklist 7 itens</td></tr>
+</table></div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+<svg width="200" height="200" viewBox="0 0 200 200">
+<circle cx="100" cy="100" r="80" fill="none" stroke="#e5e7eb" stroke-width="24"/>
+<circle cx="100" cy="100" r="80" fill="none" stroke="#16A34A" stroke-width="24" stroke-dasharray="502" stroke-dashoffset="55" stroke-linecap="round" transform="rotate(-90 100 100)"/>
+<circle cx="100" cy="100" r="80" fill="none" stroke="#6B2D8B" stroke-width="24" stroke-dasharray="502" stroke-dashoffset="447" stroke-linecap="round" transform="rotate(230 100 100)"/>
+<text x="100" y="95" text-anchor="middle" font-size="28" font-weight="800" fill="#16A34A">89%</text>
+<text x="100" y="118" text-anchor="middle" font-size="13" fill="#4B5563">SKIP</text>
+</svg>
+<div style="font-size:16px;color:var(--gr);text-align:center"><span style="color:var(--gn);font-weight:700">89% SKIP</span> vs <span style="color:var(--p);font-weight:700">11% FULL</span></div>
+</div></div></div>
+<div class="card" style="text-align:center;font-size:20px;font-weight:600;color:var(--p)">Resultado: -83% de interrupções vs. v1</div></div>
+<div class="S" id="s8">
+<div><div class="st">Supply Chain (SCA)</div><div class="ab"></div>
+<div class="ss">Maior vetor de ataque atual</div></div>
+<div class="sc"><div class="g2">
+<div><table>
+<tr><th>Ecossistema</th><th>Pacotes</th><th>Ataques</th></tr>
+<tr><td><strong>npm</strong></td><td>8</td><td>Typosquatting, protestware, worm</td></tr>
+<tr><td><strong>pip</strong></td><td>6</td><td>Typosquatting, malicious setup.py</td></tr>
+<tr><td><strong>Maven</strong></td><td>7</td><td>Log4Shell, transitive attacks</td></tr>
+<tr><td><strong>NuGet</strong></td><td>5</td><td>Dependency confusion, build scripts</td></tr>
+<tr><td><strong>Composer</strong></td><td>5</td><td>Abandoned, malicious autoload</td></tr>
+</table></div>
+<div style="display:flex;align-items:center;justify-content:center">
+<svg width="280" height="240" viewBox="0 0 280 240">
+<text x="140" y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#4B5563">Pacotes Proibidos por Ecossistema</text>
+<rect x="30" y="40" width="160" height="30" rx="4" fill="#6B2D8B"/><text x="200" y="60" font-size="14" fill="#4B5563">npm (8)</text>
+<rect x="30" y="80" width="140" height="30" rx="4" fill="#6B2D8B"/><text x="180" y="100" font-size="14" fill="#4B5563">Maven (7)</text>
+<rect x="30" y="120" width="120" height="30" rx="4" fill="#F5A623"/><text x="160" y="140" font-size="14" fill="#4B5563">pip (6)</text>
+<rect x="30" y="160" width="100" height="30" rx="4" fill="#F5A623"/><text x="140" y="180" font-size="14" fill="#4B5563">NuGet (5)</text>
+<rect x="30" y="200" width="100" height="30" rx="4" fill="#F5A623"/><text x="140" y="220" font-size="14" fill="#4B5563">Composer (5)</text>
+</svg></div></div></div>
+<div class="card" style="text-align:center;font-size:18px;font-weight:600;color:var(--p)">Regra absoluta: verificar CVEs via web ANTES de escrever versões</div></div>
+<div class="S" id="s9">
+<div><div class="st">Observabilidade e Logs</div><div class="ab"></div></div>
+<div class="sc"><table>
+<tr><th>Regra</th><th>Antes</th><th>Depois</th></tr>
+<tr><td><strong>PII em logs</strong></td><td class="tr">console.log(user.cpf)</td><td class="tg">Mascarado: ***.456.***-**</td></tr>
+<tr><td><strong>Formato</strong></td><td class="tr">console.log("msg")</td><td class="tg">GELF estruturado</td></tr>
+<tr><td><strong>Rastreabilidade</strong></td><td class="tr">Sem correlação</td><td class="tg">CorrelationID em toda request</td></tr>
+<tr><td><strong>Níveis</strong></td><td class="tr">Tudo console.log</td><td class="tg">INFO/WARN/ERROR</td></tr>
+<tr><td><strong>Dados de cartão</strong></td><td class="tr">Logado em plaintext</td><td class="tg">NUNCA logado (PCI-DSS)</td></tr>
+</table></div>
+<div class="card" style="text-align:center;font-size:18px;color:var(--p);font-weight:600">Padrão GELF COGNA: timestamp, level, correlationId, service, message</div></div>
+<div class="S" id="s10">
+<div><div class="st">Integração com Processos</div><div class="ab"></div></div>
+<div class="sc" style="justify-content:center;align-items:center">
+<div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:700px">
+<div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 24px;border-left:4px solid var(--p)"><span style="font-size:26px">&#128736;</span><div><strong style="color:var(--p);font-size:17px">Veracode</strong><br><span style="font-size:15px;color:var(--gr)">Feedback loop: CWEs encontradas alimentam steerings</span></div></div>
+<div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 24px;border-left:4px solid var(--p)"><span style="font-size:26px">&#128274;</span><div><strong style="color:var(--p);font-size:17px">LGPD</strong><br><span style="font-size:15px;color:var(--gr)">Hook dedicado verifica mascaramento e consentimento</span></div></div>
+<div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 24px;border-left:4px solid var(--p)"><span style="font-size:26px">&#9888;&#65039;</span><div><strong style="color:var(--p);font-size:17px">Incidentes</strong><br><span style="font-size:15px;color:var(--gr)">Regras atualizadas quando novas vulnerabilidades surgem</span></div></div>
+<div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 24px;border-left:4px solid var(--p)"><span style="font-size:26px">&#128218;</span><div><strong style="color:var(--p);font-size:17px">Onboarding</strong><br><span style="font-size:15px;color:var(--gr)">10 regras fundamentais carregadas automaticamente</span></div></div>
+<div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 24px;border-left:4px solid var(--p)"><span style="font-size:26px">&#9881;&#65039;</span><div><strong style="color:var(--p);font-size:17px">CI/CD</strong><br><span style="font-size:15px;color:var(--gr)">Regras de pipeline: npm audit, pip-audit, OWASP Dependency-Check</span></div></div>
+</div></div>
+<div class="ft">Integração completa com o ecossistema de segurança COGNA</div></div>
+<div class="S" id="s11">
+<div><div class="st">Métricas</div><div class="ab"></div></div>
+<div class="sc"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+<div class="mc"><div class="mv">100%</div><div class="ml">Proteção em produção</div></div>
+<div class="mc"><div class="mv">46</div><div class="ml">CWEs cobertas</div></div>
+<div class="mc"><div class="mv">13</div><div class="ml">Linguagens</div></div>
+<div class="mc"><div class="mv">21</div><div class="ml">Hooks ativos</div></div>
+</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px">
+<div class="mc"><div class="mv">26</div><div class="ml">Pacotes proibidos</div></div>
+<div class="mc"><div class="mv">12</div><div class="ml">Políticas COGNA</div></div>
+<div class="mc"><div class="mv" style="color:var(--gn)">-83%</div><div class="ml">Redução de fricção vs. v1</div></div>
+</div></div>
+<div class="ft">Números que demonstram o impacto do Security Guardrails</div></div>
+<div class="S" id="s12">
+<div><div class="st">Próximos Passos + Como Usar</div><div class="ab"></div></div>
+<div class="sc"><div class="g2">
+<div>
+<div style="font-size:22px;font-weight:700;color:var(--p);margin-bottom:20px">Roadmap</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px">1</div><span style="font-size:17px;color:var(--gr)"><strong>Piloto com squads</strong> — ativar em projetos selecionados</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px">2</div><span style="font-size:17px;color:var(--gr)"><strong>Métricas de adoção</strong> — hook coleta dados automaticamente</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px">3</div><span style="font-size:17px;color:var(--gr)"><strong>Feedback loop Veracode</strong> — mapear findings</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px">4</div><span style="font-size:17px;color:var(--gr)"><strong>Mobile-specific</strong> — cert pinning, jailbreak detection</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px">5</div><span style="font-size:17px;color:var(--gr)"><strong>Evolução contínua</strong> — feedback coleta gaps reais</span></div>
+</div></div>
+<div>
+<div style="font-size:22px;font-weight:700;color:var(--p);margin-bottom:20px">Como Usar</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px;background:var(--g)">1</div><span style="font-size:17px;color:var(--gr)">Instalar o Power no Kiro (marketplace ou manual)</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px;background:var(--g)">2</div><span style="font-size:17px;color:var(--gr)">Steerings carregam automaticamente — zero config</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px;background:var(--g)">3</div><span style="font-size:17px;color:var(--gr)">Hooks opcionais no projeto (.kiro/hooks/)</span></div>
+<div style="display:flex;align-items:center;gap:14px"><div class="tc" style="min-width:40px;height:40px;font-size:18px;background:var(--g)">4</div><span style="font-size:17px;color:var(--gr)">Desenvolver normalmente — proteção transparente</span></div>
+</div></div>
+</div></div>
+<div class="card" style="text-align:center;font-size:18px;color:var(--p)">Repositório: <strong>github.com/igoravila-net/security-steering-kiro</strong></div></div>
+<button class="na l" onclick="go(-1)">&#10094;</button>
+<button class="na r" onclick="go(1)">&#10095;</button>
+<div class="nd" id="dots"></div>
+<script>
+let c=0;const ss=document.querySelectorAll('.S');const n=ss.length;
+function show(i){ss.forEach((s,j)=>{s.classList.toggle('a',j===i)});
+document.querySelectorAll('.ndot').forEach((d,j)=>{d.classList.toggle('a',j===i)});c=i}
+function go(d){show((c+d+n)%n)}
+const dots=document.getElementById('dots');
+for(let i=0;i<n;i++){const d=document.createElement('button');d.className='ndot'+(i===0?' a':'');d.onclick=()=>show(i);dots.appendChild(d)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1)});
+</script></body></html>

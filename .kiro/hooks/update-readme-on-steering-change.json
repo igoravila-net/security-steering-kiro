@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Atualizar README ao Modificar Steering",
+      "description": "Quando um arquivo de steering de segurança for criado ou editado, lembra o agente de verificar se o README.md e POWER.md precisam ser atualizados.",
+      "trigger": "PostFileSave",
+      "matcher": "(.*steering/constraints\\.md$|.*steering/implementation\\.md$|.*steering/validation\\.md$|.*steering/policies\\.md$|.*steering/infrastructure\\.md$|.*steering/observability\\.md$|.*steering/conditional\\.md$)",
+      "action": {
+        "type": "agent",
+        "prompt": "Um steering de segurança foi modificado ou criado. Verifique se o README.md e o POWER.md na raiz do projeto precisam ser atualizados para refletir a mudança (steering adicionado, removido, ou mudança significativa de escopo). Se necessário, atualize as tabelas correspondentes."
+      },
+      "enabled": true
+    }
+  ]
+}

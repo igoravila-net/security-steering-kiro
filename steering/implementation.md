@@ -1,6 +1,7 @@
 ---
-inclusion: always
-description: "Padrões de código seguro por tipo de vulnerabilidade com exemplos multilinguagem"
+inclusion: fileMatch
+fileMatchPattern: "**/*.ts,**/*.js,**/*.tsx,**/*.jsx,**/*.py,**/*.java,**/*.kt,**/*.cs,**/*.php,**/*.go,**/*.rs,**/*.rb,**/*.swift,**/pom.xml,**/build.gradle,**/Cargo.toml,**/go.mod"
+description: "Padrões de código seguro por tipo de vulnerabilidade com exemplos multilinguagem. Ativado ao editar código-fonte."
 ---
 
 # Secure Implementation — Padrões de Código Seguro
@@ -683,3 +684,362 @@ PROIBIDO: concatenação de strings em queries, f-strings/template literals em S
 - Tamanho de arrays/buffers calculado a partir de input: validar antes de alocar
 - Conversão entre tipos (int32 → int16): verificar que valor cabe no tipo destino
 - IDs sequenciais: considerar overflow em sistemas de longa duração
+
+---
+
+## 18. Go — Padrões de Código Seguro
+
+> Regras específicas para aplicações Go (gin, echo, fiber, net/http).
+
+### SQL Injection
+- SEMPRE usar `database/sql` com placeholders (`$1` para PostgreSQL, `?` para MySQL)
+- NUNCA concatenar input em queries SQL
+- Usar ORMs seguros: GORM (parametrizado por padrão), sqlx com named queries
+- Validar que queries dinâmicas usam `sq.Eq{}` ou similar (não fmt.Sprintf)
+
+```go
+// ❌ VULNERÁVEL
+query := fmt.Sprintf("SELECT * FROM users WHERE email = '%s'", email)
+db.Raw(query)
+
+// ✅ SEGURO
+db.Where("email = ?", email).First(&user)
+// ou com database/sql:
+row := db.QueryRow("SELECT * FROM users WHERE email = $1", email)
+```
+
+### Command Injection
+- SEMPRE usar `exec.Command()` com argumentos separados
+- NUNCA usar `exec.Command("sh", "-c", userInput)` ou `exec.Command("bash", "-c", input)`
+- Validar input contra whitelist antes de passar como argumento
+- Usar `exec.CommandContext()` com timeout
+
+```go
+// ❌ VULNERÁVEL
+cmd := exec.Command("sh", "-c", "ls " + userInput)
+
+// ✅ SEGURO
+cmd := exec.CommandContext(ctx, "ls", sanitizedPath)
+```
+
+### Input Validation
+- Usar `go-playground/validator` para structs de request
+- Limitar tamanho de body: `http.MaxBytesReader(w, r.Body, 1<<20)` (1MB)
+- Validar tipos e ranges em todos os campos
+- Sanitizar strings: remover caracteres de controle, limitar tamanho
+
+```go
+type CreateUserRequest struct {
+    Name  string `json:"name" validate:"required,max=100"`
+    Email string `json:"email" validate:"required,email,max=255"`
+    Age   int    `json:"age" validate:"gte=0,lte=150"`
+}
+
+// Validar no handler:
+if err := validate.Struct(req); err != nil {
+    http.Error(w, "Invalid input", http.StatusBadRequest)
+    return
+}
+```
+
+### Criptografia
+- SEMPRE usar `crypto/rand` para geração de valores seguros (NUNCA `math/rand`)
+- Senhas: `golang.org/x/crypto/bcrypt` (cost >= 12) ou `golang.org/x/crypto/argon2`
+- Criptografia simétrica: `crypto/aes` com GCM (NUNCA ECB)
+- TLS: configurar `tls.Config` com MinVersion = tls.VersionTLS12
+
+```go
+// ❌ VULNERÁVEL
+token := fmt.Sprintf("%d", rand.Int())
+
+// ✅ SEGURO
+b := make([]byte, 32)
+crypto_rand.Read(b)
+token := hex.EncodeToString(b)
+
+// ❌ VULNERÁVEL — senha com hash fraco
+hash := sha256.Sum256([]byte(password))
+
+// ✅ SEGURO
+hash, _ := bcrypt.GenerateFromPassword([]byte(password), 12)
+```
+
+### Error Handling
+- SEMPRE verificar `err != nil` — nunca ignorar erros
+- Não expor erros internos ao cliente — retornar mensagem genérica
+- Usar `errors.Is()` e `errors.As()` para type checking
+- Logar erro completo internamente, retornar mensagem segura ao cliente
+
+```go
+// ❌ VULNERÁVEL — expõe internals
+if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+}
+
+// ✅ SEGURO
+if err != nil {
+    logger.Error("operation failed", "error", err, "correlationId", correlationId)
+    http.Error(w, "Internal server error", http.StatusInternalServerError)
+    return
+}
+```
+
+### HTTP Server — Segurança
+- SEMPRE configurar timeouts: ReadTimeout, WriteTimeout, IdleTimeout
+- Headers de segurança em middleware
+- CORS restritivo
+- Rate limiting (golang.org/x/time/rate ou middleware)
+
+```go
+srv := &http.Server{
+    Addr:         ":8080",
+    Handler:      handler,
+    ReadTimeout:  5 * time.Second,
+    WriteTimeout: 10 * time.Second,
+    IdleTimeout:  120 * time.Second,
+}
+
+// Middleware de headers de segurança
+func securityHeaders(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("X-Content-Type-Options", "nosniff")
+        w.Header().Set("X-Frame-Options", "DENY")
+        w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        w.Header().Set("Content-Security-Policy", "default-src 'self'")
+        next.ServeHTTP(w, r)
+    })
+}
+```
+
+### Secrets
+- SEMPRE via `os.Getenv()` ou vault client — NUNCA hardcoded
+- Validar variáveis obrigatórias no startup (falhar se ausentes)
+- Usar `os.LookupEnv()` para distinguir vazio de não-definido
+
+```go
+// ❌ VULNERÁVEL
+apiKey := "sk-1234567890abcdef"
+
+// ✅ SEGURO
+apiKey := os.Getenv("API_KEY")
+if apiKey == "" {
+    log.Fatal("API_KEY environment variable is required")
+}
+```
+
+### Concorrência
+- Proteger estado compartilhado com `sync.Mutex` ou channels
+- Usar `context.Context` para propagação de cancelamento e timeout
+- `defer` para cleanup de resources (unlock, close)
+- Evitar goroutine leaks: sempre ter condição de saída
+
+### SSRF Prevention
+- Validar URLs antes de `http.Get()` / `http.Post()`
+- Bloquear IPs internos após resolução DNS
+- Usar `net.Dialer` customizado com ControlContext para validar IP antes de conectar
+- Limitar redirects com `CheckRedirect` no `http.Client`
+
+### Dependências
+- `go.sum` SEMPRE commitado (verificação de integridade)
+- `govulncheck` obrigatório no CI
+- `go mod tidy` para remover dependências não utilizadas
+- Pinnar versões em `go.mod` (Go modules faz isso por padrão)
+
+---
+
+## 19. Rust — Padrões de Código Seguro
+
+> Regras específicas para aplicações Rust (actix-web, axum, rocket, warp).
+
+### SQL Injection
+- SEMPRE usar `sqlx` com query macros parametrizados ou `diesel` ORM
+- NUNCA usar `format!()` para construir queries SQL
+- Query macros (`sqlx::query!`) validam em compile-time contra o schema
+
+```rust
+// ❌ VULNERÁVEL
+let query = format!("SELECT * FROM users WHERE email = '{}'", email);
+sqlx::query(&query).fetch_one(&pool).await?;
+
+// ✅ SEGURO
+let user = sqlx::query_as!(User, "SELECT * FROM users WHERE email = $1", email)
+    .fetch_one(&pool)
+    .await?;
+
+// ✅ SEGURO (diesel)
+users::table.filter(users::email.eq(&email)).first::<User>(&mut conn)?;
+```
+
+### Input Validation
+- Usar crate `validator` com derive macros
+- Limitar tamanho de body no framework (actix: `PayloadConfig`, axum: `ContentLengthLimit`)
+- Validar tipos via sistema de tipos do Rust (newtypes para domínio)
+
+```rust
+use validator::Validate;
+
+#[derive(Deserialize, Validate)]
+struct CreateUserRequest {
+    #[validate(length(min = 1, max = 100))]
+    name: String,
+    #[validate(email, length(max = 255))]
+    email: String,
+    #[validate(range(min = 0, max = 150))]
+    age: u8,
+}
+
+// No handler:
+let req: CreateUserRequest = serde_json::from_slice(&body)?;
+req.validate().map_err(|e| HttpResponse::BadRequest().json(e))?;
+```
+
+### Criptografia
+- Usar crates `ring` ou `RustCrypto` (rust-crypto) — NUNCA implementar próprio
+- Senhas: `argon2` crate ou `bcrypt` crate (cost >= 12)
+- Random seguro: `rand::rngs::OsRng` (NUNCA `rand::thread_rng()` para segurança)
+- TLS: configurar via `rustls` com protocolos modernos
+
+```rust
+// ❌ VULNERÁVEL — random não criptográfico para tokens
+use rand::Rng;
+let token: u64 = rand::thread_rng().gen();
+
+// ✅ SEGURO
+use rand::rngs::OsRng;
+use rand::RngCore;
+let mut token = [0u8; 32];
+OsRng.fill_bytes(&mut token);
+
+// ❌ VULNERÁVEL — hash fraco para senhas
+use sha2::{Sha256, Digest};
+let hash = Sha256::digest(password.as_bytes());
+
+// ✅ SEGURO
+use argon2::{Argon2, PasswordHasher};
+use argon2::password_hash::SaltString;
+let salt = SaltString::generate(&mut OsRng);
+let hash = Argon2::default().hash_password(password.as_bytes(), &salt)?;
+```
+
+### Error Handling
+- SEMPRE tratar `Result<T, E>` — nunca `.unwrap()` em código de produção
+- Usar `?` operator para propagação limpa
+- `.expect("message")` apenas quando panic é intencional (startup/config)
+- Retornar erros genéricos ao cliente, logar detalhes internamente
+- Usar `thiserror` para erros de domínio, `anyhow` para erros de aplicação
+
+```rust
+// ❌ VULNERÁVEL — panic em produção
+let config = std::fs::read_to_string("config.toml").unwrap();
+let user = db.get_user(id).await.unwrap();
+
+// ✅ SEGURO
+let config = std::fs::read_to_string("config.toml")
+    .map_err(|e| AppError::Config(e))?;
+
+let user = db.get_user(id).await.map_err(|e| {
+    tracing::error!("Failed to fetch user: {}", e);
+    AppError::Internal
+})?;
+```
+
+### Unsafe Code
+- Minimizar blocos `unsafe {}` — usar apenas quando absolutamente necessário
+- Documentar TODAS as invariantes que tornam o `unsafe` sound
+- Encapsular `unsafe` em abstrações seguras (safe wrapper)
+- `#[deny(unsafe_code)]` no crate-level quando possível — `#[allow(unsafe_code)]` apenas em módulos específicos
+
+```rust
+// Crate-level: proibir unsafe por padrão
+#![deny(unsafe_code)]
+
+// Módulo específico que precisa de FFI:
+#[allow(unsafe_code)]
+mod ffi {
+    // SAFETY: ptr é garantido non-null e alinhado pelo caller externo
+    pub unsafe fn process_buffer(ptr: *const u8, len: usize) -> Vec<u8> {
+        // ...
+    }
+}
+```
+
+### Secrets
+- Via `std::env::var()` — NUNCA hardcoded
+- Usar `secrecy` crate para tipos que contêm secrets (previne logging acidental)
+- Validar variáveis obrigatórias no startup
+- Zeroize secrets em memória quando não mais necessários (`zeroize` crate)
+
+```rust
+use secrecy::{Secret, ExposeSecret};
+
+struct AppConfig {
+    database_url: Secret<String>,
+    api_key: Secret<String>,
+}
+
+// ❌ VULNERÁVEL — secret logado acidentalmente
+tracing::info!("Config: {:?}", config.api_key);
+
+// ✅ SEGURO — Secret<T> implementa Debug como "Secret([REDACTED])"
+tracing::info!("Config loaded"); // secret nunca exposto
+let key = config.api_key.expose_secret(); // acesso explícito quando necessário
+```
+
+### HTTP Server — Segurança
+- Configurar timeouts em todas as conexões
+- Limitar tamanho de payload
+- Headers de segurança via middleware/layer
+- Rate limiting com `tower::limit` ou `governor` crate
+
+```rust
+// axum exemplo
+use axum::{Router, middleware};
+use tower_http::timeout::TimeoutLayer;
+use std::time::Duration;
+
+let app = Router::new()
+    .route("/api/users", post(create_user))
+    .layer(TimeoutLayer::new(Duration::from_secs(5)))
+    .layer(middleware::from_fn(security_headers));
+
+async fn security_headers(req: Request, next: Next) -> Response {
+    let mut response = next.run(req).await;
+    let headers = response.headers_mut();
+    headers.insert("x-content-type-options", "nosniff".parse().unwrap());
+    headers.insert("x-frame-options", "DENY".parse().unwrap());
+    headers.insert("strict-transport-security", "max-age=31536000; includeSubDomains".parse().unwrap());
+    response
+}
+```
+
+### Command Injection
+- Usar `std::process::Command` com argumentos separados
+- NUNCA passar input do usuário como shell command
+- Validar input contra whitelist antes de usar como argumento
+
+```rust
+// ❌ VULNERÁVEL
+let output = Command::new("sh")
+    .arg("-c")
+    .arg(format!("ls {}", user_input))
+    .output()?;
+
+// ✅ SEGURO
+let output = Command::new("ls")
+    .arg(&sanitized_path)
+    .output()?;
+```
+
+### SSRF Prevention
+- Validar URLs antes de `reqwest::get()` / `hyper` calls
+- Resolver DNS e verificar que IP não é interno antes de conectar
+- Configurar timeout e redirect limit no client
+- Usar `reqwest::Client` com `redirect(Policy::none())` ou limite baixo
+
+### Dependências
+- `Cargo.lock` SEMPRE commitado para binários (não para libraries)
+- `cargo audit` obrigatório no CI (falhar em vulnerabilidades)
+- `cargo deny` para verificar licenças e advisories
+- Preferir crates com `#![forbid(unsafe_code)]` quando possível
+- Verificar crate antes de adicionar: downloads, mantenedores, última release

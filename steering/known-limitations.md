@@ -1,6 +1,6 @@
 ---
-inclusion: always
-description: "Limitações conhecidas da plataforma Kiro que afetam hooks. NÃO reportar como feedback."
+inclusion: manual
+description: "Limitações conhecidas da plataforma Kiro que afetam hooks. NÃO reportar como feedback. Referência interna — consultar apenas quando necessário para suprimir falsos reportes."
 ---
 
 # Limitações Conhecidas — NÃO Reportar
