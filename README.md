@@ -164,7 +164,7 @@ Crie os seguintes 5 hooks em .kiro/hooks/ com os JSONs EXATOS abaixo (copie lite
   "version": "2",
   "when": {
     "type": "fileEdited",
-    "patterns": ["**/package.json", "**/pom.xml", "**/build.gradle", "**/build.gradle.kts", "**/requirements.txt", "**/requirements*.txt", "**/Pipfile", "**/pyproject.toml", "**/poetry.lock", "**/*.csproj", "**/Podfile", "**/Package.swift", "**/libs.versions.toml", "**/Cargo.toml", "**/composer.json"]
+    "patterns": ["**/package.json", "**/pom.xml", "**/build.gradle", "**/build.gradle.kts", "**/requirements.txt", "**/requirements*.txt", "**/Pipfile", "**/pyproject.toml", "**/poetry.lock", "**/*.csproj", "**/Podfile", "**/Package.swift", "**/libs.versions.toml", "**/composer.json"]
   },
   "then": {
     "type": "askAgent",

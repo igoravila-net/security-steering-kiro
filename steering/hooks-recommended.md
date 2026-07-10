@@ -210,7 +210,7 @@ Hooks que agregam valor para stacks específicas. Ative apenas os relevantes.
     "trigger": "SessionStart",
     "action": {
       "type": "agent",
-      "prompt": "No início da sessão, identifique o framework do projeto verificando arquivos na raiz/src:\n- package.json → busque por express, @nestjs/*, next, react, vue, angular, svelte\n- pom.xml / build.gradle → Spring Boot, Quarkus\n- composer.json → Laravel, Symfony, WordPress\n- go.mod → Go (gin, echo, fiber)\n- Cargo.toml → Rust (actix-web, axum, rocket)\n- *.csproj / Program.cs → ASP.NET Core\n- requirements.txt / pyproject.toml → Django, Flask, FastAPI\n\nArmazene mentalmente o framework detectado para aplicar regras condicionais específicas (conforme conditional.md) durante toda a sessão. Não precisa reportar ao usuário — apenas use internamente para contextualizar verificações de segurança."
+      "prompt": "No início da sessão, identifique o framework do projeto verificando arquivos na raiz/src:\n- package.json → busque por express, @nestjs/*, next, react, vue, angular, svelte\n- pom.xml / build.gradle → Spring Boot, Quarkus\n- composer.json → Laravel, Symfony, WordPress\n- *.csproj / Program.cs → ASP.NET Core\n- requirements.txt / pyproject.toml → Django, Flask, FastAPI\n\nArmazene mentalmente o framework detectado para aplicar regras condicionais específicas (conforme conditional.md) durante toda a sessão. Não precisa reportar ao usuário — apenas use internamente para contextualizar verificações de segurança."
     }
   }]
 }

@@ -12,7 +12,7 @@ author: "Segurança da Informação - Grupo COGNA"
 Framework automatizado de segurança para desenvolvimento seguro no Grupo COGNA. Garante conformidade com políticas corporativas, OWASP Top 10, LGPD e melhores práticas de mercado.
 
 Linguagens cobertas: C#, Java, TypeScript, JavaScript, HTML, Swift, Kotlin, Python, YAML, HCL, PowerShell e Bash/Shell.
-Linguagens suportadas (não homologadas): PHP (WordPress, Laravel), Go (gin, echo, fiber, net/http), Rust (actix-web, axum, rocket, warp).
+Linguagens suportadas (não homologadas): PHP (WordPress, Laravel).
 
 ## Execução Automática
 
@@ -28,7 +28,7 @@ Princípios fundamentais:
 ## Available Steering Files
 
 - **constraints** — Regras críticas, violações automáticas, princípios de input/sanitização, dependências seguras, detecção de dependências não utilizadas, supply chain security (npm, pip, Maven, NuGet), escopo de aplicação (classificação de projetos: production/internal-tool/prototype/cli-script/library) e scaffolding por default
-- **implementation** *(fileMatch: código-fonte)* — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs, memory safety CWE-787/125/416/119/190, exceptional conditions OWASP A10:2025, LLM Top 10:2025, API Security Top 10:2023, Go, Rust) com exemplos multilinguagem. Ativado ao editar código-fonte.
+- **implementation** *(fileMatch: código-fonte)* — Padrões de código seguro por tipo de vulnerabilidade (injection, XSS, SSRF, crypto, auth, APIs, memory safety CWE-787/125/416/119/190, exceptional conditions OWASP A10:2025, LLM Top 10:2025, API Security Top 10:2023) com exemplos multilinguagem. Ativado ao editar código-fonte.
 - **validation** *(fileMatch: testes)* — Testes de segurança, templates prontos (TypeScript/Java/Python/C#/PHP/Kotlin), banco de payloads, checklist pré-PR, threat modeling STRIDE e métricas de compliance. Ativado ao editar arquivos de teste.
 - **policies** *(manual: #policies)* — Políticas corporativas COGNA (SI geral, LGPD, acessos, incidentes, IA segura, criptografia, cloud). Referência sob demanda.
 - **infrastructure** — IaC seguro (Terraform, Docker, K8s), deployment, resiliência e secrets scanning
@@ -66,8 +66,8 @@ Após instalar o Power, peça ao agente: **"Crie os hooks de segurança recomend
 | `security-critical-paths` | `PreToolUse` | `fs_write\|str_replace\|fs_append` | Checklist de segurança antes de escrever código (App 7 itens + IaC 7 itens) |
 | `block-secrets-in-commits` | `PreToolUse` | `execute_pwsh` | Bloqueia credenciais em git add/commit/push |
 | `shell-output-scanner` | `PostToolUse` | `execute_pwsh` | Detecta credenciais e deprecated em outputs |
-| `auto-fix-vulnerabilities-on-create` | `PostFileCreate` | `\.(ts\|js\|py\|java\|cs\|kt\|php\|go\|rs)$` | Corrige vulnerabilidades automaticamente ao criar arquivo |
-| `auto-fix-vulnerabilities-on-edit` | `PostFileSave` | `\.(ts\|js\|py\|java\|cs\|kt\|php\|go\|rs)$` | Corrige vulnerabilidades automaticamente ao editar arquivo |
+| `auto-fix-vulnerabilities-on-create` | `PostFileCreate` | `\.(ts\|js\|py\|java\|cs\|kt\|php)$` | Corrige vulnerabilidades automaticamente ao criar arquivo |
+| `auto-fix-vulnerabilities-on-edit` | `PostFileSave` | `\.(ts\|js\|py\|java\|cs\|kt\|php)$` | Corrige vulnerabilidades automaticamente ao editar arquivo |
 
 ### Hooks Contextuais (ativar conforme stack)
 
@@ -75,9 +75,9 @@ Após instalar o Power, peça ao agente: **"Crie os hooks de segurança recomend
 |------|---------|---------|-------------|
 | `infra-review-on-create` | `PostFileCreate` | `(Dockerfile\|docker-compose\|\.tf\|\.tfvars)` | Projetos com Docker/Terraform/K8s |
 | `infra-review-on-edit` | `PostFileSave` | `(Dockerfile\|docker-compose\|\.tf\|\.tfvars)` | Projetos com Docker/Terraform/K8s |
-| `check-dependency-security` | `PostFileSave` | `(package\.json\|requirements\|pom\.xml\|\.csproj\|composer\.json\|Cargo\.toml\|go\.mod)` | Projetos com gerenciador de deps |
-| `lgpd-data-review` | `PostFileCreate` | `\.(ts\|js\|py\|java\|cs\|kt\|php\|go\|rs)$` | Projetos que processam dados pessoais |
-| `cors-security-headers-check` | `PostFileCreate` | `(middleware\|server\|app\|main)\.(ts\|js\|py\|java\|cs\|go\|rs)$` | Projetos com APIs HTTP |
+| `check-dependency-security` | `PostFileSave` | `(package\.json\|requirements\|pom\.xml\|\.csproj\|composer\.json)` | Projetos com gerenciador de deps |
+| `lgpd-data-review` | `PostFileCreate` | `\.(ts\|js\|py\|java\|cs\|kt\|php)$` | Projetos que processam dados pessoais |
+| `cors-security-headers-check` | `PostFileCreate` | `(middleware\|server\|app\|main)\.(ts\|js\|py\|java\|cs)$` | Projetos com APIs HTTP |
 | `stride-pre-task-assessment` | `PreTaskExec` | — | Projetos usando specs/tasks do Kiro |
 | `security-implementation-verification` | `PostToolUse` | `fs_write\|str_replace\|fs_append` | Projetos usando specs/tasks do Kiro |
 
