@@ -230,6 +230,7 @@ Dependências instaladas mas não importadas/usadas no código representam risco
    | next < 14.2.25 | CVE-2025-29927 (auth bypass middleware) | next >= 14.2.25 ou >= 15.2.3 |
    | react-server-dom-webpack 19.0-19.2 | CVE-2025-55182 (pre-auth RCE) | react >= 19.2.1 |
    | @antv/* (versões comprometidas Mai/2026) | Mini Shai-Hulud worm — account takeover | Verificar integridade, atualizar para versão pós-fix |
+   | js-yaml < 4.1.1 | CVE-2025-64718 (prototype pollution via __proto__) | js-yaml >= 4.1.1 |
 
 9. **Configuração .npmrc segura**
    - save-exact=true

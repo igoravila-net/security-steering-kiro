@@ -161,14 +161,14 @@ Crie os seguintes 5 hooks em .kiro/hooks/ com os JSONs EXATOS abaixo (copie lite
   "enabled": true,
   "name": "Verificar Segurança de Dependências",
   "description": "Quando um arquivo de dependências for editado, pesquisa CVEs na web e corrige automaticamente.",
-  "version": "2",
+  "version": "3",
   "when": {
     "type": "fileEdited",
     "patterns": ["**/package.json", "**/pom.xml", "**/build.gradle", "**/build.gradle.kts", "**/requirements.txt", "**/requirements*.txt", "**/Pipfile", "**/pyproject.toml", "**/poetry.lock", "**/*.csproj", "**/Podfile", "**/Package.swift", "**/libs.versions.toml", "**/composer.json"]
   },
   "then": {
     "type": "askAgent",
-    "prompt": "📦 Arquivo de dependências editado. OBRIGATÓRIO antes de prosseguir:\n\n1. Para CADA dependência adicionada/modificada, pesquise na web (GitHub Advisories, NVD, Snyk) se a versão possui CVEs conhecidos\n2. 🔴 Se encontrar CVE: atualize IMEDIATAMENTE para versão segura no arquivo (não apenas sugira — corrija)\n3. 🚫 Se a biblioteca está na lista PROIBIDA do steering (event-stream, colors>=1.4.1, faker>=6.6.6, log4j<2.17.1, etc.): BLOQUEIE e substitua pela alternativa\n4. 🔍 Se é pacote npm: execute `npm audit --audit-level=high` após a edição e corrija vulnerabilidades encontradas\n5. ⚠️ Verifique se a biblioteca está em EOL — se sim, substitua pela alternativa recomendada\n\nFormato de report:\n⚠️ [lib] vX.Y.Z → corrigido para vA.B.C (CVE-XXXX)\n🚫 [lib] PROIBIDA → substituída por [alternativa]\n✅ Todas as dependências verificadas — sem CVEs conhecidos\n\n🌐 IMPORTANTE: Pesquise SEMPRE na web. Não confie em conhecimento prévio — novas CVEs são publicadas diariamente. Se não conseguir verificar, alerte o usuário."
+    "prompt": "📦 Arquivo de dependências editado. OBRIGATÓRIO antes de prosseguir:\n\n🌐 REGRA ABSOLUTA: Para CADA dependência adicionada/modificada, você DEVE executar web search (GitHub Advisories, NVD, Snyk) para verificar CVEs. NÃO use conhecimento interno — CVEs novos são publicados diariamente. Pular esta etapa é VIOLAÇÃO CRÍTICA.\n\n1. 🔍 Web search OBRIGATÓRIO para cada pacote+versão adicionado/modificado\n2. 🔴 Se encontrar CVE: atualize IMEDIATAMENTE para versão segura no arquivo (não apenas sugira — corrija)\n3. 🚫 Se a biblioteca está na lista PROIBIDA do steering (event-stream, colors>=1.4.1, faker>=6.6.6, log4j<2.17.1, js-yaml<4.1.1, etc.): BLOQUEIE e substitua pela alternativa\n4. �️ Se é pacote npm: execute `npm audit --audit-level=high` e corrija vulnerabilidades encontradas\n5. 🛠️ Se é pip: execute `pip-audit` (se disponível) ou pesquise no PyPI/Snyk\n6. ⚠️ Verifique se a biblioteca está em EOL — se sim, substitua pela alternativa recomendada\n\nFormato de report:\n⚠️ [lib] vX.Y.Z → corrigido para vA.B.C (CVE-XXXX)\n🚫 [lib] PROIBIDA → substituída por [alternativa]\n✅ Todas as dependências verificadas via web — sem CVEs conhecidos\n\n❌ PROIBIDO: Responder 'APROVADO' sem ter executado web search para cada dependência nova/modificada."
   }
 }
 ```

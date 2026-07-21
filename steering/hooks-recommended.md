@@ -160,7 +160,7 @@ Hooks que agregam valor para stacks específicas. Ative apenas os relevantes.
     "matcher": "(package\\.json|requirements.*\\.txt|pom\\.xml|build\\.gradle|\\.csproj|composer\\.json)",
     "action": {
       "type": "agent",
-      "prompt": "Arquivo de dependências modificado. Verifique:\n\n1. Pacotes na lista de PROIBIDOS (conforme constraints.md seção Supply Chain)?\n2. Versões com CVEs conhecidos? (verificar via web search se possível)\n3. Versões pinadas (exatas, sem ^ ou ~ ou *)?\n4. Pacotes com nomes suspeitos (typosquatting)?\n5. Dependências apontando para URLs externas (não registry)?\n6. Pacotes novos adicionados — justificativa clara?\n\nSe tudo OK: responda 'APROVADO'.\nSe problemas encontrados: liste e sugira correção."
+      "prompt": "Arquivo de dependências modificado.\n\n🌐 REGRA ABSOLUTA: Para CADA dependência adicionada/modificada, você DEVE executar web search (GitHub Advisories, NVD, Snyk) para verificar CVEs. NÃO use conhecimento interno — CVEs novos são publicados diariamente. Pular esta etapa é VIOLAÇÃO CRÍTICA.\n\nVerifique:\n1. 🔍 Web search OBRIGATÓRIO para cada pacote+versão novo/modificado\n2. Pacotes na lista de PROIBIDOS (conforme constraints.md seção Supply Chain)?\n3. Versões pinadas (exatas, sem ^ ou ~ ou *)?\n4. Pacotes com nomes suspeitos (typosquatting)?\n5. Dependências apontando para URLs externas (não registry)?\n6. 🛠️ Se npm: execute `npm audit --audit-level=high` e corrija findings\n7. 🛠️ Se pip: execute `pip-audit` (se disponível) ou pesquise no PyPI/Snyk\n\nSe CVE encontrado: CORRIJA imediatamente (atualize versão no arquivo).\nSe tudo verificado via web e OK: responda 'APROVADO'.\n\n❌ PROIBIDO: Responder 'APROVADO' sem ter executado web search para cada dependência nova/modificada."
     }
   }]
 }
