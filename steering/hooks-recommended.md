@@ -35,8 +35,10 @@ Hooks que previnem vulnerabilidades críticas. Devem estar ativos sempre.
 | Hook | Trigger | Matcher | Propósito |
 |------|---------|---------|-----------|
 | `security-critical-paths` | `PreToolUse` | `fs_write\|str_replace\|fs_append` | Checklist App (7 itens) + Checklist IaC (7 itens) com fast-path para docs/testes |
-| `block-secrets-in-commits` | `PreToolUse` | `execute_pwsh` | Bloqueia credenciais em git add/commit/push |
-| `shell-output-scanner` | `PostToolUse` | `execute_pwsh` | Detecta credenciais, deprecated e stack traces em outputs |
+| `block-prohibited-packages` | `PreToolUse` | `fs_write\|str_replace\|fs_append` | Bloqueia pacotes PROIBIDOS ANTES de serem adicionados ao package.json/pom.xml/etc |
+| `block-secrets-in-commits` | `PreToolUse` | `execute_pwsh` | Bloqueia credenciais em git add/commit/push e flags inseguras (--ignore-engines) |
+| `shell-output-scanner` | `PostToolUse` | `execute_pwsh` | Detecta credenciais, deprecated com CVE, e stack traces em outputs |
+| `npm-audit-on-deps-change` | `PostFileSave` | `package\\.json` | Executa `npm audit` automaticamente após alteração em package.json |
 
 **Tokens estimados por sessão:** ~500 (maioria fast-path)
 
@@ -53,7 +55,24 @@ Hooks que previnem vulnerabilidades críticas. Devem estar ativos sempre.
     "matcher": "fs_write|str_replace|fs_append",
     "action": {
       "type": "agent",
-      "prompt": "ANTES de escrever este arquivo, verifique:\n\nFAST-PATH (responda apenas 'APROVADO'):\n- Se path contém: .kiro/, test/, spec/, __tests__/, *.md, *.json (não package.json), *.lock\n- Se é arquivo de documentação, configuração IDE, ou steering\n\nSe NÃO for fast-path, aplique:\n\n**Checklist App (código-fonte):**\n1. Input validado com limite de caracteres?\n2. SQL/queries parametrizadas (sem concatenação)?\n3. Credenciais via env/vault (sem hardcoded)?\n4. Auth + Authz no endpoint?\n5. Dados sensíveis mascarados em logs/respostas?\n6. Error handling sem stack trace ao cliente?\n7. DTO separado da entidade?\n\n**Checklist IaC (se Dockerfile/Terraform/K8s/Compose):**\n1. USER não-root?\n2. Sem secrets na imagem/manifesto?\n3. Resource limits definidos?\n4. Imagem com tag fixa (não :latest)?\n5. Security groups sem 0.0.0.0/0 em portas sensíveis?\n6. Encryption at rest habilitado?\n7. Network policies aplicadas?\n\nSe TODOS os itens aplicáveis estão OK: responda 'APROVADO'.\nSe algum item FALHA: liste os problemas e sugira correção inline."
+      "prompt": "FAST-PATH SILENCIOSO (NÃO responda nada — apenas prossiga):\n- Se path contém: .kiro/, test/, spec/, __tests__/, *.md, *.json (não package.json), *.lock, *.yml, *.css, *.html\n- Se é arquivo de documentação, configuração IDE, steering, ou hook\n\nSe NÃO for fast-path, aplique:\n\n**Checklist App (código-fonte):**\n1. Input validado com limite de caracteres?\n2. SQL/queries parametrizadas (sem concatenação)?\n3. Credenciais via env/vault (sem hardcoded)?\n4. Auth + Authz no endpoint?\n5. Dados sensíveis mascarados em logs/respostas?\n6. Error handling sem stack trace ao cliente?\n7. DTO separado da entidade?\n\n**Checklist IaC (se Dockerfile/Terraform/K8s/Compose):**\n1. USER não-root?\n2. Sem secrets na imagem/manifesto?\n3. Resource limits definidos?\n4. Imagem com tag fixa (não :latest)?\n5. Security groups sem 0.0.0.0/0 em portas sensíveis?\n6. Encryption at rest habilitado?\n7. Network policies aplicadas?\n\nSe TODOS os itens aplicáveis estão OK: 'APROVADO'.\nSe algum item FALHA: liste os problemas e sugira correção inline."
+    }
+  }]
+}
+```
+
+#### block-prohibited-packages
+
+```json
+{
+  "version": "v1",
+  "hooks": [{
+    "name": "Block Prohibited Packages",
+    "trigger": "PreToolUse",
+    "matcher": "fs_write|str_replace|fs_append",
+    "action": {
+      "type": "agent",
+      "prompt": "ANTES de escrever neste arquivo, verifique se é um arquivo de dependências (package.json, pom.xml, build.gradle, requirements.txt, *.csproj, composer.json).\n\nFAST-PATH: Se NÃO é arquivo de dependências → 'APROVADO'.\n\nSe É arquivo de dependências, verifique se ALGUM pacote sendo adicionado/modificado está na lista PROIBIDA:\n\n**npm PROIBIDOS:** event-stream, ua-parser-js<0.7.30, colors>=1.4.1, faker>=6.6.6, node-ipc>=10.1.1, coa>=2.0.3, rc>=1.2.9, peacenotwar, next<14.2.25, react-server-dom-webpack 19.0-19.2, js-yaml<4.1.1, vm2, express<4.21\n\n**pip PROIBIDOS:** jeIlyfish (com I maiúsculo), colourama, python3-dateutil, setup-tools, urllib, reqeusts\n\n**Maven PROIBIDOS:** log4j-core<2.24, commons-collections<3.2.2, fastjson<1.2.83, struts2-core, commons-text<1.10, snakeyaml<2.0, spring-cloud-gateway<4.1.6\n\n**NuGet PROIBIDOS:** Newtonsoft.Json<13.0.3, System.Drawing.Common (Linux), log4net<2.0.16, RestSharp<108.0\n\n**Composer PROIBIDOS:** phpmailer<6.5, guzzlehttp/guzzle<7.4.5, symfony/http-kernel<6.3.8, laravel/framework<10.0\n\n🚫 Se pacote PROIBIDO detectado → BLOQUEIE e instrua a usar alternativa.\n✅ Se nenhum pacote proibido → 'APROVADO'."
     }
   }]
 }
@@ -70,7 +89,7 @@ Hooks que previnem vulnerabilidades críticas. Devem estar ativos sempre.
     "matcher": "execute_pwsh",
     "action": {
       "type": "agent",
-      "prompt": "ANTES de executar este comando shell, verifique:\n\nFAST-PATH (responda apenas 'APROVADO'):\n- Se NÃO contém: git add, git commit, git push, git stash\n- Se é comando de leitura: git status, git log, git diff, cat, ls, dir, type\n- Se é build/test: npm, npx, mvn, dotnet, python -m pytest, vitest, jest\n\nSe o comando contém git add/commit/push, VERIFIQUE:\n1. Arquivos sendo commitados NÃO contêm padrões de secrets:\n   - Prefixos: sk-, pk-, api_, AKIA, AIza, ghp_, glpat-\n   - Patterns: BEGIN RSA/PRIVATE KEY, eyJ (JWT hardcoded)\n   - Variáveis com valor literal: password=, secret=, token=, api_key=\n   - Connection strings com credenciais embutidas\n2. Arquivos .env, *.pem, *.key NÃO estão sendo adicionados\n3. Se detectar qualquer secret: BLOQUEAR (exit 2) e instruir a usar vault/env\n\nSe seguro: responda 'APROVADO'."
+      "prompt": "ANTES de executar este comando shell, verifique:\n\nFAST-PATH (responda apenas 'APROVADO'):\n- Se NÃO contém: git add, git commit, git push, git stash, npm install, npm i\n- Se é comando de leitura: git status, git log, git diff, cat, ls, dir, type\n- Se é build/test: npm run, npx, mvn, dotnet, python -m pytest, vitest, jest\n\n🚫 FLAGS INSEGURAS — BLOQUEAR:\n- `--ignore-engines` → bypassa verificação de compatibilidade de Node.js, pode instalar pacotes inseguros\n- `--ignore-scripts` em contexto de produção (OK no CI)\n- `--force` ou `-f` em npm install → bypassa verificações de segurança\n- `npm install` sem lockfile (sem --ci ou --frozen-lockfile)\n\nSe o comando contém git add/commit/push, VERIFIQUE:\n1. Arquivos sendo commitados NÃO contêm padrões de secrets:\n   - Prefixos: sk-, pk-, api_, AKIA, AIza, ghp_, glpat-\n   - Patterns: BEGIN RSA/PRIVATE KEY, eyJ (JWT hardcoded)\n   - Variáveis com valor literal: password=, secret=, token=, api_key=\n   - Connection strings com credenciais embutidas\n2. Arquivos .env, *.pem, *.key NÃO estão sendo adicionados\n3. Se detectar qualquer secret ou flag insegura: BLOQUEAR e instruir correção\n\nSe seguro: responda 'APROVADO'."
     }
   }]
 }
@@ -87,11 +106,30 @@ Hooks que previnem vulnerabilidades críticas. Devem estar ativos sempre.
     "matcher": "execute_pwsh",
     "action": {
       "type": "agent",
-      "prompt": "Analise o output do comando executado. Responda 'OK' a menos que detecte:\n\n1. **Credenciais expostas**: tokens, passwords, API keys, connection strings no output\n2. **Deprecated warnings**: bibliotecas EOL ou com CVEs conhecidos mencionados\n3. **Stack traces com info sensível**: paths internos, versões de framework, nomes de tabelas\n4. **Npm audit/pip-audit findings**: vulnerabilidades HIGH ou CRITICAL reportadas\n\nSe detectar qualquer item acima:\n- Identifique o problema\n- Sugira ação corretiva\n- Se for credencial exposta: ALERTA — instruir a rotacionar imediatamente\n\nSe output limpo: responda 'OK'."
+      "prompt": "Analise o output do comando executado. Responda 'OK' a menos que detecte:\n\n1. **Credenciais expostas**: tokens, passwords, API keys, connection strings no output → ALERTA + instruir rotação\n2. **Deprecated com advisory**: se output contém `npm warn deprecated` E o pacote tem security advisory conhecido → CORRIGIR automaticamente (atualizar no package.json para versão segura)\n3. **Npm audit findings**: vulnerabilidades HIGH ou CRITICAL reportadas → listar e sugerir fix\n4. **Stack traces com info sensível**: paths internos, versões de framework, nomes de tabelas → alertar\n5. **Flags inseguras detectadas**: `--ignore-engines`, `--force` em install → alertar sobre risco\n\nPara deprecated com CVE conhecido (item 2):\n- Identifique o pacote e versão atual\n- Pesquise a versão segura mais recente\n- CORRIJA o package.json/requirements.txt automaticamente\n- Execute novo `npm audit` para confirmar correção\n\nSe output limpo: responda 'OK'."
     }
   }]
 }
 ```
+
+#### npm-audit-on-deps-change
+
+```json
+{
+  "version": "v1",
+  "hooks": [{
+    "name": "NPM Audit on Deps Change",
+    "trigger": "PostFileSave",
+    "matcher": "package\\.json$",
+    "action": {
+      "type": "command",
+      "command": "npm audit --audit-level=high --json 2>/dev/null || echo '{\"error\": \"npm audit failed or not available\"}'"
+    }
+  }]
+}
+```
+
+> **Nota:** Este hook usa `type: command` para executar `npm audit` automaticamente após cada save de package.json. O output JSON é analisado pelo agente via `shell-output-scanner`. Se `npm audit` encontrar vulnerabilidades HIGH/CRITICAL, o agente será alertado e poderá corrigir automaticamente.
 
 ---
 
@@ -109,7 +147,7 @@ Hooks que agregam valor para stacks específicas. Ative apenas os relevantes.
 | `lgpd-data-review` | `PostFileCreate` | `\.(ts\|js\|py\|java\|cs\|kt\|php)$` | Projetos que processam dados pessoais |
 | `cors-security-headers-check` | `PostFileCreate` | `(middleware\|server\|app\|main\|startup\|program)\.(ts\|js\|py\|java\|cs)$` | Projetos com APIs HTTP |
 | `stride-pre-task-assessment` | `PreTaskExec` | — | Projetos usando specs/tasks do Kiro |
-| `security-implementation-verification` | `PostToolUse` | `fs_write\|str_replace\|fs_append` | Projetos usando specs/tasks do Kiro |
+| `security-implementation-verification` | `PostToolUse` | `fs_write\|str_replace\|fs_append` | Verifica mitigações STRIDE (silencioso para .kiro/.md/.json/.lock) |
 
 **Tokens estimados por sessão:** ~1000-2000 (depende da stack)
 
@@ -268,6 +306,8 @@ Hooks para situações específicas. Não precisam estar ativos o tempo todo.
 
 #### veracode-cwe-mapping
 
+> **Quando usar:** Apenas quando há findings reais do Veracode para mapear. Ative este hook manualmente quando receber um relatório de scan. Sem findings, o hook é no-op — não o deixe no SessionStart.
+
 ```json
 {
   "version": "v1",
@@ -277,7 +317,7 @@ Hooks para situações específicas. Não precisam estar ativos o tempo todo.
     "matcher": "veracode|cwe|mapping|findings",
     "action": {
       "type": "agent",
-      "prompt": "O time de AppSec solicitou mapeamento de findings Veracode. Analise os CWEs reportados e para cada um:\n\n1. Identifique o steering que deveria ter prevenido (constraints, implementation, validation, policies, infrastructure, observability, conditional)\n2. Verifique se a regra correspondente existe e está adequada\n3. Se a regra existe mas não preveniu: sugira melhoria no prompt/exemplo\n4. Se a regra NÃO existe: sugira adição ao steering apropriado\n\nMapeamento CWE → Steering:\n- CWE-89 (SQL Injection) → implementation.md seção 1\n- CWE-79 (XSS) → implementation.md seção 2\n- CWE-918 (SSRF) → implementation.md seção 3\n- CWE-502 (Desserialização) → implementation.md seção 3\n- CWE-327 (Crypto fraca) → implementation.md seção 4\n- CWE-798 (Credenciais hardcoded) → constraints.md Secrets Scanning\n- CWE-611 (XXE) → implementation.md seção 3\n- CWE-22 (Path Traversal) → implementation.md seção 9\n- CWE-862 (Missing Auth) → implementation.md seção 6\n- CWE-1035 (Supply Chain) → constraints.md Supply Chain\n\nRegistre o mapeamento no arquivo VERACODE-MAPPING.md (crie se não existir)."
+      "prompt": "O time de AppSec solicitou mapeamento de findings Veracode.\n\nFAST-PATH: Se não existe arquivo de findings (veracode-results.json, veracode-findings.xml, security-report.json) na raiz do projeto → responda 'Nenhum arquivo de findings encontrado. Forneça o relatório do Veracode para iniciar o mapeamento.' e pare.\n\nSe findings existirem, analise os CWEs reportados e para cada um:\n\n1. Identifique o steering que deveria ter prevenido (constraints, implementation, validation, policies, infrastructure, observability, conditional)\n2. Verifique se a regra correspondente existe e está adequada\n3. Se a regra existe mas não preveniu: sugira melhoria no prompt/exemplo\n4. Se a regra NÃO existe: sugira adição ao steering apropriado\n\nMapeamento CWE → Steering:\n- CWE-89 (SQL Injection) → implementation.md seção 1\n- CWE-79 (XSS) → implementation.md seção 2\n- CWE-918 (SSRF) → implementation.md seção 3\n- CWE-502 (Desserialização) → implementation.md seção 3\n- CWE-327 (Crypto fraca) → implementation.md seção 4\n- CWE-798 (Credenciais hardcoded) → constraints.md Secrets Scanning\n- CWE-611 (XXE) → implementation.md seção 3\n- CWE-22 (Path Traversal) → implementation.md seção 9\n- CWE-862 (Missing Auth) → implementation.md seção 6\n- CWE-1035 (Supply Chain) → constraints.md Supply Chain\n\nRegistre o mapeamento no arquivo VERACODE-MAPPING.md (crie se não existir)."
     }
   }]
 }
@@ -329,12 +369,14 @@ Hooks para situações específicas. Não precisam estar ativos o tempo todo.
 ## Princípios de Design dos Hooks
 
 1. **Prompts curtos** — Hooks referenciam steerings (`conforme constraints.md`) em vez de repetir regras
-2. **Fast-path primeiro** — Toda resposta trivial deve ser 1 palavra (APROVADO/OK/SKIP)
+2. **Fast-path silencioso** — Para .kiro/, *.md, *.json (não deps), *.lock: NÃO emitir resposta alguma — apenas prosseguir
 3. **Sem redundância** — Se o steering já cobre, o hook só verifica compliance
 4. **Camadas independentes** — Cada camada funciona sem as outras
 5. **Tokens mínimos** — Meta: <3000 tokens/sessão em hooks para sessões típicas
 6. **Triggers exatos** — Sempre usar nomes PascalCase oficiais do Kiro
 7. **Matchers precisos** — Regex para filtrar apenas eventos relevantes
+8. **Hooks on-demand para cenários raros** — CVE update e Veracode mapping só ativam quando explicitamente solicitados via keyword no prompt
+9. **Command hooks para ações determinísticas** — `npm audit`, `pip-audit`, linters: usar `type: command` em vez de `type: agent` para resultados confiáveis e sem consumo de contexto
 
 ---
 

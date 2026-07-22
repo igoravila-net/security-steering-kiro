@@ -239,6 +239,11 @@ Dependências instaladas mas não importadas/usadas no código representam risco
    - package-lock=true
    - @cogna:registry=https://npm.pkg.github.com
 
+   **Flags PROIBIDAS em npm install:**
+   - `--ignore-engines` → bypassa verificação de compatibilidade de Node.js; pode instalar pacotes incompatíveis ou inseguros. NUNCA usar em produção ou CI.
+   - `--force` / `-f` → bypassa verificações de peer deps e lockfile. NUNCA usar sem revisão explícita.
+   - `--legacy-peer-deps` → aceita peer deps conflitantes sem validação. Evitar em produção.
+
 10. **Bloquear Remote Dynamic Dependencies**
     - NUNCA aceitar dependências que apontam para URLs externas (http://, https://) em vez do registry
     - Verificar campo "dependencies" por URLs: `"dep": "https://attacker.com/malware.tgz"` ← PROIBIDO
